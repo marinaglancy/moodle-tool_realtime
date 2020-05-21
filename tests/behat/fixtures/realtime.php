@@ -54,7 +54,7 @@ $PAGE->requires->js_amd_inline(<<<EOL
 
         PubSub.subscribe(RealTimeEvents.EVENT, function(event) {
             $('#realtimeresults').append('Received event for component ' + event.component +
-            ', area = ' + event.area + ', itemid = ' + event.itemid + 
+            ', area = ' + event.area + ', itemid = ' + event.itemid +
             ', context id = ' + event.context.id +
             ', contextlevel = ' + event.context.contextlevel +
             ', context instanceid = ' + event.context.instanceid +

@@ -1,4 +1,4 @@
-@realtimeplugin @realtimeplugin_phppoll
+@tool @tool_realtime @realtimeplugin @realtimeplugin_phppoll
 Feature: Testing basic functionality of realtimeplugin_phppoll
   In order to browse effectively
   As a user
