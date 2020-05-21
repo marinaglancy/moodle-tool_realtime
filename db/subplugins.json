@@ -1,0 +1,5 @@
+{
+  "plugintypes": {
+    "realtimeplugin": "admin\/tool\/realtime/plugin"
+  }
+}
