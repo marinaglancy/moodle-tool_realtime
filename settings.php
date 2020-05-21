@@ -18,7 +18,6 @@
  * Plugin administration pages are defined here.
  *
  * @package     tool_realtime
- * @category    admin
  * @copyright   2020 Marina Glancy
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

@@ -17,7 +17,7 @@
 /**
  * Store management setting.
  *
- * @package    tool_log
+ * @package    tool_realtime
  * @copyright  2020 Marina Glancy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -33,6 +33,11 @@ use core_plugin_manager;
 
 require_once("$CFG->libdir/adminlib.php");
 
+/**
+ * Class setting_manageplugins
+ *
+ * @package tool_realtime
+ */
 class setting_manageplugins extends \admin_setting {
     /**
      * Calls parent::__construct with specific arguments
@@ -124,8 +129,8 @@ class setting_manageplugins extends \admin_setting {
         $table->data = array();
 
         foreach (manager::get_installed_plugins_menu() as $plugin => $name) {
-            /** @var \tool_realtime\plugininfo\realtimeplugin $plugininfo */
             $fullname = manager::PLUGINTYPE . '_' . $plugin;
+            /** @var \tool_realtime\plugininfo\realtimeplugin $plugininfo */
             $plugininfo = $pluginmanager->get_plugin_info($fullname);
             $version = get_config($fullname, 'version') ?: '';
 
