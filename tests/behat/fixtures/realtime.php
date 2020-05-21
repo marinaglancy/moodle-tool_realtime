@@ -40,6 +40,7 @@ if ($test = optional_param('test', 0, PARAM_INT)) {
     exit;
 }
 
+$pluginname = \tool_realtime\manager::get_enabled_plugin_name();
 \tool_realtime\api::subscribe(context_user::instance($USER->id), 'tool_realtime', 'test', 0);
 echo $OUTPUT->header();
 $PAGE->requires->js_amd_inline(<<<EOL
@@ -60,6 +61,8 @@ $PAGE->requires->js_amd_inline(<<<EOL
             ', context instanceid = ' + event.context.instanceid +
             ', payload data = ' + event.payload.data + '<br>');
         });
+
+        $('#realtimeresults').append('Realtime plugin - {$pluginname}<br>');
         return M.util.js_complete('initrealtimetest');
     });
 EOL
@@ -73,13 +76,6 @@ EOL
     Test2
 </a></p>
 <div id="realtimeresults">
-    <?php
-    if ($pluginname = \tool_realtime\manager::get_enabled_plugin_name()) {
-        echo "Realtime is enabled - $pluginname<br>";
-    } else {
-        echo "Realtime is not working<br>";
-    }
-    ?>
 </div>
 <?php
 echo $OUTPUT->footer();

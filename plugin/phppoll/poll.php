@@ -38,12 +38,6 @@ if (\tool_realtime\manager::get_enabled_plugin_name() !== 'phppoll') {
     exit;
 }
 
-require_login(0, false);
-if (isguestuser()) {
-    echo json_encode(['error' => 'Not available for guests']);
-    exit;
-}
-
 core_php_time_limit::raise();
 
 /** @var realtimeplugin_phppoll\plugin $plugin */
@@ -62,5 +56,9 @@ while (true) {
         exit;
     }
     // Nothing new for this user. Sleep and check again.
-    sleep(1);
+    if (defined('BEHAT_SITE_RUNNING')) {
+        usleep(200000);
+    } else {
+        sleep(1);
+    }
 }
