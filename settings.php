@@ -30,8 +30,14 @@ if ($hassiteconfig) {
     $ADMIN->add('tools', new admin_category('realtime', new lang_string('pluginname', 'tool_realtime')));
 
     $temp = new admin_settingpage('managerealtime', new lang_string('managerealtime', 'tool_realtime'));
-    $temp->add(new tool_realtime_setting_manageplugins());
+    $temp->add(new \tool_realtime\setting_manageplugins());
     $ADMIN->add('realtime', $temp);
+
+    $temp->add(new admin_setting_configselect('tool_realtime/enabled',
+            new lang_string('enabledplugin', 'tool_realtime'),
+            new lang_string('enabledplugindesc', 'tool_realtime'), 'phppoll',
+            \tool_realtime\manager::get_installed_plugins_menu())
+    );
 
     foreach (core_plugin_manager::instance()->get_plugins_of_type('realtimeplugin') as $plugin) {
         /** @var \tool_realtime\plugininfo\realtimeplugin $plugin */

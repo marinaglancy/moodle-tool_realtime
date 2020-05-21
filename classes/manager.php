@@ -34,12 +34,59 @@ defined('MOODLE_INTERNAL') || die();
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class manager {
-    public static function get_available_plugins(): array {
-        $plugins = \core_component::get_plugin_list_with_class('realtimeplugin', 'plugin');
-        return array_keys($plugins);
+
+    /** @var string */
+    const PLUGINTYPE = 'realtimeplugin';
+
+    /**
+     * List of available backend plugins
+     *
+     * @return array
+     */
+    public static function get_installed_plugins(): array {
+        $plugins = \core_component::get_plugin_list_with_class(self::PLUGINTYPE, 'plugin');
+        $res = [];
+        foreach (array_keys($plugins) as $fullname) {
+            list($type, $name) = \core_component::normalize_component($fullname);
+            $res[$name] = $fullname;
+        }
+        return $res;
     }
 
+    /**
+     * Returns the list of installed plugins sorted by name
+     *
+     * @return array
+     */
+    public static function get_installed_plugins_menu(): array {
+        $plugins = self::get_installed_plugins();
+        $menu = [];
+        foreach ($plugins as $name => $fullname) {
+            if (get_string_manager()->string_exists('pluginname', $fullname)) {
+                $displayname = get_string('pluginname', $fullname);
+            } else {
+                $displayname = $name;
+            }
+            $menu[$name] = $displayname;
+        }
+        asort($menu);
+        return $menu;
+    }
+
+    /**
+     * Name of the enabled backend plugin
+     *
+     * @return string
+     */
     public static function get_enabled_plugin(): string {
-        return 'phppoll'; // TODO.
+        $selected = get_config('tool_realtime', 'enabled');
+        $all = self::get_installed_plugins();
+        if (strlen($selected) && array_key_exists($selected, $all)) {
+            return $selected;
+        }
+        if (array_key_exists('phppoll', $all)) {
+            return 'phppoll';
+        }
+        return key($all);
     }
 }

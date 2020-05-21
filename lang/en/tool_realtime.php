@@ -25,10 +25,12 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['availableplugins'] = 'Available real time backend plugins';
+$string['enabledplugin'] = 'Enabled real time backend plugin';
+$string['enabledplugindesc'] = 'Select the real time backend plugin that is used on the site. If the selected plugin is not configured it will fall back to the default one';
+$string['managerealtime'] = 'Manage Real time backend plugins';
 $string['pluginname'] = 'Real time events';
 $string['privacy:metadata'] = 'The Real time events plugin only stores user information for a short period of time';
-$string['taskcleanup'] = 'Clean-up for Real time events';
-$string['managerealtime'] = 'Manage Real time backend plugins';
-$string['availableplugins'] = 'Available real time backend plugins';
 $string['subplugintype_realtimeplugin'] = 'Real time backend plugin';
 $string['subplugintype_realtimeplugin_plural'] = 'Real time backend plugins';
+$string['taskcleanup'] = 'Clean-up for Real time events';

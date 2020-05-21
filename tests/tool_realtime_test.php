@@ -36,6 +36,6 @@ class tool_realtime_tool_realtime_testcase extends advanced_testcase {
 
     public function test_is_enabled() {
         $this->assertNotEmpty(\tool_realtime\manager::get_enabled_plugin());
-        $this->assertNotEmpty(\tool_realtime\manager::get_available_plugins());
+        $this->assertNotEmpty(\tool_realtime\manager::get_installed_plugins());
     }
 }

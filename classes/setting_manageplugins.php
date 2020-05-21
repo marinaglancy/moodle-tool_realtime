@@ -22,11 +22,18 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace tool_realtime;
+
 defined('MOODLE_INTERNAL') || die();
+
+use core_text;
+use html_writer;
+use html_table;
+use core_plugin_manager;
 
 require_once("$CFG->libdir/adminlib.php");
 
-class tool_realtime_setting_manageplugins extends admin_setting {
+class setting_manageplugins extends \admin_setting {
     /**
      * Calls parent::__construct with specific arguments
      */
@@ -76,7 +83,7 @@ class tool_realtime_setting_manageplugins extends admin_setting {
         }
 
         $query = core_text::strtolower($query);
-        $plugins = \tool_realtime\manager::get_available_plugins();
+        $plugins = manager::get_installed_plugins();
         foreach ($plugins as $plugin) {
             if (strpos(core_text::strtolower($plugin), $query) !== false) {
                 return true;
@@ -99,36 +106,34 @@ class tool_realtime_setting_manageplugins extends admin_setting {
     public function output_html($data, $query = '') {
         global $OUTPUT, $PAGE;
 
-        // Display strings.
         $strsettings = get_string('settings');
         $struninstall = get_string('uninstallplugin', 'core_admin');
         $strversion = get_string('version');
+        $strenabled = get_string('enabled', 'core_admin');
 
         $pluginmanager = core_plugin_manager::instance();
-        $available = \tool_realtime\manager::get_available_plugins();
-        $enabled = \tool_realtime\manager::get_enabled_plugin();
 
         $return = $OUTPUT->heading(get_string('availableplugins', 'tool_realtime'), 3, 'main', true);
-        $return .= $OUTPUT->box_start('generalbox loggingui');
+        $return .= $OUTPUT->box_start('generalbox realtimeui');
 
         $table = new html_table();
-        $table->head = array(get_string('name'), $strversion, $strsettings, $struninstall);
-        $table->colclasses = array('leftalign', 'centeralign', 'centeralign', 'centeralign');
+        $table->head = array(get_string('name'), $strversion, $strenabled, $strsettings, $struninstall);
+        $table->colclasses = array('leftalign', 'centeralign', 'centeralign', 'centeralign', 'centeralign');
         $table->id = 'logstoreplugins';
         $table->attributes['class'] = 'admintable generaltable';
         $table->data = array();
 
-        $printed = array();
-        foreach ($available as $plugin) {
+        foreach (manager::get_installed_plugins_menu() as $plugin => $name) {
             /** @var \tool_realtime\plugininfo\realtimeplugin $plugininfo */
-            $plugininfo = $pluginmanager->get_plugin_info($plugin);
-            $version = get_config($plugin, 'version') ?: '';
+            $fullname = manager::PLUGINTYPE . '_' . $plugin;
+            $plugininfo = $pluginmanager->get_plugin_info($fullname);
+            $version = get_config($fullname, 'version') ?: '';
 
-            $name = get_string('pluginname', $plugin);
-            $displayname = html_writer::span($name, $plugin === 'realtimeplugin_' . $enabled ? '' : 'dimmed_text');
+            $isenabled = $plugin === manager::get_enabled_plugin();
+            $displayname = html_writer::span($name, $isenabled ? '' : 'dimmed_text');
 
-            if ($PAGE->theme->resolve_image_location('icon', $plugin, false)) {
-                $icon = $OUTPUT->pix_icon('icon', '', $plugin, ['class' => 'icon pluginicon']);
+            if ($PAGE->theme->resolve_image_location('icon', $fullname)) {
+                $icon = $OUTPUT->pix_icon('icon', '', $fullname, ['class' => 'icon pluginicon']);
             } else {
                 $icon = $OUTPUT->spacer();
             }
@@ -141,14 +146,12 @@ class tool_realtime_setting_manageplugins extends admin_setting {
 
             // Uninstall link.
             $uninstall = '';
-            if ($uninstallurl = core_plugin_manager::instance()->get_uninstall_url($plugin, 'manage')) {
+            if ($uninstallurl = core_plugin_manager::instance()->get_uninstall_url($fullname, 'manage')) {
                 $uninstall = html_writer::link($uninstallurl, $struninstall);
             }
 
             // Add a row to the table.
-            $table->data[] = array($icon . $displayname, $version, $settings, $uninstall);
-
-            $printed[$plugin] = true;
+            $table->data[] = array($icon . $displayname, $version, $isenabled ? $strenabled : '', $settings, $uninstall);
         }
 
         $return .= html_writer::table($table);
