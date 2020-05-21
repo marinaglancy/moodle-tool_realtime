@@ -15,11 +15,13 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Class plugin_base
+ * Class api
  *
  * @package     tool_realtime
- * @copyright   2020 Marina Glancy
+ * @copyright   2020 Moodle Pty Ltd <support@moodle.com>
+ * @author      2020 Marina Glancy
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @license     Moodle Workplace License, distribution is restricted, contact support@moodle.com
  */
 
 namespace tool_realtime;
@@ -27,50 +29,15 @@ namespace tool_realtime;
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Class plugin_base
+ * Class api
  *
  * @package     tool_realtime
- * @copyright   2020 Marina Glancy
+ * @copyright   2020 Moodle Pty Ltd <support@moodle.com>
+ * @author      2020 Marina Glancy
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @license     Moodle Workplace License, distribution is restricted, contact support@moodle.com
  */
-abstract class plugin_base {
-
-    /**
-     * Name of this plugin
-     *
-     * @return false|string
-     */
-    public function get_name() {
-        $parts = preg_split("|\\\\|", get_class($this), -1, PREG_SPLIT_NO_EMPTY);
-        return substr($parts[0], strlen(manager::PLUGINTYPE) + 1);
-    }
-
-    /**
-     * Is current plugin enabled
-     *
-     * @return bool
-     */
-    public function is_enabled(): bool {
-        return $this->get_name() === manager::get_enabled_plugin_name();
-    }
-
-    /**
-     * Instance of this plugin
-     *
-     * Can be overridden to return singleton
-     *
-     * @return static
-     */
-    public static function get_instance() {
-        return new static();
-    }
-
-    /**
-     * Is the plugin setup completed
-     *
-     * @return bool
-     */
-    abstract public function is_set_up(): bool;
+class api {
 
     /**
      * Subscribe the current page to receive notifications about events
@@ -80,7 +47,11 @@ abstract class plugin_base {
      * @param string $area
      * @param int $itemid
      */
-    abstract public function subscribe(\context $context, string $component, string $area, int $itemid): void;
+    public static function subscribe(\context $context, string $component, string $area, int $itemid) {
+        if (self::is_enabled($component, $area)) {
+            manager::get_plugin()->subscribe($context, $component, $area, $itemid);
+        }
+    }
 
     /**
      * Notifies all subscribers about an event
@@ -91,5 +62,21 @@ abstract class plugin_base {
      * @param int $itemid
      * @param array|null $payload
      */
-    abstract public function notify(\context $context, string $component, string $area, int $itemid, ?array $payload = null): void;
+    public static function notify(\context $context, string $component, string $area, int $itemid, ?array $payload = null) {
+        if (self::is_enabled($component, $area)) {
+            manager::get_plugin()->notify($context, $component, $area, $itemid, $payload);
+        }
+    }
+
+    /**
+     * Checks if the given area is enabled
+     *
+     * @param string $component
+     * @param string $area
+     * @return bool
+     */
+    public static function is_enabled(string $component, string $area) {
+        // TODO.
+        return true;
+    }
 }

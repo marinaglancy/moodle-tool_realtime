@@ -15,26 +15,23 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Plugin upgrade steps are defined here.
+ * Tasks definitions.
  *
- * @package     tool_realtime
- * @category    upgrade
- * @copyright   2020 Marina Glancy
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    realtimeplugin_phppoll
+ * @copyright  2020 Marina Glancy
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-/**
- * Execute tool_realtime upgrade from the given old version.
- *
- * @param int $oldversion
- * @return bool
- */
-function xmldb_tool_realtime_upgrade($oldversion) {
-    global $DB;
-
-    $dbman = $DB->get_manager();
-
-    return true;
-}
+$tasks = array(
+    array(
+        'classname' => 'realtimeplugin_phppoll\task\cleanup_task',
+        'blocking' => 0,
+        'minute' => '*/5',
+        'hour' => '*',
+        'day' => '*',
+        'dayofweek' => '*',
+        'month' => '*'
+    ),
+);

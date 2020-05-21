@@ -26,4 +26,5 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['pluginname'] = 'PHP polling';
-$string['privacy:metadata'] = 'The PHP polling plugin does not store user information';
+$string['privacy:metadata'] = 'The PHP polling plugin only stores user information for a short period of time';
+$string['taskcleanup'] = 'Clean-up for events in PHP polling';

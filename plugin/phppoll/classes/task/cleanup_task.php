@@ -15,33 +15,42 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * File containing tests for tool_realtime.
+ * Task to cleanup task logs.
  *
- * @package     tool_realtime
- * @category    test
- * @copyright   2020 Marina Glancy
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
-defined('MOODLE_INTERNAL') || die();
-
-/**
- * The tool_realtime test class.
- *
- * @package    tool_realtime
+ * @package    realtimeplugin_phppoll
  * @copyright  2020 Marina Glancy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_realtime_tool_realtime_testcase extends advanced_testcase {
+namespace realtimeplugin_phppoll\task;
 
-    public function test_is_enabled() {
-        $this->assertNotEmpty(\tool_realtime\manager::get_enabled_plugin_name());
-        $this->assertNotEmpty(\tool_realtime\manager::get_installed_plugins());
+defined('MOODLE_INTERNAL') || die();
+
+use core\task\scheduled_task;
+use realtimeplugin_phppoll\plugin;
+
+/**
+ * A task to cleanup log entries for tasks.
+ *
+ * @copyright  2020 Marina Glancy
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class cleanup_task extends scheduled_task {
+
+    /**
+     * Get a descriptive name for this task (shown to admins).
+     *
+     * @return string
+     */
+    public function get_name() {
+        return get_string('taskcleanup', 'realtimeplugin_phppoll');
     }
 
-    public function test_is_set_up() {
-        $this->assertTrue(\tool_realtime\manager::get_plugin()->is_set_up());
-        $this->assertTrue(\tool_realtime\manager::get_plugin()->is_enabled());
-        $this->assertEquals(\tool_realtime\manager::get_enabled_plugin_name(), \tool_realtime\manager::get_plugin()->get_name());
+    /**
+     * Perform the cleanup task.
+     */
+    public function execute() {
+        global $DB;
+        $DB->delete_records_select(plugin::TABLENAME, 'timecreated < ?', [time() - 5 * MINSECS]);
+        mtrace('Done');
     }
 }

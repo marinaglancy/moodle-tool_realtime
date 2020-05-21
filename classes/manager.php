@@ -96,9 +96,10 @@ class manager {
      * @return plugin_base
      */
     public static function get_plugin(): plugin_base {
-        // TODO check for errors, return singleton?
+        // TODO check for initialisation errors.
         $plugins = \core_component::get_plugin_list_with_class(self::PLUGINTYPE, 'plugin');
+        /** @var plugin_base $classname */
         $classname = $plugins[self::PLUGINTYPE . '_' . self::get_enabled_plugin_name()];
-        return new $classname();
+        return $classname::get_instance();
     }
 }
