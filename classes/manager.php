@@ -78,7 +78,7 @@ class manager {
      *
      * @return string
      */
-    public static function get_enabled_plugin(): string {
+    public static function get_enabled_plugin_name(): string {
         $selected = get_config('tool_realtime', 'enabled');
         $all = self::get_installed_plugins();
         if (strlen($selected) && array_key_exists($selected, $all)) {
@@ -88,5 +88,17 @@ class manager {
             return 'phppoll';
         }
         return key($all);
+    }
+
+    /**
+     * Returns an instance of the enabled backend plugin
+     *
+     * @return plugin_base
+     */
+    public static function get_plugin(): plugin_base {
+        // TODO check for errors, return singleton?
+        $plugins = \core_component::get_plugin_list_with_class(self::PLUGINTYPE, 'plugin');
+        $classname = $plugins[self::PLUGINTYPE . '_' . self::get_enabled_plugin_name()];
+        return new $classname();
     }
 }

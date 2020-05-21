@@ -48,7 +48,7 @@ class realtimeplugin extends \core\plugininfo\base {
      * @return null|bool
      */
     public function is_enabled() {
-        $enabled = manager::get_enabled_plugin();
+        $enabled = manager::get_enabled_plugin_name();
         return $this->name === $enabled;
     }
 

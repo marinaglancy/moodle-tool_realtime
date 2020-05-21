@@ -36,7 +36,9 @@ require_once("$CFG->libdir/adminlib.php");
 /**
  * Class setting_manageplugins
  *
- * @package tool_realtime
+ * @package    tool_realtime
+ * @copyright  2020 Marina Glancy
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class setting_manageplugins extends \admin_setting {
     /**
@@ -134,7 +136,7 @@ class setting_manageplugins extends \admin_setting {
             $plugininfo = $pluginmanager->get_plugin_info($fullname);
             $version = get_config($fullname, 'version') ?: '';
 
-            $isenabled = $plugin === manager::get_enabled_plugin();
+            $isenabled = $plugin === manager::get_enabled_plugin_name();
             $displayname = html_writer::span($name, $isenabled ? '' : 'dimmed_text');
 
             if ($PAGE->theme->resolve_image_location('icon', $fullname)) {
