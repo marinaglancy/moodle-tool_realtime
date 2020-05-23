@@ -6,9 +6,12 @@ Feature: Testing basic functionality of realtimeplugin_phppoll
 
   @javascript
   Scenario: Basic test of polling for updates
-    Given I log in as "admin"
-    When I am on realtime fixture page
-    And I wait until "Realtime plugin - phppoll" "text" exists
+    Given the following config values are set as admin:
+      | realtimeplugin_phppoll/longpolltimeout | 1000 |
+      | realtimeplugin_phppoll/shortpollperiod | 200  |
+    When I log in as "admin"
+    And I am on realtime fixture page
+    Then I wait until "Realtime plugin - phppoll" "text" exists
     And I follow "Test1"
     And I wait until "Received event" "text" exists
     And I should see "Received event for component tool_realtime, area = test, itemid = 0, context id = 5, contextlevel = 30, context instanceid = 2, payload data = 1"
