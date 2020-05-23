@@ -28,7 +28,7 @@
 require_once(__DIR__.'/../../../../../../config.php');
 
 // Only continue for behat site.
-//defined('BEHAT_SITE_RUNNING') ||  die();
+defined('BEHAT_SITE_RUNNING') ||  die();
 
 require_login(0, false);
 $PAGE->set_url('/admin/tool/realtime/tests/behat/fixtures/realtime.php');
