@@ -15,20 +15,24 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Plugin strings are defined here.
+ * Plugin administration pages are defined here.
  *
  * @package     realtimeplugin_phppoll
- * @category    string
  * @copyright   2020 Marina Glancy
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['longpolltimeout'] = 'Maximum duration for long polling';
-$string['longpolltimeoutdesc'] = 'Time to send new polling request if there are no new events';
-$string['pluginname'] = 'PHP polling';
-$string['privacy:metadata'] = 'The PHP polling plugin only stores user information for a short period of time';
-$string['shortpollperiod'] = 'Short polling interval, ms';
-$string['shortpollperioddesc'] = 'Interval between short polling requests, in milliseconds, can not be less than {$a}';
-$string['taskcleanup'] = 'Clean-up for events in PHP polling';
+if ($hassiteconfig) {
+
+    $settings->add(new admin_setting_configduration('realtimeplugin_phppoll/longpolltimeout',
+            new lang_string('longpolltimeout', 'realtimeplugin_phppoll'),
+            new lang_string('longpolltimeoutdesc', 'realtimeplugin_phppoll'), 30)
+    );
+
+    $settings->add(new admin_setting_configtext('realtimeplugin_phppoll/shortpollperiod',
+            new lang_string('shortpollperiod', 'realtimeplugin_phppoll'),
+            new lang_string('shortpollperioddesc', 'realtimeplugin_phppoll', 200), 1000)
+    );
+}

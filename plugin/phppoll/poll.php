@@ -39,9 +39,12 @@ if (\tool_realtime\manager::get_enabled_plugin_name() !== 'phppoll') {
 }
 
 core_php_time_limit::raise();
+$starttime = microtime(true);
 
 /** @var realtimeplugin_phppoll\plugin $plugin */
 $plugin = \tool_realtime\manager::get_plugin();
+$maxduration = $plugin->get_log_poll_maximum_duration(); // In seconds as float.
+$sleepinterval = $plugin->get_short_poll_period() * 1000; // In microseconds.
 
 while (true) {
     if (!$plugin->validate_token($userid, $token)) {
@@ -56,9 +59,9 @@ while (true) {
         exit;
     }
     // Nothing new for this user. Sleep and check again.
-    if (defined('BEHAT_SITE_RUNNING')) {
-        usleep(200000);
-    } else {
-        sleep(1);
+    if (microtime(true) - $starttime > $maxduration) {
+        echo json_encode(['success' => 1, 'events' => []]);
+        exit;
     }
+    usleep($sleepinterval);
 }

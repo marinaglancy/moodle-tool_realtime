@@ -161,4 +161,23 @@ class plugin extends plugin_base {
         return $events;
     }
 
+    /**
+     * Short polling interval, ms
+     *
+     * @return int sleep time between pollings, in milliseconds
+     */
+    public function get_short_poll_period(): int {
+        $period = get_config('realtimeplugin_phppoll', 'shortpollperiod');
+        return max($period, 200);
+    }
+
+    /**
+     * Maximum duration for long polling
+     *
+     * @return int time in seconds
+     */
+    public function get_log_poll_maximum_duration(): float {
+        $duration = get_config('realtimeplugin_phppoll', 'longpolltimeout');
+        return (isset($duration) && $duration !== false) ? (float)$duration : 30;
+    }
 }
