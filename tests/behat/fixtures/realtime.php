@@ -28,7 +28,7 @@
 require_once(__DIR__.'/../../../../../../config.php');
 
 // Only continue for behat site.
-defined('BEHAT_SITE_RUNNING') ||  die();
+//defined('BEHAT_SITE_RUNNING') ||  die();
 
 require_login(0, false);
 $PAGE->set_url('/admin/tool/realtime/tests/behat/fixtures/realtime.php');
@@ -46,13 +46,14 @@ echo $OUTPUT->header();
 $PAGE->requires->js_amd_inline(<<<EOL
     M.util.js_pending('initrealtimetest');
     require(['jquery', 'core/pubsub', 'tool_realtime/events'], function($, PubSub, RealTimeEvents) {
-//        $('body').on('click', '.testform', function(e) {
-//            e.preventDefault();
+        $('body').on('click', '.testform', function(e) {
+            e.preventDefault();
+            $('#realtimeresults').append('Pushed Test' + $(e.currentTarget).data('linkid') + '<br>');
 //            var ajax = new XMLHttpRequest();
 //            ajax.open('GET', "{$PAGE->url}?test=" + $(e.currentTarget).data('linkid'), true);
 //            ajax.send();
-//        })
-//
+        })
+
 //        PubSub.subscribe(RealTimeEvents.EVENT, function(event) {
 //            $('#realtimeresults').append('Received event for component ' + event.component +
 //            ', area = ' + event.area + ', itemid = ' + event.itemid +
