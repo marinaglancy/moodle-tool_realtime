@@ -49,19 +49,19 @@ $PAGE->requires->js_amd_inline(<<<EOL
         $('body').on('click', '.testform', function(e) {
             e.preventDefault();
             $('#realtimeresults').append('Pushed Test' + $(e.currentTarget).data('linkid') + '<br>');
-//            var ajax = new XMLHttpRequest();
-//            ajax.open('GET', "{$PAGE->url}?test=" + $(e.currentTarget).data('linkid'), true);
-//            ajax.send();
-        })
+            var ajax = new XMLHttpRequest();
+            ajax.open('GET', "{$PAGE->url}?test=" + $(e.currentTarget).data('linkid'), true);
+            ajax.send();
+        });
 
-//        PubSub.subscribe(RealTimeEvents.EVENT, function(event) {
-//            $('#realtimeresults').append('Received event for component ' + event.component +
-//            ', area = ' + event.area + ', itemid = ' + event.itemid +
-//            ', context id = ' + event.context.id +
-//            ', contextlevel = ' + event.context.contextlevel +
-//            ', context instanceid = ' + event.context.instanceid +
-//            ', payload data = ' + event.payload.data + '<br>');
-//        });
+        PubSub.subscribe(RealTimeEvents.EVENT, function(event) {
+            $('#realtimeresults').append('Received event for component ' + event.component +
+            ', area = ' + event.area + ', itemid = ' + event.itemid +
+            ', context id = ' + event.context.id +
+            ', contextlevel = ' + event.context.contextlevel +
+            ', context instanceid = ' + event.context.instanceid +
+            ', payload data = ' + event.payload.data + '<br>');
+        });
 
         $('#realtimeresults').append('Realtime plugin - {$pluginname}<br>');
         return M.util.js_complete('initrealtimetest');
