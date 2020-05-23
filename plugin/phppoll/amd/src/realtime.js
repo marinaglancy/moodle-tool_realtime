@@ -25,7 +25,7 @@ define(['core/pubsub', 'tool_realtime/events', 'jquery'], function(PubSub, RealT
     };
 
     var poll = function() {
-        $('#realtimeresults').append('Starting to poll<br>');
+        $('#realtimeresults').append("Starting to poll<br>\n");
         if (!checkRequestCounter()) {
             // Too many requests, stop polling.
             return;
@@ -35,7 +35,7 @@ define(['core/pubsub', 'tool_realtime/events', 'jquery'], function(PubSub, RealT
             json;
         ajax.onreadystatechange = function() {
             $('#realtimeresults').append('== readyState=' + this.readyState + ", status=" +
-                this.status + ", responsetext=" + this.responseText + '<br>');
+                this.status + ", responsetext=" + this.responseText + "<br>\n");
             if (this.readyState === 4 && this.status === 200) {
                 if (this.status === 200) {
                     try {

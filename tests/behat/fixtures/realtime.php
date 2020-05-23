@@ -49,14 +49,14 @@ $PAGE->requires->js_amd_inline(<<<EOL
     require(['jquery', 'core/pubsub', 'tool_realtime/events'], function($, PubSub, RealTimeEvents) {
         $('body').on('click', '.testform', function(e) {
             e.preventDefault();
-            $('#realtimeresults').append('Pushed Test' + $(e.currentTarget).data('linkid') + '<br>');
+            $('#realtimeresults').append('Pushed Test' + $(e.currentTarget).data('linkid') + "<br>\\n");
             var ajax = new XMLHttpRequest();
             ajax.open('GET', "{$PAGE->url}?test=" + $(e.currentTarget).data('linkid'), true);
             ajax.onreadystatechange = function() {
-                $('#realtimeresults').append('-- readyState='+this.readyState+", status="+this.status+", responsetext="+this.responseText + '<br>');
+                $('#realtimeresults').append('-- readyState='+this.readyState+", status="+this.status+", responsetext="+this.responseText + "<br>\\n");
             };
             ajax.send();
-            $('#realtimeresults').append('Sent: ' + "{$PAGE->url}?test=" + $(e.currentTarget).data('linkid') + '<br>');
+            $('#realtimeresults').append('Sent: ' + "{$PAGE->url}?test=" + $(e.currentTarget).data('linkid') + "<br>\\n");
         });
 
         PubSub.subscribe(RealTimeEvents.EVENT, function(event) {
@@ -65,10 +65,10 @@ $PAGE->requires->js_amd_inline(<<<EOL
             ', context id = ' + event.context.id +
             ', contextlevel = ' + event.context.contextlevel +
             ', context instanceid = ' + event.context.instanceid +
-            ', payload data = ' + event.payload.data + '<br>');
+            ', payload data = ' + event.payload.data + "<br>\\n");
         });
 
-        $('#realtimeresults').append('Realtime plugin - {$pluginname}<br>');
+        $('#realtimeresults').append("Realtime plugin - {$pluginname}<br>\\n");
         return M.util.js_complete('initrealtimetest');
     });
 EOL
