@@ -7,8 +7,8 @@ Feature: Testing basic functionality of realtimeplugin_phppoll
   @javascript
   Scenario: Basic test of polling for updates
     Given the following config values are set as admin:
-      | realtimeplugin_phppoll/longpolltimeout | 1000 |
-      | realtimeplugin_phppoll/shortpollperiod | 200  |
+      | realtimeplugin_phppoll/longpolltimeout | 1   |
+      | realtimeplugin_phppoll/shortpollperiod | 200 |
     When I log in as "admin"
     And I am on realtime fixture page
     Then I wait until "Realtime plugin - phppoll" "text" exists
