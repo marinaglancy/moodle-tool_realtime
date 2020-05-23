@@ -14,9 +14,8 @@ Feature: Testing basic functionality of realtimeplugin_phppoll
     Then I wait until "Realtime plugin - phppoll" "text" exists
     And I follow "Test1"
     And I wait until "Pushed Test1" "text" exists
-    And I wait until "Received event" "text" exists
-    And I should see "Received event for component tool_realtime, area = test, itemid = 0, context id = 5, contextlevel = 30, context instanceid = 2, payload data = 1"
+    And I wait until "Received event for component tool_realtime, area = test, itemid = 0" "text" exists
+    And I should see "payload data = 1"
     And I follow "Test2"
-    And I wait "2" seconds
-    And I should see "Received event for component tool_realtime, area = test, itemid = 0, context id = 5, contextlevel = 30, context instanceid = 2, payload data = 2"
+    And I wait until "payload data = 2" "text" exists
     And I log out
