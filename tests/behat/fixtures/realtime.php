@@ -46,21 +46,21 @@ echo $OUTPUT->header();
 $PAGE->requires->js_amd_inline(<<<EOL
     M.util.js_pending('initrealtimetest');
     require(['jquery', 'core/pubsub', 'tool_realtime/events'], function($, PubSub, RealTimeEvents) {
-        $('body').on('click', '.testform', function(e) {
-            e.preventDefault();
-            var ajax = new XMLHttpRequest();
-            ajax.open('GET', "{$PAGE->url}?test=" + $(e.currentTarget).data('linkid'), true);
-            ajax.send();
-        })
-
-        PubSub.subscribe(RealTimeEvents.EVENT, function(event) {
-            $('#realtimeresults').append('Received event for component ' + event.component +
-            ', area = ' + event.area + ', itemid = ' + event.itemid +
-            ', context id = ' + event.context.id +
-            ', contextlevel = ' + event.context.contextlevel +
-            ', context instanceid = ' + event.context.instanceid +
-            ', payload data = ' + event.payload.data + '<br>');
-        });
+//        $('body').on('click', '.testform', function(e) {
+//            e.preventDefault();
+//            var ajax = new XMLHttpRequest();
+//            ajax.open('GET', "{$PAGE->url}?test=" + $(e.currentTarget).data('linkid'), true);
+//            ajax.send();
+//        })
+//
+//        PubSub.subscribe(RealTimeEvents.EVENT, function(event) {
+//            $('#realtimeresults').append('Received event for component ' + event.component +
+//            ', area = ' + event.area + ', itemid = ' + event.itemid +
+//            ', context id = ' + event.context.id +
+//            ', contextlevel = ' + event.context.contextlevel +
+//            ', context instanceid = ' + event.context.instanceid +
+//            ', payload data = ' + event.payload.data + '<br>');
+//        });
 
         $('#realtimeresults').append('Realtime plugin - {$pluginname}<br>');
         return M.util.js_complete('initrealtimetest');
