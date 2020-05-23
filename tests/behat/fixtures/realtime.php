@@ -41,8 +41,32 @@ if ($test = optional_param('test', 0, PARAM_INT)) {
 }
 
 $pluginname = \tool_realtime\manager::get_enabled_plugin_name();
-\tool_realtime\api::subscribe(context_user::instance($USER->id), 'tool_realtime', 'test', 0);
+//\tool_realtime\api::subscribe(context_user::instance($USER->id), 'tool_realtime', 'test', 0);
 echo $OUTPUT->header();
+$PAGE->requires->js_amd_inline(<<<EOL
+    M.util.js_pending('initrealtimetest');
+    require(['jquery', 'core/pubsub', 'tool_realtime/events'], function($, PubSub, RealTimeEvents) {
+        $('body').on('click', '.testform', function(e) {
+            e.preventDefault();
+            var ajax = new XMLHttpRequest();
+            ajax.open('GET', "{$PAGE->url}?test=" + $(e.currentTarget).data('linkid'), true);
+            ajax.send();
+        })
+
+        PubSub.subscribe(RealTimeEvents.EVENT, function(event) {
+            $('#realtimeresults').append('Received event for component ' + event.component +
+            ', area = ' + event.area + ', itemid = ' + event.itemid +
+            ', context id = ' + event.context.id +
+            ', contextlevel = ' + event.context.contextlevel +
+            ', context instanceid = ' + event.context.instanceid +
+            ', payload data = ' + event.payload.data + '<br>');
+        });
+
+        $('#realtimeresults').append('Realtime plugin - {$pluginname}<br>');
+        return M.util.js_complete('initrealtimetest');
+    });
+EOL
+);
 
 ?>
 <p><a class="testform" data-linkid="1" href="#">
