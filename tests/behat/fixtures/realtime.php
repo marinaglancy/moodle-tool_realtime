@@ -28,7 +28,7 @@
 require_once(__DIR__.'/../../../../../../config.php');
 
 // Only continue for behat site.
-defined('BEHAT_SITE_RUNNING') ||  die();
+//defined('BEHAT_SITE_RUNNING') ||  die();
 
 require_login(0, false);
 $PAGE->set_url('/admin/tool/realtime/tests/behat/fixtures/realtime.php');
@@ -37,6 +37,7 @@ $PAGE->set_pagelayout('admin');
 
 if ($test = optional_param('test', 0, PARAM_INT)) {
     \tool_realtime\api::notify(context_user::instance($USER->id), 'tool_realtime', 'test', 0, ['data' => $test]);
+    echo "ok";
     exit;
 }
 
@@ -51,7 +52,11 @@ $PAGE->requires->js_amd_inline(<<<EOL
             $('#realtimeresults').append('Pushed Test' + $(e.currentTarget).data('linkid') + '<br>');
             var ajax = new XMLHttpRequest();
             ajax.open('GET', "{$PAGE->url}?test=" + $(e.currentTarget).data('linkid'), true);
+            ajax.onreadystatechange = function() {
+                $('#realtimeresults').append('-- readyState='+this.readyState+", status="+this.status+", responsetext="+this.responseText + '<br>');
+            };
             ajax.send();
+            $('#realtimeresults').append('Sent: ' + "{$PAGE->url}?test=" + $(e.currentTarget).data('linkid') + '<br>');
         });
 
         PubSub.subscribe(RealTimeEvents.EVENT, function(event) {
