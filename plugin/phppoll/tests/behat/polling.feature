@@ -15,6 +15,7 @@ Feature: Testing basic functionality of realtimeplugin_phppoll
     And I wait "1" seconds
     And I follow "Test1"
     And I wait until "Pushed Test1" "text" exists
+    And I wait "1" seconds
     And I wait until "Received event for component tool_realtime" "text" exists
     And I should see "payload data = 1"
     And I follow "Test2"
