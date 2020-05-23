@@ -81,7 +81,7 @@ define(['core/pubsub', 'tool_realtime/events'], function(PubSub, RealTimeEvents)
                 fromid: fromId
             };
             pollURL = pollURLParam;
-            poll();
+            setTimeout(poll, 100);
         }
     };
 });
