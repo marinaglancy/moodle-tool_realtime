@@ -31,8 +31,8 @@ if ($hassiteconfig) {
             new lang_string('requesttimeoutdesc', 'realtimeplugin_phppoll'), 30)
     );
 
-    $settings->add(new admin_setting_configtext('realtimeplugin_phppoll/longpollsleep',
-            new lang_string('longpollsleep', 'realtimeplugin_phppoll'),
-            new lang_string('longpollsleepdesc', 'realtimeplugin_phppoll', 200), 1000)
+    $settings->add(new admin_setting_configtext('realtimeplugin_phppoll/checkinterval',
+            new lang_string('checkinterval', 'realtimeplugin_phppoll'),
+            new lang_string('checkintervaldesc', 'realtimeplugin_phppoll', 200), 1000)
     );
 }
