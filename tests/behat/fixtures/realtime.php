@@ -28,7 +28,7 @@
 require_once(__DIR__.'/../../../../../../config.php');
 
 // Only continue for behat site.
-//defined('BEHAT_SITE_RUNNING') ||  die();
+defined('BEHAT_SITE_RUNNING') ||  die();
 
 require_login(0, false);
 $PAGE->set_url('/admin/tool/realtime/tests/behat/fixtures/realtime.php');
@@ -37,7 +37,7 @@ $PAGE->set_pagelayout('admin');
 
 if ($test = optional_param('test', 0, PARAM_INT)) {
     \tool_realtime\api::notify(context_user::instance($USER->id), 'tool_realtime', 'test', 0, ['data' => $test]);
-=    exit;
+    exit;
 }
 
 $pluginname = \tool_realtime\manager::get_enabled_plugin_name();

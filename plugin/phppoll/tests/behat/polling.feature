@@ -13,7 +13,6 @@ Feature: Testing basic functionality of realtimeplugin_phppoll
     And I am on realtime fixture page
     Then I wait until "Realtime plugin - phppoll" "text" exists
     And I follow "Test1"
-    And I wait until "Pushed Test1" "text" exists
     And I wait until "Received event for component tool_realtime" "text" exists
     And I should see "payload data = 1"
     And I follow "Test2"
