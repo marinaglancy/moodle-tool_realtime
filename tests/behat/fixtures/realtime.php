@@ -59,10 +59,10 @@ $PAGE->requires->js_amd_inline(<<<EOL
             ', context id = ' + event.context.id +
             ', contextlevel = ' + event.context.contextlevel +
             ', context instanceid = ' + event.context.instanceid +
-            ', payload data = ' + event.payload.data + "<br>\\n");
+            ', payload data = ' + event.payload.data + "<br>");
         });
 
-        $('#realtimeresults').append("Realtime plugin - {$pluginname}<br>\\n");
+        $('#realtimeresults').append("Realtime plugin - {$pluginname}<br>");
         return M.util.js_complete('initrealtimetest');
     });
 EOL
