@@ -36,8 +36,8 @@ $PAGE->set_context(context_system::instance());
 $PAGE->set_pagelayout('admin');
 
 if ($test = optional_param('test', 0, PARAM_INT)) {
-    \tool_realtime\api::notify(context_user::instance($USER->id), 'tool_realtime', 'test', 0, ['data' => $test]);
-    echo "ok";
+    //\tool_realtime\api::notify(context_user::instance($USER->id), 'tool_realtime', 'test', 0, ['data' => $test]);
+    echo "ok ".($USER->id ?? 0);
     exit;
 }
 
