@@ -51,7 +51,7 @@ $PAGE->requires->js_amd_inline(<<<EOL
             var ajax = new XMLHttpRequest();
             ajax.open('GET', "{$PAGE->url}?test=" + $(e.currentTarget).data('linkid'), true);
             ajax.send();
-        })
+        });
 
         PubSub.subscribe(RealTimeEvents.EVENT, function(event) {
             $('#realtimeresults').append('Received event for component ' + event.component +
