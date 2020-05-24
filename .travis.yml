@@ -22,7 +22,7 @@ env:
   - MOODLE_START_BEHAT_SERVERS=NO
   matrix:
   - DB=pgsql MOODLE_BRANCH=master
-#  - DB=pgsql MOODLE_BRANCH=MOODLE_38_STABLE CODECHECK=1
+  - DB=pgsql MOODLE_BRANCH=MOODLE_38_STABLE CODECHECK=1
 
 before_install:
   - phpenv config-rm xdebug.ini
@@ -43,16 +43,16 @@ install:
   - sleep 10
 
 script:
-#  - if [ "$CODECHECK" = "1" ]; then moodle-plugin-ci phplint; fi
-#  - if [ "$CODECHECK" = "1" ]; then moodle-plugin-ci codechecker; fi
-#  - if [ "$CODECHECK" = "1" ]; then moodle-plugin-ci validate; fi
-#  - if [ "$CODECHECK" = "1" ]; then moodle-plugin-ci savepoints; fi
-#  - if [ "$CODECHECK" = "1" ]; then moodle-plugin-ci mustache; fi
-#  - if [ "$CODECHECK" = "1" ]; then moodle-plugin-ci grunt; fi
-#  - if [ "$CODECHECK" = "1" ]; then moodle-plugin-ci phpdoc; fi
-#  - cd moodle
-#  - moodle-plugin-ci phpunit
-#  - vendor/bin/phpunit --fail-on-risky --disallow-test-output -v admin/tool/dataprivacy/tests/metadata_registry_test.php
-#  - vendor/bin/phpunit --fail-on-risky --disallow-test-output -v lib/tests/externallib_test.php
-#  - vendor/bin/phpunit --fail-on-risky --disallow-test-output -v privacy/tests/provider_test.php
-  - moodle-plugin-ci behat --profile chrome --dump --auto-rerun 0
+  - if [ "$CODECHECK" = "1" ]; then moodle-plugin-ci phplint; fi
+  - if [ "$CODECHECK" = "1" ]; then moodle-plugin-ci codechecker; fi
+  - if [ "$CODECHECK" = "1" ]; then moodle-plugin-ci validate; fi
+  - if [ "$CODECHECK" = "1" ]; then moodle-plugin-ci savepoints; fi
+  - if [ "$CODECHECK" = "1" ]; then moodle-plugin-ci mustache; fi
+  - if [ "$CODECHECK" = "1" ]; then moodle-plugin-ci grunt; fi
+  - if [ "$CODECHECK" = "1" ]; then moodle-plugin-ci phpdoc; fi
+  - cd moodle
+  - moodle-plugin-ci phpunit
+  - vendor/bin/phpunit --fail-on-risky --disallow-test-output -v admin/tool/dataprivacy/tests/metadata_registry_test.php
+  - vendor/bin/phpunit --fail-on-risky --disallow-test-output -v lib/tests/externallib_test.php
+  - vendor/bin/phpunit --fail-on-risky --disallow-test-output -v privacy/tests/provider_test.php
+  - moodle-plugin-ci behat --profile chrome

@@ -5,7 +5,7 @@
  * @package    realtimeplugin_phppoll
  * @copyright  2020 Marina Glancy
  */
-define(['core/pubsub', 'tool_realtime/events', 'jquery'], function(PubSub, RealTimeEvents, $) {
+define(['core/pubsub', 'tool_realtime/events'], function(PubSub, RealTimeEvents) {
 
     var params;
     var requestscounter = [];
@@ -25,8 +25,6 @@ define(['core/pubsub', 'tool_realtime/events', 'jquery'], function(PubSub, RealT
     };
 
     var poll = function() {
-        $('#realtimeresults').append("Starting to poll<br>\n");
-        console.log('Starting to poll');
         if (!checkRequestCounter()) {
             // Too many requests, stop polling.
             return;
@@ -35,8 +33,6 @@ define(['core/pubsub', 'tool_realtime/events', 'jquery'], function(PubSub, RealT
         var ajax = new XMLHttpRequest(),
             json;
         ajax.onreadystatechange = function() {
-            $('#realtimeresults').append('== readyState=' + this.readyState + ", status=" +
-                this.status + ", responsetext=" + this.responseText + "<br>\n");
             if (this.readyState === 4 && this.status === 200) {
                 if (this.status === 200) {
                     try {

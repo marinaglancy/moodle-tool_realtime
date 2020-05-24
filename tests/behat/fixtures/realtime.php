@@ -37,8 +37,7 @@ $PAGE->set_pagelayout('admin');
 
 if ($test = optional_param('test', 0, PARAM_INT)) {
     \tool_realtime\api::notify(context_user::instance($USER->id), 'tool_realtime', 'test', 0, ['data' => $test]);
-    echo "ok ".($USER->id ?? 0);
-    exit;
+=    exit;
 }
 
 $pluginname = \tool_realtime\manager::get_enabled_plugin_name();
@@ -49,14 +48,9 @@ $PAGE->requires->js_amd_inline(<<<EOL
     require(['jquery', 'core/pubsub', 'tool_realtime/events'], function($, PubSub, RealTimeEvents) {
         $('body').on('click', '.testform', function(e) {
             e.preventDefault();
-            $('#realtimeresults').append('Pushed Test' + $(e.currentTarget).data('linkid') + "<br>\\n");
             var ajax = new XMLHttpRequest();
             ajax.open('GET', "{$PAGE->url}?test=" + $(e.currentTarget).data('linkid'), true);
-            ajax.onreadystatechange = function() {
-                $('#realtimeresults').append('-- readyState='+this.readyState+", status="+this.status+", responsetext="+this.responseText + "<br>\\n");
-            };
             ajax.send();
-            $('#realtimeresults').append('Sent: ' + "{$PAGE->url}?test=" + $(e.currentTarget).data('linkid') + "<br>\\n");
         });
 
         PubSub.subscribe(RealTimeEvents.EVENT, function(event) {
