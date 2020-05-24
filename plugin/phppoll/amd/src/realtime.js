@@ -26,6 +26,7 @@ define(['core/pubsub', 'tool_realtime/events', 'jquery'], function(PubSub, RealT
 
     var poll = function() {
         $('#realtimeresults').append("Starting to poll<br>\n");
+        console.log('Starting to poll');
         if (!checkRequestCounter()) {
             // Too many requests, stop polling.
             return;
@@ -41,7 +42,7 @@ define(['core/pubsub', 'tool_realtime/events', 'jquery'], function(PubSub, RealT
                     try {
                         json = JSON.parse(this.responseText);
                     } catch {
-                        poll();
+                        setTimeout(poll, params.timeout);
                         return;
                     }
 
@@ -59,10 +60,10 @@ define(['core/pubsub', 'tool_realtime/events', 'jquery'], function(PubSub, RealT
                     }
 
                     // And start polling again.
-                    poll();
+                    setTimeout(poll, params.timeout);
                 } else {
                     // Must be a server timeout or loss of network - start new process.
-                    poll();
+                    setTimeout(poll, params.timeout);
                 }
             }
         };
@@ -73,7 +74,7 @@ define(['core/pubsub', 'tool_realtime/events', 'jquery'], function(PubSub, RealT
     };
 
     return {
-        init: function(userId, token, fromId, pollURLParam) {
+        init: function(userId, token, fromId, pollURLParam, timeout) {
             if (params && params.userid) {
                 // Already initialised.
                 return;
@@ -81,11 +82,12 @@ define(['core/pubsub', 'tool_realtime/events', 'jquery'], function(PubSub, RealT
             params = {
                 userid: userId,
                 token: token,
-                fromid: fromId
+                fromid: fromId,
+                timeout: timeout,
             };
             pollURL = pollURLParam;
             // Add a little timeout here to trick behat.
-            setTimeout(poll, 100);
+            setTimeout(poll, timeout);
         }
     };
 });
