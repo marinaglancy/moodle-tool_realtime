@@ -7,7 +7,7 @@ Feature: Testing basic functionality of realtimeplugin_phppoll
   @javascript
   Scenario: Basic test of polling for updates
     Given the following config values are set as admin:
-      | realtimeplugin_phppoll/requesttimeout | 0   |
+      | realtimeplugin_phppoll/requesttimeout | 1   |
       | realtimeplugin_phppoll/longpollsleep  | 200 |
     When I log in as "admin"
     And I am on realtime fixture page
