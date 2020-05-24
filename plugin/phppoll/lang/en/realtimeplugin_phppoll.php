@@ -25,10 +25,10 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['longpollsleep'] = 'Long poll sleep, ms';
-$string['longpollsleepdesc'] = 'Interval between the check for new events on the server during long polling, in milliseconds, can not be less than {$a}';
+$string['checkinterval'] = 'Check interval, ms';
+$string['checkintervaldesc'] = 'Interval between the polling requests to the server and also sleep interval between checks for new events on the server during long polling, in milliseconds, can not be less than {$a} ms';
 $string['pluginname'] = 'PHP polling';
 $string['privacy:metadata'] = 'The PHP polling plugin only stores user information for a short period of time';
 $string['requesttimeout'] = 'Maximum duration for polling requests';
-$string['requesttimeoutdesc'] = 'Time to send new polling request if there are no new events';
+$string['requesttimeoutdesc'] = 'Maximum duration of a polling request if there are no new events, set to 0 to use short polling instead of long polling';
 $string['taskcleanup'] = 'Clean-up for events in PHP polling';

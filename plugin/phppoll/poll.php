@@ -43,8 +43,8 @@ $starttime = microtime(true);
 
 /** @var realtimeplugin_phppoll\plugin $plugin */
 $plugin = \tool_realtime\manager::get_plugin();
-$maxduration = $plugin->get_log_poll_maximum_duration(); // In seconds as float.
-$sleepinterval = $plugin->get_short_poll_period() * 1000; // In microseconds.
+$maxduration = $plugin->get_request_timeout(); // In seconds as float.
+$sleepinterval = $plugin->get_delay_between_checks() * 1000; // In microseconds.
 
 while (true) {
     if (!$plugin->validate_token($userid, $token)) {

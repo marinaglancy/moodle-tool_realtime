@@ -70,7 +70,7 @@ class plugin extends plugin_base {
             "} WHERE contextid = ?", [$context->id]);
         $url = new \moodle_url('/admin/tool/realtime/plugin/phppoll/poll.php');
         $PAGE->requires->js_call_amd('realtimeplugin_phppoll/realtime', 'init',
-            [$USER->id, self::get_token(), $fromid, $url->out(false), $this->get_short_poll_period()]);
+            [$USER->id, self::get_token(), $fromid, $url->out(false), $this->get_delay_between_checks()]);
         self::$initialised = true;
 
     }
@@ -162,21 +162,21 @@ class plugin extends plugin_base {
     }
 
     /**
-     * Short polling interval, ms
+     * Delay between checks (or between short poll requests), ms
      *
-     * @return int sleep time between pollings, in milliseconds
+     * @return int sleep time between checks, in milliseconds
      */
-    public function get_short_poll_period(): int {
-        $period = get_config('realtimeplugin_phppoll', 'longpollsleep');
+    public function get_delay_between_checks(): int {
+        $period = get_config('realtimeplugin_phppoll', 'checkinterval');
         return max($period, 200);
     }
 
     /**
-     * Maximum duration for long polling
+     * Maximum duration for poll requests
      *
      * @return int time in seconds
      */
-    public function get_log_poll_maximum_duration(): float {
+    public function get_request_timeout(): float {
         $duration = get_config('realtimeplugin_phppoll', 'requesttimeout');
         return (isset($duration) && $duration !== false) ? (float)$duration : 30;
     }
