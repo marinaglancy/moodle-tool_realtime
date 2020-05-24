@@ -38,7 +38,7 @@ define(['core/pubsub', 'tool_realtime/events'], function(PubSub, RealTimeEvents)
                     try {
                         json = JSON.parse(this.responseText);
                     } catch {
-                        poll();
+                        setTimeout(poll, params.timeout);
                         return;
                     }
 
@@ -56,10 +56,10 @@ define(['core/pubsub', 'tool_realtime/events'], function(PubSub, RealTimeEvents)
                     }
 
                     // And start polling again.
-                    poll();
+                    setTimeout(poll, params.timeout);
                 } else {
                     // Must be a server timeout or loss of network - start new process.
-                    poll();
+                    setTimeout(poll, params.timeout);
                 }
             }
         };
@@ -70,7 +70,7 @@ define(['core/pubsub', 'tool_realtime/events'], function(PubSub, RealTimeEvents)
     };
 
     return {
-        init: function(userId, token, fromId, pollURLParam) {
+        init: function(userId, token, fromId, pollURLParam, timeout) {
             if (params && params.userid) {
                 // Already initialised.
                 return;
@@ -78,10 +78,11 @@ define(['core/pubsub', 'tool_realtime/events'], function(PubSub, RealTimeEvents)
             params = {
                 userid: userId,
                 token: token,
-                fromid: fromId
+                fromid: fromId,
+                timeout: timeout,
             };
             pollURL = pollURLParam;
-            poll();
+            setTimeout(poll, timeout);
         }
     };
 });

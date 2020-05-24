@@ -70,7 +70,7 @@ class plugin extends plugin_base {
             "} WHERE contextid = ?", [$context->id]);
         $url = new \moodle_url('/admin/tool/realtime/plugin/phppoll/poll.php');
         $PAGE->requires->js_call_amd('realtimeplugin_phppoll/realtime', 'init',
-            [$USER->id, self::get_token(), $fromid, $url->out(false)]);
+            [$USER->id, self::get_token(), $fromid, $url->out(false), $this->get_short_poll_period()]);
         self::$initialised = true;
 
     }
