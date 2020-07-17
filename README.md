@@ -27,7 +27,7 @@ or
 import {subscribe} from 'core/pubsub';
 import RealTimeEvents from 'tool_realtime/events';
 
-subscribe(RealTimeEvents.EVENT, (context, component, area, itemid, payload) => {
+subscribe(RealTimeEvents.EVENT, (eventData) => {
     // ...
 });
 ```
