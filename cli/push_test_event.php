@@ -19,7 +19,7 @@
  *
  * @package    core
  * @subpackage cli
- * @copyright  2020 Nicholas Parker <ncpark3r@gmail.com>
+ * @copyright  2020 Daniel Conquit, Matthew Gray, Nicholas Parker, Dan Thistlewaite
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -30,7 +30,9 @@ require_once("$CFG->libdir/clilib.php");
 require_once("$CFG->libdir/outputlib.php");
 
 $longparams = [
-    'type' => null,
+    'context' => null,
+    'component' => null,
+    'area' => null,
     'id' => null,
     'payload' => null,
     'help' => false,
@@ -38,8 +40,10 @@ $longparams = [
 ];
 
 $shortmappings = [
-    't' => 'type',
-    'id' => 'id',
+    'c' => 'context',
+    'n' => 'component',
+    'a' => 'area',
+    'i' => 'id',
     'p' => 'payload',
     'h' => 'help',
     'v' => 'verbose'
@@ -58,30 +62,50 @@ if ($options['help']) {
     "Send
 By default all themes will be recompiled unless otherwise specified.
 Options:
--t, --type      type of event to be sent
--id, --id       identification number for event
--v, --verbose   Print info comments to stdout
--h, --help      Print out this help
+-c, --context       type of event to be sent
+-n, --component     identification number for event
+-a, --area          area related to event
+-i, --id            event ID
+-p, --payload       payload array for event
+-v, --verbose       Print info comments to stdout
+-h, --help          Print out this help
 Example:
 
-\$ sudo -u www-data var/www/html/moodle/admin/tool/realtime/cli/push_test_event.php --type=chatmessage --id=1337
+\$ sudo -u www-data var/www/html/moodle/admin/tool/realtime/cli/push_test_event.php --context=3 --component=testcomponent --area=testarea --id=123 --payload='testkey1=>testvalue1,testkey2=>testvalue2'
 ";
     die;
 }
 
-if (empty($options['verbose'])) {
-    $trace = new null_progress_trace();
-} else {
-    $trace = new text_progress_trace();
-}
-
 cli_heading('Push Test Event');
 
-$contexttest = context_user::instance(3);
-$componenttest = "testcomponent";
-$areatest = "testarea";
-$itemidtest = 123;
-$payload = array("Volvo", "BMW", "Toyota");
-\tool_realtime\api::notify($contexttest, $componenttest, $areatest, $itemidtest, $payload);
+if (!is_null($options['context'])) {
+    $user_id = [$options['context']];
+    $context = context_user::instance($user_id[0]);
+}
+if (!is_null($options['component'])) {
+    $component = [$options['component']][0];
+}
+if (!is_null($options['area'])) {
+    $area = [$options['area']][0];
+}
+if (!is_null($options['id'])) {
+    $id = [$options['id']][0];
+}
 
+// Create payload array
+if (!is_null($options['payload'])) {
+    $payloadUnprocessed = [$options['payload']][0];
+    $payloadCommaSeperated = explode(",", $payloadUnprocessed);
+    $payload = array();
+    for ($i = 0; $i < count($payloadCommaSeperated); $i++) {
+        $payloadKeySeperated = explode("=>", $payloadCommaSeperated[$i]);
+        $payload[$payloadKeySeperated[0]] = $payloadKeySeperated[1];
+    }
+} else {
+    $payload = array("Brand" => "Volvo", "Model" => "Fam Van");
+}
+// Append server time before sending
+$payload["eventReceived"] = microtime(true)*1000;
+
+\tool_realtime\api::notify($context, $component, $area, $id, $payload);
 exit(0);

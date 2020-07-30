@@ -18,7 +18,7 @@
  *  A page for testing realtime event pushing form CL.
  *
  * @package    tool_realtime
- * @copyright  2020 Nicholas Parker
+ * @copyright  2020 Daniel Conquit, Matthew Gray, Nicholas Parker, Dan Thistlewaite
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -38,7 +38,13 @@ $areatest = "testarea";
 $itemidtest = 123;
 \tool_realtime\api::subscribe($contexttest, $componenttest, $areatest, $itemidtest);
 echo $OUTPUT->header();
-print_object($USER);
+Echo "<html>";
+Echo
+"<title>Realtime Event Testing</title>";
+Echo
+"<h3>Event Testing Area</h3>";
+Echo
+"<div id='testarea'></div>";
 echo $OUTPUT->footer();
 ?>
 
@@ -46,6 +52,36 @@ echo $OUTPUT->footer();
     require(['core/pubsub', 'tool_realtime/events'], function(PubSub, RealTimeEvents) {
         PubSub.subscribe(RealTimeEvents.EVENT, function(data) {
             console.log(data);
+            let testArea = document.getElementById('testarea');
+            testArea.appendChild(document.createElement("br"));
+            let headingForEvent = document.createElement('div');
+            headingForEvent.setAttribute('id', 'eventHeading');
+            headingForEvent.style.fontWeight = 'bold';
+            testArea.appendChild(headingForEvent);
+            let eventReceivedText = document.createTextNode("Event received:");
+            let eventReceived = new Date().getTime();
+            let itemID = document.createTextNode("ID:    " + data['itemid']);
+            let area = document.createTextNode("Component:    " + data['area']);
+            let component = document.createTextNode("Area:    " + data['component']);
+            let payloadtext = document.createTextNode("Payload: ");
+            headingForEvent.appendChild(eventReceivedText);
+            testArea.appendChild(document.createElement("br"));
+            testArea.appendChild(itemID);
+            testArea.appendChild(document.createElement("br"));
+            testArea.appendChild(area);
+            testArea.appendChild(document.createElement("br"));
+            testArea.appendChild(component);
+            testArea.appendChild(document.createElement("br"));
+            testArea.appendChild(payloadtext);
+            testArea.appendChild(document.createElement("br"));
+            for (let key in data['payload']) {
+                if (key !== 'eventReceived') {
+                    testArea.appendChild(document.createTextNode(key + " => " + data['payload'][key]));
+                    testArea.appendChild(document.createElement("br"));
+                }
+            }
+            testArea.appendChild(document.createTextNode("Latency is: " + (eventReceived - parseInt(data['payload']['eventReceived'])) + " milliseconds"));
+            testArea.appendChild(document.createElement("br"));
         });
     });
 </script>
