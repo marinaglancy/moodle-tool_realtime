@@ -51,7 +51,6 @@ define(['core/pubsub', 'tool_realtime/events'], function(PubSub, RealTimeEvents)
                         // Remember the last id.
                         params.fromid = events[i].id;
                     }
-
                     // And start polling again.
                     setTimeout(poll, params.timeout);
                 } else {

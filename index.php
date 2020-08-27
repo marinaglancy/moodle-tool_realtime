@@ -24,6 +24,7 @@
 
 require_once(dirname(__FILE__) . '/../../../config.php');
 require_once($CFG->dirroot . '/lib/adminlib.php');
+
 admin_externalpage_setup('tool_realtime_report');
 // Instantiate realtime_tool_form.
 $mform = new tool_realtime\form\realtime_tool_form();
@@ -31,29 +32,20 @@ $url = new moodle_url('/admin/tool/realtime/');
 $PAGE->set_context(context_system::instance());
 $PAGE->set_title(get_string('pluginname', 'tool_realtime'));
 $PAGE->set_heading(get_string('pluginname', 'tool_realtime'));
+
 echo $OUTPUT->header();
 if ($fromform = $mform->get_data()) {
     $contextfromform = context::instance_by_id($fromform->context);
     tool_realtime\api::subscribe($contextfromform, $fromform->component, $fromform->area, $fromform->itemid);
 }
 $mform->display();
-// If the form's button is pressed do something.
-// TODO: add channel based on form fields.
 echo $OUTPUT->heading(get_string('eventtesting', 'tool_realtime'));
 Echo
 "<div id='testarea'></div>";
 echo $OUTPUT->footer();
 ?>
 
-
 <script type="text/javascript">
-    let submitButton = document.getElementById('id_submitbutton');
-    submitButton.addEventListener("click", function(evt) {
-        evt.preventDefault();
-        console.log("WORKING")
-        var addChannel = <?php echo tool_realtime\api::subscribe($context,"thiscomponent","pingtest",1); ?> ;
-    });
-
     require(['core/pubsub', 'tool_realtime/events'], function(PubSub, RealTimeEvents) {
         PubSub.subscribe(RealTimeEvents.EVENT, function(data) {
             let testArea = document.getElementById('testarea');

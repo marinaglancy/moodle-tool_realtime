@@ -15,23 +15,18 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Plugin administration pages are defined here.
+ * Plugin strings are defined here.
  *
- * @package     realtimeplugin_phppoll
- * @copyright   2020 Marina Glancy
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package     realtimeplugin_pusher
+ * @category    string
+ * @copyright  2020 Daniel Conquit, Matthew Gray, Nicholas Parker, Dan Thistlewaite
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-if ($hassiteconfig) {
-    $settings->add(new admin_setting_configduration('realtimeplugin_phppoll/requesttimeout',
-            new lang_string('requesttimeout', 'realtimeplugin_phppoll'),
-            new lang_string('requesttimeoutdesc', 'realtimeplugin_phppoll'), 30)
-    );
-
-    $settings->add(new admin_setting_configtext('realtimeplugin_phppoll/checkinterval',
-            new lang_string('checkinterval', 'realtimeplugin_phppoll'),
-            new lang_string('checkintervaldesc', 'realtimeplugin_phppoll', 200), 1000)
-    );
-}
+$string['pluginname'] = 'Pusher';
+$string['app_id'] = 'Application Identifier';
+$string['key'] = 'Application';
+$string['secret'] = 'Secret Key';
+$string['cluster'] = 'Cluster';
