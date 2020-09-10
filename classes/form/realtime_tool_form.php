@@ -43,11 +43,7 @@ class realtime_tool_form extends \moodleform {
         $mform = $this->_form;
 
         $mform->addElement('text', 'context', 'Context:');
-<<<<<<< HEAD
         $mform->setType('context', PARAM_INT);
-=======
-        $mform->setType('context', PARAM_TEXT);
->>>>>>> 9e4aa77... Pusher Plugin
 
         $mform->addElement('text', 'component', 'Component:');
         $mform->setType('component', PARAM_TEXT);
@@ -61,7 +57,6 @@ class realtime_tool_form extends \moodleform {
         $this->add_action_buttons();
     }
 
-<<<<<<< HEAD
     /**
      * Validation for the moodle form on the realtime tool reporting page
      *
@@ -79,12 +74,6 @@ class realtime_tool_form extends \moodleform {
         if (!preg_match('/[^-]/', $data['area'])) {
             $errors['area'] = "No hyphens (-) allowed.";
         }
-=======
-    // Perform some validation
-    function validation($data, $files) {
-        $errors = parent::validation($data, $files);
-        // TODO: context and component moodle checks exists + no hyphons in area
->>>>>>> 9e4aa77... Pusher Plugin
         return $errors;
     }
 }

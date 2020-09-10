@@ -28,11 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 
 use tool_realtime\plugin_base;
 
-<<<<<<< HEAD
 require(__DIR__ . '/../../../../../../vendor/autoload.php');
-=======
-require __DIR__ . '/../../../../../../vendor/autoload.php';
->>>>>>> 9e4aa77... Pusher Plugin
 
 /**
  * Class realtimeplugin_pusher\plugin
@@ -64,27 +60,15 @@ class plugin extends plugin_base {
      * @param int $itemid
      */
     public function subscribe(\context $context, string $component, string $area, int $itemid): void {
-<<<<<<< HEAD
         $appid = get_config('realtimeplugin_pusher', 'app_id');
-=======
-        $app_id = get_config('realtimeplugin_pusher', 'app_id');
->>>>>>> 9e4aa77... Pusher Plugin
         $key = get_config('realtimeplugin_pusher', 'key');
         $secret = get_config('realtimeplugin_pusher', 'secret');
         $cluster = get_config('realtimeplugin_pusher', 'cluster');
 
         // TODO check that area is defined only as letters and numbers.
         global $PAGE, $USER;
-<<<<<<< HEAD
         $PAGE->requires->js_call_amd('realtimeplugin_pusher/realtime', 'init',
             [$USER->id, $context->id, $component, $area, $itemid, $appid, $key, $secret, $cluster]);
-=======
-//        $url = new \moodle_url('https://js.pusher.com/7.0/pusher.min.js');
-//
-//        $PAGE->requires->js_module($url, true);
-        $PAGE->requires->js_call_amd('realtimeplugin_pusher/realtime', 'init',
-            [$USER->id, $context->id, $component, $area, $itemid, $app_id, $key, $secret, $cluster]);
->>>>>>> 9e4aa77... Pusher Plugin
     }
 
     /**
@@ -97,11 +81,7 @@ class plugin extends plugin_base {
      * @param array|null $payload
      */
     public function notify(\context $context, string $component, string $area, int $itemid, ?array $payload = null): void {
-<<<<<<< HEAD
         $appid = get_config('realtimeplugin_pusher', 'app_id');
-=======
-        $app_id = get_config('realtimeplugin_pusher', 'app_id');
->>>>>>> 9e4aa77... Pusher Plugin
         $key = get_config('realtimeplugin_pusher', 'key');
         $secret = get_config('realtimeplugin_pusher', 'secret');
         $cluster = get_config('realtimeplugin_pusher', 'cluster');
@@ -113,7 +93,6 @@ class plugin extends plugin_base {
         $pusher = new \Pusher\Pusher(
             (string)($key),
             (string)($secret),
-<<<<<<< HEAD
             (string)($appid),
             $options
         );
@@ -122,16 +101,6 @@ class plugin extends plugin_base {
         $payloadjson = json_encode($payload ?? []);
 
         $pusher->trigger((string)$channelname, 'event', $payloadjson);
-=======
-            (string)($app_id),
-            $options
-        );
-
-        $channel_name = (string)($context->id) . '-' . (string)($component) . '-' . (string)($area) . '-' . (string)($itemid);
-        $payloadJSON = json_encode($payload ?? []);
-
-        $pusher->trigger((string)$channel_name, 'event', $payloadJSON);
->>>>>>> 9e4aa77... Pusher Plugin
     }
 
     /**
