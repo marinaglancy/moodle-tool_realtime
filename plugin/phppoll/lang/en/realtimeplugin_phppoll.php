@@ -32,3 +32,4 @@ $string['privacy:metadata'] = 'The PHP polling plugin only stores user informati
 $string['requesttimeout'] = 'Maximum duration for polling requests';
 $string['requesttimeoutdesc'] = 'Maximum duration of a polling request if there are no new events, set to 0 to use short polling instead of long polling';
 $string['taskcleanup'] = 'Clean-up for events in PHP polling';
+$string['component'] = 'Component';

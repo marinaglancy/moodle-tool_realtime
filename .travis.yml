@@ -14,18 +14,18 @@ cache:
     - $HOME/.npm
 
 php:
-  - 7.2
+  - 7.4
 
 env:
   - DB=pgsql MOODLE_BRANCH=master
-  - DB=pgsql MOODLE_BRANCH=MOODLE_38_STABLE CODECHECK=1
+  - DB=pgsql MOODLE_BRANCH=MOODLE_39_STABLE CODECHECK=1
 
 before_install:
   - phpenv config-rm xdebug.ini
   - nvm install 14.2.0
   - nvm use 14.2.0
   - cd ../..
-  - composer create-project -n --no-dev --prefer-dist blackboard-open-source/moodle-plugin-ci ci ^2
+  - composer create-project -n --no-dev --prefer-dist moodlehq/moodle-plugin-ci ci ^2
   - export PATH="$(cd ci/bin; pwd):$(cd ci/vendor/bin; pwd):$PATH"
   - export MOODLE_START_BEHAT_SERVERS="NO"
 

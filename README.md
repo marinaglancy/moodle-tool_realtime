@@ -17,8 +17,12 @@ Subscribe in PHP:
 Listen in Javascript:
 ```
 require(['core/pubsub', 'tool_realtime/events'], function(PubSub, RealTimeEvents) {
-    PubSub.subscribe(RealTimeEvents.EVENT, function(context, component, area, itemid, payload) {
-        // ...
+    PubSub.subscribe(RealTimeEvents.EVENT, function(eventData) {
+        // access context, component, area, itemid, payload as keys in event data
+        // example for context
+        document.write(eventData['context']);
+        // access payload by key
+        document.write(eventData['payload']['testkey']);
     });
 });
 ```
@@ -27,8 +31,12 @@ or
 import {subscribe} from 'core/pubsub';
 import RealTimeEvents from 'tool_realtime/events';
 
-subscribe(RealTimeEvents.EVENT, (context, component, area, itemid, payload) => {
-    // ...
+subscribe(RealTimeEvents.EVENT, (eventData) => {
+    // access context, component, area, itemid, payload as keys in event data
+    // example for context
+    document.write(eventData['context']);
+    // access payload by key
+    document.write(eventData['payload']['testkey']);
 });
 ```
 

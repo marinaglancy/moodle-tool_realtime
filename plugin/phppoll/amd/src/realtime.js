@@ -10,6 +10,7 @@ define(['core/pubsub', 'tool_realtime/events'], function(PubSub, RealTimeEvents)
     var params;
     var requestscounter = [];
     var pollURL;
+    var ajax = new XMLHttpRequest(), json;
 
     var checkRequestCounter = function() {
         var curDate = new Date(),
@@ -29,9 +30,6 @@ define(['core/pubsub', 'tool_realtime/events'], function(PubSub, RealTimeEvents)
             // Too many requests, stop polling.
             return;
         }
-
-        var ajax = new XMLHttpRequest(),
-            json;
         ajax.onreadystatechange = function() {
             if (this.readyState === 4 && this.status === 200) {
                 if (this.status === 200) {
@@ -41,7 +39,6 @@ define(['core/pubsub', 'tool_realtime/events'], function(PubSub, RealTimeEvents)
                         setTimeout(poll, params.timeout);
                         return;
                     }
-
                     if (!json.success || json.success !== 1) {
                         // Poll.php returned an error or an exception. Stop trying to poll.
                         return;
@@ -54,7 +51,6 @@ define(['core/pubsub', 'tool_realtime/events'], function(PubSub, RealTimeEvents)
                         // Remember the last id.
                         params.fromid = events[i].id;
                     }
-
                     // And start polling again.
                     setTimeout(poll, params.timeout);
                 } else {
@@ -63,24 +59,36 @@ define(['core/pubsub', 'tool_realtime/events'], function(PubSub, RealTimeEvents)
                 }
             }
         };
-        var url = pollURL + '?userid=' + encodeURIComponent(params.userid) +
-            '&token=' + encodeURIComponent(params.token) + '&fromid=' + encodeURIComponent(params.fromid);
+        var url = pollURL + '?userid=' + encodeURIComponent(params.userid) + '&token=' +
+            encodeURIComponent(params.token) + '&fromid=' + encodeURIComponent(params.fromid)
+            + '&channel=' + encodeURIComponent(params.context) + ':' +
+            encodeURIComponent(params.component) + ':' + encodeURIComponent(params.area) +
+            ':' + encodeURIComponent(params.itemid);
         ajax.open('GET', url, true);
         ajax.send();
     };
 
     return {
-        init: function(userId, token, fromId, pollURLParam, timeout) {
+        init: function(userId, token, context, component, area, itemid, fromId, pollURLParam, timeout) {
             if (params && params.userid) {
                 // Already initialised.
-                return;
+                ajax.abort();
+                params.context += ('-' + context);
+                params.component += ('-' + component);
+                params.area += ('-' + area);
+                params.itemid += ('-' + itemid);
+            } else {
+                params = {
+                    userid: userId,
+                    token: token,
+                    context: context,
+                    component: component,
+                    area: area,
+                    itemid: itemid,
+                    fromid: fromId,
+                    timeout: timeout,
+                };
             }
-            params = {
-                userid: userId,
-                token: token,
-                fromid: fromId,
-                timeout: timeout,
-            };
             pollURL = pollURLParam;
             setTimeout(poll, timeout);
         }

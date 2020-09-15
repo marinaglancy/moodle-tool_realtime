@@ -28,6 +28,11 @@ if ($hassiteconfig) {
 
     $ADMIN->add('tools', new admin_category('realtime', new lang_string('pluginname', 'tool_realtime')));
 
+    $ADMIN->add('reports', new admin_externalpage('tool_realtime_report',
+        get_string('realtime:page', 'tool_realtime'),
+        new moodle_url('/admin/tool/realtime/index.php')));
+
+
     $temp = new admin_settingpage('managerealtime', new lang_string('managerealtime', 'tool_realtime'));
     $temp->add(new \tool_realtime\setting_manageplugins());
     $ADMIN->add('realtime', $temp);
