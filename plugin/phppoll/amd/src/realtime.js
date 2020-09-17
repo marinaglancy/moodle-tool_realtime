@@ -5,7 +5,7 @@
  * @package    realtimeplugin_phppoll
  * @copyright  2020 Marina Glancy
  */
-define(['core/pubsub', 'tool_realtime/events'], function(PubSub, RealTimeEvents) {
+define(['core/pubsub', 'tool_realtime/events', 'tool_realtime/api'], function(PubSub, RealTimeEvents,api) {
 
     var params;
     var requestscounter = [];
@@ -63,34 +63,48 @@ define(['core/pubsub', 'tool_realtime/events'], function(PubSub, RealTimeEvents)
             encodeURIComponent(params.token) + '&fromid=' + encodeURIComponent(params.fromid)
             + '&channel=' + encodeURIComponent(params.context) + ':' +
             encodeURIComponent(params.component) + ':' + encodeURIComponent(params.area) +
-            ':' + encodeURIComponent(params.itemid);
+            ':' + encodeURIComponent(params.itemid) +
+            ':' + encodeURIComponent(params.fromtimestamp);
         ajax.open('GET', url, true);
         ajax.send();
     };
 
-    return {
-        init: function(userId, token, context, component, area, itemid, fromId, pollURLParam, timeout) {
+    var plugin =  {
+        init: function(userId, token, pollURLParam, timeout) {
             if (params && params.userid) {
-                // Already initialised.
-                ajax.abort();
-                params.context += ('-' + context);
-                params.component += ('-' + component);
-                params.area += ('-' + area);
-                params.itemid += ('-' + itemid);
+                // log console dev error
             } else {
                 params = {
                     userid: userId,
                     token: token,
-                    context: context,
-                    component: component,
-                    area: area,
-                    itemid: itemid,
-                    fromid: fromId,
                     timeout: timeout,
                 };
             }
             pollURL = pollURLParam;
-            setTimeout(poll, timeout);
+            api.setImplementation(plugin);
+        },
+        subscribe: function(context, component, area, itemid, fromId, fromTimeStamp) {
+            if (params && params.userid && params.context) {
+                // Already initialised.
+                ajax.abort();
+                params.fromid = fromId;
+                params.context += ('-' + context);
+                params.component += ('-' + component);
+                params.area += ('-' + area);
+                params.itemid += ('-' + itemid);
+                params.fromtimestamp += ('-' + fromTimeStamp);
+            } else {
+                params.context= context;
+                params.component= component;
+                params.area= area;
+                params.itemid= itemid;
+                params.fromid= fromId;
+                params.fromtimestamp = fromTimeStamp;
+            }
+            setTimeout(poll, params.timeout);
         }
     };
+
+
+    return plugin;
 });

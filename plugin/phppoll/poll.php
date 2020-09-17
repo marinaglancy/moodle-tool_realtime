@@ -31,6 +31,8 @@ require_once(__DIR__ . '/../../../../../config.php');
 // We do not want to call require_login() here because we don't want to update 'lastaccess' and keep session alive.
 // Last event id seen.
 $fromid = optional_param('fromid', 0, PARAM_INT);
+// Last event id seen.
+
 // Who is the current user making request.
 $userid = optional_param('userid', 0, PARAM_INT);
 $token = optional_param('token', '', PARAM_RAW);
@@ -44,6 +46,8 @@ $areaunprocessed = $paramarray[2];
 $area = explode('-', $areaunprocessed);
 $itemidunprocessed = $paramarray[3];
 $itemid = explode('-', $itemidunprocessed);
+$fromtimestamp = $paramarray[4];
+$fromtimestampprocessed = explode('-', $fromtimestamp);
 
 if (\tool_realtime\manager::get_enabled_plugin_name() !== 'phppoll') {
     echo json_encode(['error' => 'Plugin is not enabled']);
@@ -67,7 +71,7 @@ while (true) {
 
     for ($x = 0; $x < count($component); $x++) {
         if ($events = $plugin->get_all((intval($context[$x])), (int)$fromid, (string)$component[$x],
-            (string)$area[$x], (int)$itemid[$x])) {
+            (string)$area[$x], (int)$itemid[$x], (float)$fromtimestampprocessed[$x])) {
             // We have some notifications for this user - return them. The JS will then create a new request.
             echo json_encode(['success' => 1, 'events' => array_values($events)]);
         }
