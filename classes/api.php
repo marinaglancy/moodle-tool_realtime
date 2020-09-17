@@ -54,6 +54,15 @@ class api {
     }
 
     /**
+     * SEt up realtime tool
+     */
+    public static function init() {
+        if (self::is_enabled('fakecomponent', 'fakearea')) {
+            manager::get_plugin()->init();
+        }
+    }
+
+    /**
      * Notifies all subscribers about an event
      *
      * @param \context $context
