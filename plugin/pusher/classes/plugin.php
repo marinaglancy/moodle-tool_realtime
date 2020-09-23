@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 
 use tool_realtime\plugin_base;
 
-require(__DIR__ . '/../../../../../../vendor/autoload.php');
+require(__DIR__ . '/../vendor/autoload.php');
 
 /**
  * Class realtimeplugin_pusher\plugin
