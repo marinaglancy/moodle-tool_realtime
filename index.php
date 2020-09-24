@@ -24,6 +24,7 @@
 
 require_once(dirname(__FILE__) . '/../../../config.php');
 require_once($CFG->dirroot . '/lib/adminlib.php');
+require "$CFG->libdir/tablelib.php";
 
 admin_externalpage_setup('tool_realtime_report');
 // Instantiate realtime_tool_form.
@@ -33,19 +34,57 @@ $PAGE->set_context(context_system::instance());
 $PAGE->set_title(get_string('pluginname', 'tool_realtime'));
 $PAGE->set_heading(get_string('pluginname', 'tool_realtime'));
 echo $OUTPUT->header();
-$SESSION->channels = array();
+tool_realtime\api::init();
+
+if(!$SESSION->channels) {
+    $SESSION->channels = array();
+}
+
 if ($fromform = $mform->get_data()) {
     $channeltoappend = array(   "contextid" => $fromform->context,
                                 "component" => $fromform->component,
                                 "area" => $fromform->area,
                                 "itemid" => $fromform->itemid);
-    $SESSION->channels = array($channeltoappend);
+    array_push($SESSION->channels, $channeltoappend);
 }
-foreach ($SESSION->channels as $channel) {
-    $contextfromform = context::instance_by_id($channel["contextid"]);
-    tool_realtime\api::subscribe($contextfromform, $channel["component"], $channel["area"], $channel["itemid"]);
+
+for ($counter = 0; $counter < count($SESSION->channels); $counter++) {
+    $contextfromform = context::instance_by_id($SESSION->channels[$counter]["contextid"]);
+    tool_realtime\api::subscribe($contextfromform, $SESSION->channels[$counter]["component"], $SESSION->channels[$counter]["area"], $SESSION->channels[$counter]["itemid"]);
 }
+
 $mform->display();
+echo $OUTPUT->heading(get_string('channeltable', 'tool_realtime'));
+
+if (!empty($SESSION->channels) && count($SESSION->channels) > 0) {
+    $table = new html_table();
+    $table->attributes['class'] = 'generaltable';
+    $table->head = array(
+        'Context',
+        'Component',
+        'Area',
+        'Item ID',
+    );
+
+    foreach ($SESSION->channels as $channel) {
+        $row = array();
+        $row[] = $channel['contextid'];
+        $row[] = $channel['component'];
+        $row[] = $channel['area'];
+        $row[] = $channel['itemid'];
+
+        $table->data[] = $row;
+    }
+    echo html_writer::table($table);
+}
+
+Echo
+"<div id='buttonarea'>
+    <button type='button' id ='clearchannels'>CLEAR ALL CHANNELS</button>
+</div>";
+
+echo "<br>";
+
 echo $OUTPUT->heading(get_string('eventtesting', 'tool_realtime'));
 Echo
 "<div id='testarea'></div>";
@@ -54,6 +93,11 @@ echo $OUTPUT->footer();
 
 <script type="text/javascript">
     require(['core/pubsub', 'tool_realtime/events', 'tool_realtime/api'], function(PubSub, RealTimeEvents, api) {
+
+        document.getElementById('clearchannels').addEventListener('click', function() {
+
+        });
+
         PubSub.subscribe(RealTimeEvents.EVENT, function(data) {
             let testArea = document.getElementById('testarea');
             testArea.appendChild(document.createElement("br"));

@@ -35,3 +35,4 @@ $string['subplugintype_realtimeplugin'] = 'Real time backend plugin';
 $string['subplugintype_realtimeplugin_plural'] = 'Real time backend plugins';
 $string['eventtesting'] = 'Event Display Area';
 $string['realtime:page'] = 'Real Time Event Testing';
+$string['channeltable'] = 'Table of Subscribed Channels';
