@@ -33,6 +33,7 @@ $PAGE->set_context(context_system::instance());
 $PAGE->set_title(get_string('pluginname', 'tool_realtime'));
 $PAGE->set_heading(get_string('pluginname', 'tool_realtime'));
 echo $OUTPUT->header();
+$SESSION->channels = array();
 if ($fromform = $mform->get_data()) {
     $channeltoappend = array(   "contextid" => $fromform->context,
                                 "component" => $fromform->component,

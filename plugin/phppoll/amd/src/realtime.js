@@ -8,6 +8,7 @@
 define(['core/pubsub', 'tool_realtime/events', 'tool_realtime/api'], function(PubSub, RealTimeEvents,api) {
 
     var params;
+    var channels = [];
     var requestscounter = [];
     var pollURL;
     var ajax = new XMLHttpRequest(), json;
@@ -60,11 +61,42 @@ define(['core/pubsub', 'tool_realtime/events', 'tool_realtime/api'], function(Pu
             }
         };
         var url = pollURL + '?userid=' + encodeURIComponent(params.userid) + '&token=' +
-            encodeURIComponent(params.token) + '&fromid=' + encodeURIComponent(params.fromid)
-            + '&channel=' + encodeURIComponent(params.context) + ':' +
-            encodeURIComponent(params.component) + ':' + encodeURIComponent(params.area) +
-            ':' + encodeURIComponent(params.itemid) +
-            ':' + encodeURIComponent(params.fromtimestamp);
+            encodeURIComponent(params.token) + '&fromid=' + encodeURIComponent(params.fromid);
+
+        if(channels.length <= 0) {
+            return;
+        }
+
+        var contextstring = "";
+        var componentstring = "";
+        var areastring = "";
+        var itemidstring = "";
+        var fromtimestampstring = "";
+
+        for (var i = 0; i < channels.length; i++) {
+            if (i == channels.length - 1) {
+                contextstring += channels[i].context;
+                componentstring += channels[i].component;
+                areastring += channels[i].area;
+                itemidstring += channels[i].itemid;
+                fromtimestampstring += channels[i].fromtimestamp;
+            } else {
+                contextstring += channels[i].context + '-';
+                componentstring += channels[i].component + '-';
+                areastring += channels[i].area + '-';
+                itemidstring += channels[i].itemid + '-';
+                fromtimestampstring += channels[i].fromtimestamp + '-';
+            }
+        }
+
+        var channelstring = '&channel=' + contextstring + ':'
+                                        + componentstring + ':'
+                                        + areastring + ':'
+                                        + itemidstring + ':'
+                                        + fromtimestampstring;
+
+        url += channelstring;
+
         ajax.open('GET', url, true);
         ajax.send();
     };
@@ -72,7 +104,7 @@ define(['core/pubsub', 'tool_realtime/events', 'tool_realtime/api'], function(Pu
     var plugin =  {
         init: function(userId, token, pollURLParam, timeout) {
             if (params && params.userid) {
-                // log console dev error
+                // Log console dev error.
             } else {
                 params = {
                     userid: userId,
@@ -84,27 +116,20 @@ define(['core/pubsub', 'tool_realtime/events', 'tool_realtime/api'], function(Pu
             api.setImplementation(plugin);
         },
         subscribe: function(context, component, area, itemid, fromId, fromTimeStamp) {
-            if (params && params.userid && params.context) {
-                // Already initialised.
-                ajax.abort();
-                params.fromid = fromId;
-                params.context += ('-' + context);
-                params.component += ('-' + component);
-                params.area += ('-' + area);
-                params.itemid += ('-' + itemid);
-                params.fromtimestamp += ('-' + fromTimeStamp);
-            } else {
-                params.context= context;
-                params.component= component;
-                params.area= area;
-                params.itemid= itemid;
-                params.fromid= fromId;
-                params.fromtimestamp = fromTimeStamp;
+            params.fromid = fromId;
+            var channeltosubto = {
+                                    context: context,
+                                    component: component,
+                                    area: area,
+                                    itemid: itemid,
+                                    fromtimestamp: fromTimeStamp,
+                                };
+            if(channeltosubto) {
+                channels.push(channeltosubto);
             }
+            console.log(channels);
             setTimeout(poll, params.timeout);
         }
     };
-
-
     return plugin;
 });
