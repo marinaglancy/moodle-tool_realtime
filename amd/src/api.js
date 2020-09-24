@@ -22,7 +22,12 @@ define(['core/pubsub', 'tool_realtime/events'], function(PubSub, RealTimeEvents)
             if (totalchannels > 0) {
                 for (var i = 0; i < totalchannels; i++) {
                     var channeltosub = document.listofchannels.shift();
-                    document.delegatedplugin.subscribe(channeltosub.context, channeltosub.component, channeltosub.area, channeltosub.itemid, channeltosub.fromid, channeltosub.fromtimestamp);
+                    document.delegatedplugin.subscribe( channeltosub.context,
+                                                        channeltosub.component,
+                                                        channeltosub.area,
+                                                        channeltosub.itemid,
+                                                        channeltosub.fromid,
+                                                        channeltosub.fromtimestamp);
                 }
             }
         },
