@@ -31,12 +31,12 @@ require_once($CFG->dirroot . '/lib/formslib.php');
  * Class realtime_tool_form
  *
  * @package     tool_realtime
- * @copyright   2020 Daniel Conquit, Matthew Gray, Nicholas Parker, Dan Thistlewaite
+ * @copyright   2020 Daniel Conquit, Matthew Gray, Nicholas Parker, Dan Thistlethwaite
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class realtime_tool_form extends \moodleform {
     /**
-     * Definition for the moodle form on the realtime tool reporting page
+     * Definition for the Moodle form on the realtime tool reporting page
      */
     public function definition() {
         global $CFG;
@@ -58,7 +58,7 @@ class realtime_tool_form extends \moodleform {
     }
 
     /**
-     * Validation for the moodle form on the realtime tool reporting page
+     * Validation for the Moodle form on the realtime tool reporting page
      *
      * @param array $data
      * @param array $files
@@ -67,7 +67,7 @@ class realtime_tool_form extends \moodleform {
      */
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);
-        // TODO: context and component moodle checks exists.
+        // TODO: context and component Moodle checks exists.
         if (preg_match('/[^A-Za-z0-9]/', $data['component'])) {
             $errors['component'] = "Only English letters and digits allowed.";
         }
