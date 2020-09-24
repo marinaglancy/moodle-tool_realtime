@@ -65,11 +65,29 @@ class plugin extends plugin_base {
         if (!$this->is_set_up() || !isloggedin() || isguestuser() || self::$initialised) {
             return;
         }
+        self::init();
         $fromid = (int)$DB->get_field_sql("SELECT max(id) FROM {" . self::TABLENAME .
             "} WHERE contextid = ?", [$context->id]);
+        $fromtimestamp = microtime(true);
         $url = new \moodle_url('/admin/tool/realtime/plugin/phppoll/poll.php');
-        $PAGE->requires->js_call_amd('realtimeplugin_phppoll/realtime', 'init',
-            [$USER->id, self::get_token(), $context->id, $component, $area, $itemid, $fromid, $url->out(false),
+        $PAGE->requires->js_call_amd('realtimeplugin_phppoll/realtime', 'subscribe',
+            [ $context->id, $component, $area, $itemid, $fromid, $fromtimestamp]);
+    }
+
+    /**
+     * Intitialises realtime tool for Javascript subscriptions
+     *
+     */
+    public function init(): void {
+        // TODO check that area is defined only as letters and numbers.
+        global $PAGE, $USER, $DB;
+        if (!$this->is_set_up() || !isloggedin() || isguestuser() || self::$initialised) {
+            return;
+        }
+        self::$initialised = true;
+        $url = new \moodle_url('/admin/tool/realtime/plugin/phppoll/poll.php');
+        $PAGE->requires->js_call_amd('realtimeplugin_phppoll/realtime',  'init',
+            [$USER->id, self::get_token(), $url->out(false),
                 $this->get_delay_between_checks()]);
     }
 
@@ -144,15 +162,49 @@ class plugin extends plugin_base {
      * @param string $component
      * @param string $area
      * @param int $itemid
+     * @param float $fromtimestamp
      * @return array
      */
-    public function get_all(int $contextidentifier, int $fromid = 0, string $component, string $area, int $itemid): array {
+    public function get_all(int $contextidentifier,
+                            int $fromid, string $component,
+                            string $area, int $itemid,
+                            float $fromtimestamp): array {
         global $DB;
-        $events = $DB->get_records_select(self::TABLENAME,
-            'contextid = :contextid AND id > :fromid AND component = :component AND area = :area AND itemid = :itemid',
-            ['contextid' => $contextidentifier, 'fromid' => $fromid, 'component' => $component, 'area' => $area,
-                'itemid' => $itemid],
-            'id', 'id, contextid, component, area, itemid, payload');
+        $events = [];
+        $fromtimestampseconds = floor($fromtimestamp / 1000);
+        if ($fromid == 0) {
+            $events = $DB->get_records_select(self::TABLENAME,
+                'contextid = :contextid
+               AND timecreated > :fromtimestamp
+               AND component = :component
+               AND area = :area
+               AND itemid = :itemid',
+                [
+                    'contextid' => $contextidentifier,
+                    'fromid' => $fromid,
+                    'component' => $component,
+                    'area' => $area,
+                    'itemid' => $itemid,
+                    'fromtimestamp' => $fromtimestampseconds,
+                ],
+                'id', 'id, contextid, component, area, itemid, payload');
+        } else {
+            $events = $DB->get_records_select(self::TABLENAME,
+                'contextid = :contextid
+               AND id > :fromid
+               AND component = :component
+               AND area = :area
+               AND itemid = :itemid',
+                [
+                    'contextid' => $contextidentifier,
+                    'fromid' => $fromid,
+                    'component' => $component,
+                    'area' => $area,
+                    'itemid' => $itemid,
+                ],
+                'id', 'id, contextid, component, area, itemid, payload');
+        }
+
         array_walk($events, function(&$item) {
             $item->payload = @json_decode($item->payload, true);
             $context = \context::instance_by_id($item->contextid);

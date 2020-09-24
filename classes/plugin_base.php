@@ -82,6 +82,12 @@ abstract class plugin_base {
      */
     abstract public function subscribe(\context $context, string $component, string $area, int $itemid): void;
 
+
+    /**
+     * Set up realtime tool on page
+     */
+    abstract public function init(): void;
+
     /**
      * Notifies all subscribers about an event
      *

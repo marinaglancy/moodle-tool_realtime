@@ -32,11 +32,17 @@ $url = new moodle_url('/admin/tool/realtime/');
 $PAGE->set_context(context_system::instance());
 $PAGE->set_title(get_string('pluginname', 'tool_realtime'));
 $PAGE->set_heading(get_string('pluginname', 'tool_realtime'));
-
 echo $OUTPUT->header();
 if ($fromform = $mform->get_data()) {
-    $contextfromform = context::instance_by_id($fromform->context);
-    tool_realtime\api::subscribe($contextfromform, $fromform->component, $fromform->area, $fromform->itemid);
+    $channeltoappend = array(   "contextid" => $fromform->context,
+                                "component" => $fromform->component,
+                                "area" => $fromform->area,
+                                "itemid" => $fromform->itemid);
+    $SESSION->channels = array($channeltoappend);
+}
+foreach ($SESSION->channels as $channel) {
+    $contextfromform = context::instance_by_id($channel["contextid"]);
+    tool_realtime\api::subscribe($contextfromform, $channel["component"], $channel["area"], $channel["itemid"]);
 }
 $mform->display();
 echo $OUTPUT->heading(get_string('eventtesting', 'tool_realtime'));
@@ -46,7 +52,7 @@ echo $OUTPUT->footer();
 ?>
 
 <script type="text/javascript">
-    require(['core/pubsub', 'tool_realtime/events'], function(PubSub, RealTimeEvents) {
+    require(['core/pubsub', 'tool_realtime/events', 'tool_realtime/api'], function(PubSub, RealTimeEvents, api) {
         PubSub.subscribe(RealTimeEvents.EVENT, function(data) {
             let testArea = document.getElementById('testarea');
             testArea.appendChild(document.createElement("br"));
@@ -70,12 +76,14 @@ echo $OUTPUT->footer();
             testArea.appendChild(document.createElement("br"));
             testArea.appendChild(payloadtext);
             testArea.appendChild(document.createElement("br"));
+
             for (let key in data['payload']) {
                 if (key !== 'eventReceived') {
                     testArea.appendChild(document.createTextNode(key + " => " + data['payload'][key]));
                     testArea.appendChild(document.createElement("br"));
                 }
             }
+
             testArea.appendChild(document.createTextNode("Latency is: " +
                 (eventReceived - parseInt(data['payload']['eventReceived'])) + " milliseconds"));
             testArea.appendChild(document.createElement("br"));

@@ -72,6 +72,13 @@ class plugin extends plugin_base {
     }
 
     /**
+     * Subscribe the current page to receive notifications about events
+     */
+    public function init(): void {
+
+    }
+
+    /**
      * Notifies all subscribers about an event
      *
      * @param \context $context
