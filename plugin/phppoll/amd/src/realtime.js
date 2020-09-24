@@ -131,7 +131,5 @@ define(['core/pubsub', 'tool_realtime/events', 'tool_realtime/api'], function(Pu
             setTimeout(poll, params.timeout);
         }
     };
-
-
     return plugin;
 });

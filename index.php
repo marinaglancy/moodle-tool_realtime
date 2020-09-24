@@ -54,8 +54,6 @@ echo $OUTPUT->footer();
 
 <script type="text/javascript">
     require(['core/pubsub', 'tool_realtime/events', 'tool_realtime/api'], function(PubSub, RealTimeEvents, api) {
-        api.subscribe(1,"test", "test", 1);
-        api.subscribe(1,"test", "test", 2);
         PubSub.subscribe(RealTimeEvents.EVENT, function(data) {
             let testArea = document.getElementById('testarea');
             testArea.appendChild(document.createElement("br"));
