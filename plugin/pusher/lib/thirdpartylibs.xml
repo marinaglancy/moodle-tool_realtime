@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<libraries>
+    <library>
+        <location>/vendor/pusher/pusher-php-server</location>
+        <name>pusher-php-server</name>
+        <version>4.1.4</version>
+        <license>MIT</license>
+        <licenseversion></licenseversion>
+    </library>
+</libraries>
