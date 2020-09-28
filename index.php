@@ -34,9 +34,9 @@ $PAGE->set_context(context_system::instance());
 $PAGE->set_title(get_string('pluginname', 'tool_realtime'));
 $PAGE->set_heading(get_string('pluginname', 'tool_realtime'));
 echo $OUTPUT->header();
-tool_realtime\api::init();
 
-if(!$SESSION->channels) {
+
+if(!isset($SESSION->channels)) {
     $SESSION->channels = array();
 }
 
