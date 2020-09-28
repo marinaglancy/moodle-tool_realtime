@@ -62,7 +62,7 @@ class plugin extends plugin_base {
     public function subscribe(\context $context, string $component, string $area, int $itemid): void {
         // TODO check that area is defined only as letters and numbers.
         global $PAGE, $USER, $DB;
-        if (!$this->is_set_up() || !isloggedin() || isguestuser() || self::$initialised) {
+        if (!$this->is_set_up() || !isloggedin() || isguestuser()) {
             return;
         }
         self::init();
