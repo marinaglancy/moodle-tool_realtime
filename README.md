@@ -26,19 +26,25 @@ require(['core/pubsub', 'tool_realtime/events'], function(PubSub, RealTimeEvents
     });
 });
 ```
-or
+OR
 ```
-import {subscribe} from 'core/pubsub';
-import RealTimeEvents from 'tool_realtime/events';
-
-subscribe(RealTimeEvents.EVENT, (eventData) => {
-    // access context, component, area, itemid, payload as keys in event data
-    // example for context
-    document.write(eventData['context']);
-    // access payload by key
-    document.write(eventData['payload']['testkey']);
+Dynamic Javascript Subscription
+Initiliase in PHP:
+```
+tool_realtime\api::init();
+```
+then in Javascript subscribee using:
+```
+require(['core/pubsub', 'tool_realtime/events', 'tool_realtime/api'], function(PubSub, RealTimeEvents, api) {
+    api.subscribe(context, component, area, itemid);
+    PubSub.subscribe(RealTimeEvents.EVENT, function(eventData) {
+        // access context, component, area, itemid, payload as keys in event data
+        // example for context
+        document.write(eventData['context']);
+        // access payload by key
+        document.write(eventData['payload']['testkey']);
+    });
 });
-```
 
 ### Other uses ###
 
