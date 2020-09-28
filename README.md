@@ -32,7 +32,7 @@ Initiliase in PHP:
 ```
 tool_realtime\api::init();
 ```
-then in Javascript subscribee using:
+then in Javascript subscribe using:
 ```
 require(['core/pubsub', 'tool_realtime/events', 'tool_realtime/api'], function(PubSub, RealTimeEvents, api) {
     api.subscribe(context, component, area, itemid);
