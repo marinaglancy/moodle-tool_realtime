@@ -27,7 +27,6 @@ require(['core/pubsub', 'tool_realtime/events'], function(PubSub, RealTimeEvents
 });
 ```
 OR
-```
 Dynamic Javascript Subscription
 Initiliase in PHP:
 ```
@@ -45,7 +44,7 @@ require(['core/pubsub', 'tool_realtime/events', 'tool_realtime/api'], function(P
         document.write(eventData['payload']['testkey']);
     });
 });
-
+```
 ### Other uses ###
 
 Check if area is enabled in PHP:
