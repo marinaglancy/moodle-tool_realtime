@@ -1,9 +1,10 @@
 /**
- * Real time events
+ * Real time events using Pusher
  *
- * @module     realtimeplugin_phppoll/realtime
- * @package    realtimeplugin_phppoll
- * @copyright  2020 Marina Glancy
+ * @module     realtimeplugin_pusher/realtime
+ * @package    realtimeplugin_pusher
+ * @copyright  2020 Daniel Conquit, Matthew Gray, Nicholas Parker, Dan Thistlethwaite
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require.config({
@@ -13,17 +14,18 @@ require.config({
     }
 });
 
-define(['core/pubsub', 'tool_realtime/events', 'pusher-7.0'], function(PubSub, RealTimeEvents, Pusher) {
+define(['core/pubsub', 'tool_realtime/events', 'pusher-7.0', 'tool_realtime/api'], function(PubSub, RealTimeEvents, Pusher, api) {
 
     var params;
+    var channels = [];
     var pubSub = PubSub;
     var realTimeEvents = RealTimeEvents;
-    var subToChannel = function() {
+    var subToChannel = function(context, component, area, itemid) {
         var pusher = new Pusher(params.key, {
             cluster: params.cluster
         });
 
-        var channelString = params.context + '-' + params.component + '-' + params.area + '-' + params.itemid;
+        var channelString = context + '-' + component + '-' + area + '-' + itemid;
 
         var channel = pusher.subscribe(channelString);
         channel.bind('event', function(data) {
@@ -34,21 +36,33 @@ define(['core/pubsub', 'tool_realtime/events', 'pusher-7.0'], function(PubSub, R
         });
     };
 
-    return {
-        init: function(userId, context, component, area, itemid, app_id, key, secret, cluster) {
-            params = {
-                userid: userId,
+    var plugin =  {
+        init: function(userId, app_id, key, secret, cluster) {
+            if (params && params.userid) {
+                // Log console dev error.
+            } else {
+                params = {
+                    app_id: app_id,
+                    key: key,
+                    secret: secret,
+                    cluster: cluster
+                };
+            }
+            api.setImplementation(plugin);
+        },
+        subscribe: function(context, component, area, itemid, fromId, fromTimeStamp) {
+            var channeltosubto = {
                 context: context,
                 component: component,
                 area: area,
-                itemid: itemid,
-                app_id: app_id,
-                key: key,
-                secret: secret,
-                cluster: cluster
+                fromid: fromId,
+                fromtimestamp: fromTimeStamp
             };
-            subToChannel();
+            if(channeltosubto) {
+                channels.push(channeltosubto);
+            }
+            subToChannel(context, component, area, itemid);
         }
-
     };
+    return plugin;
 });

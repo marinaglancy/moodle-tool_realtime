@@ -60,22 +60,29 @@ class plugin extends plugin_base {
      * @param int $itemid
      */
     public function subscribe(\context $context, string $component, string $area, int $itemid): void {
+        self::init();
+        // TODO check that area is defined only as letters and numbers.
+        global $PAGE, $USER;
+        $PAGE->requires->js_call_amd('realtimeplugin_pusher/realtime', 'subscribe',
+            [$context->id, $component, $area, $itemid]);
+    }
+
+    /**
+     * Intitialises realtime tool for Javascript subscriptions
+     *
+     */
+    public function init(): void {
+        global $PAGE, $USER, $DB;
+        if (!$this->is_set_up() || !isloggedin() || isguestuser() || self::$initialised) {
+            return;
+        }
         $appid = get_config('realtimeplugin_pusher', 'app_id');
         $key = get_config('realtimeplugin_pusher', 'key');
         $secret = get_config('realtimeplugin_pusher', 'secret');
         $cluster = get_config('realtimeplugin_pusher', 'cluster');
-
-        // TODO check that area is defined only as letters and numbers.
-        global $PAGE, $USER;
-        $PAGE->requires->js_call_amd('realtimeplugin_pusher/realtime', 'init',
-            [$USER->id, $context->id, $component, $area, $itemid, $appid, $key, $secret, $cluster]);
-    }
-
-    /**
-     * Subscribe the current page to receive notifications about events
-     */
-    public function init(): void {
-
+        self::$initialised = true;
+        $PAGE->requires->js_call_amd('realtimeplugin_pusher/realtime',  'init',
+            [$USER->id, $appid, $key, $secret, $cluster]);
     }
 
     /**
