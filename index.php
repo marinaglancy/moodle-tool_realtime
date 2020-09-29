@@ -26,6 +26,8 @@ require_once(dirname(__FILE__) . '/../../../config.php');
 require_once($CFG->dirroot . '/lib/adminlib.php');
 require "$CFG->libdir/tablelib.php";
 
+//TODO: Make this page visible to any user so that user access permissions may be checked.
+
 admin_externalpage_setup('tool_realtime_report');
 // Instantiate realtime_tool_form.
 $mform = new tool_realtime\form\realtime_tool_form();
@@ -35,8 +37,9 @@ $PAGE->set_title(get_string('pluginname', 'tool_realtime'));
 $PAGE->set_heading(get_string('pluginname', 'tool_realtime'));
 echo $OUTPUT->header();
 
+$action = optional_param('action', '', PARAM_ALPHA);
 
-if(!isset($SESSION->channels)) {
+if(!isset($SESSION->channels) || $action == 'clearall') {
     $SESSION->channels = array();
 }
 
@@ -60,10 +63,10 @@ if (!empty($SESSION->channels) && count($SESSION->channels) > 0) {
     $table = new html_table();
     $table->attributes['class'] = 'generaltable';
     $table->head = array(
-        'Context',
-        'Component',
-        'Area',
-        'Item ID',
+        get_string('context', 'tool_realtime'),
+        get_string('component', 'tool_realtime'),
+        get_string('area', 'tool_realtime'),
+        get_string('itemid', 'tool_realtime'),
     );
 
     foreach ($SESSION->channels as $channel) {
@@ -78,25 +81,17 @@ if (!empty($SESSION->channels) && count($SESSION->channels) > 0) {
     echo html_writer::table($table);
 }
 
-Echo
-"<div id='buttonarea'>
-    <button type='button' id ='clearchannels'>CLEAR ALL CHANNELS</button>
-</div>";
+$clearurl = new moodle_url('/admin/tool/realtime/',  ['action' => 'clearall']);
+echo $OUTPUT->single_button($clearurl, 'Clear all channels');
 
 echo "<br>";
-
 echo $OUTPUT->heading(get_string('eventtesting', 'tool_realtime'));
-Echo
-"<div id='testarea'></div>";
+echo "<div id='testarea'></div>";
 echo $OUTPUT->footer();
 ?>
 
 <script type="text/javascript">
     require(['core/pubsub', 'tool_realtime/events', 'tool_realtime/api'], function(PubSub, RealTimeEvents, api) {
-
-        document.getElementById('clearchannels').addEventListener('click', function() {
-
-        });
 
         PubSub.subscribe(RealTimeEvents.EVENT, function(data) {
             let testArea = document.getElementById('testarea');
