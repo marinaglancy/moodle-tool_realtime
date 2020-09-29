@@ -69,6 +69,8 @@ while (true) {
         exit;
     }
 
+    //TODO: check user rights to subscribe to channel.
+
     for ($x = 0; $x < count($component); $x++) {
         if ($events = $plugin->get_all((intval($context[$x])), (int)$fromid, (string)$component[$x],
             (string)$area[$x], (int)$itemid[$x], (float)$fromtimestampprocessed[$x])) {

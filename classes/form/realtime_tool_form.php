@@ -42,16 +42,16 @@ class realtime_tool_form extends \moodleform {
         global $CFG;
         $mform = $this->_form;
 
-        $mform->addElement('text', 'context', 'Context:');
+        $mform->addElement('text', 'context', get_string('context', 'tool_realtime'));
         $mform->setType('context', PARAM_INT);
 
-        $mform->addElement('text', 'component', 'Component:');
+        $mform->addElement('text', 'component', get_string('component', 'tool_realtime'));
         $mform->setType('component', PARAM_TEXT);
 
-        $mform->addElement('text', 'area', 'Area:');
+        $mform->addElement('text', 'area', get_string('area', 'tool_realtime'));
         $mform->setType('area', PARAM_TEXT);
 
-        $mform->addElement('text', 'itemid', 'Item ID:');
+        $mform->addElement('text', 'itemid', get_string('itemid', 'tool_realtime'));
         $mform->setType('itemid', PARAM_INT);
 
         $this->add_action_buttons();

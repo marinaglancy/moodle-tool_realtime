@@ -68,13 +68,11 @@ if (!is_null($options['eventcount'])) {
     cli_error("Missing arg: id\nAdd -h for help");
 }
 
-// Append server time before sending.
-$payload["eventReceived"] = microtime(true) * 1000;
-
 // Create context
 $context = \context::instance_by_id(1);
 
 for ($counter = 0; $counter < $eventcount; $counter++) {
+    $payload["eventReceived"] = microtime(true) * 1000;
     \tool_realtime\api::notify($context, 'loadtest', 'loadtest', 1, $payload);
 }
 

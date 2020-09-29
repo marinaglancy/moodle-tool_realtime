@@ -37,3 +37,7 @@ $string['eventtesting'] = 'Event Display Area';
 $string['realtime:page'] = 'Real Time Event Testing';
 $string['channeltable'] = 'Table of Subscribed Channels';
 $string['loadtest'] = 'Load Testing Tool';
+$string['context'] = 'Context';
+$string['component'] = 'Component';
+$string['area'] = 'Area';
+$string['itemid'] = 'Item ID';
