@@ -48,7 +48,7 @@ final class plugin_test extends advanced_testcase {
         $context = context_user::instance($USER->id);
         $plugin->subscribe($context, 'testcomponent', 'testarea', 7);
         $plugin->notify($context, 'testcomponent', 'testarea', 7, ['a' => 'b']);
-        $results = $plugin->get_all($USER->id, 0);
+        $results = $plugin->get_all($context->id, 0, 'testcomponent', 'testarea', 7, 0);
         $this->assertCount(1, $results);
         $result = (array)reset($results);
         unset($result['id']);
