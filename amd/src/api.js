@@ -1,11 +1,10 @@
 /**
  * Real time events
  *
- * @module     tool_realtime/events
- * @package    tool_realtime
+ * @module     tool_realtime/api
  * @copyright  2020 Marina Glancy
  */
-define(['core/pubsub', 'tool_realtime/events'], function(PubSub, RealTimeEvents) {
+define(['core/pubsub', 'tool_realtime/events'], function() {
 
     document.listofchannels = [];
 
@@ -13,8 +12,8 @@ define(['core/pubsub', 'tool_realtime/events'], function(PubSub, RealTimeEvents)
         setImplementation: function(plugin) {
             var totalchannels;
             document.delegatedplugin = plugin;
-            // in here check list to subscribe once plugin has been set
-            if(!document.listofchannels) {
+            // In here check list to subscribe once plugin has been set.
+            if (!document.listofchannels) {
                 return;
             }
             totalchannels = document.listofchannels.length;
@@ -34,13 +33,13 @@ define(['core/pubsub', 'tool_realtime/events'], function(PubSub, RealTimeEvents)
         subscribe: function(context, component, area, itemid, fromId= 0, fromtimestamp = -1) {
             var fromTimeStamp = fromtimestamp;
 
-            if(fromId == 0) {
-                fromTimeStamp= (new Date).getTime();
+            if (fromId == 0) {
+                fromTimeStamp = (new Date()).getTime();
             }
 
             // Check that plugin implementation has been set.
             if (document.delegatedplugin) {
-                //  conditional for plugin being set
+                // Conditional for plugin being set.
                 document.delegatedplugin.subscribe(context, component, area, itemid, fromId, fromTimeStamp);
             } else {
                 // Channel object to store in list
@@ -52,7 +51,7 @@ define(['core/pubsub', 'tool_realtime/events'], function(PubSub, RealTimeEvents)
                     fromid: fromId,
                     fromtimestamp: fromTimeStamp
                 };
-                // push channel to list
+                // Push channel to list
                 document.listofchannels.push(channel);
             }
 

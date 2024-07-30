@@ -2,10 +2,9 @@
  * Real time events
  *
  * @module     realtimeplugin_phppoll/realtime
- * @package    realtimeplugin_phppoll
  * @copyright  2020 Marina Glancy
  */
-define(['core/pubsub', 'tool_realtime/events', 'tool_realtime/api'], function(PubSub, RealTimeEvents,api) {
+define(['core/pubsub', 'tool_realtime/events', 'tool_realtime/api'], function(PubSub, RealTimeEvents, api) {
 
     var params;
     var channels = [];
@@ -101,7 +100,7 @@ define(['core/pubsub', 'tool_realtime/events', 'tool_realtime/api'], function(Pu
         ajax.send();
     };
 
-    var plugin =  {
+    var plugin = {
         init: function(userId, token, pollURLParam, timeout) {
             if (params && params.userid) {
                 // Log console dev error.
@@ -124,10 +123,11 @@ define(['core/pubsub', 'tool_realtime/events', 'tool_realtime/api'], function(Pu
                                     itemid: itemid,
                                     fromtimestamp: fromTimeStamp,
                                 };
-            if(channeltosubto) {
+            if (channeltosubto) {
                 channels.push(channeltosubto);
             }
-            console.log(channels);
+            // eslint-disable-next-line no-console
+            console.log('Subscribe to', channels);
             setTimeout(poll, params.timeout);
         }
     };

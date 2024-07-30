@@ -17,7 +17,6 @@
  * Events for the real time.
  *
  * @module     tool_realtime/events
- * @package    tool_realtime
  * @copyright  2020 Marina Glancy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
