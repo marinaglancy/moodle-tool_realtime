@@ -25,7 +25,6 @@
 defined('MOODLE_INTERNAL') || die();
 
 if ($hassiteconfig) {
-
     $settings->add(new admin_setting_configduration('realtimeplugin_phppoll/requesttimeout',
             new lang_string('requesttimeout', 'realtimeplugin_phppoll'),
             new lang_string('requesttimeoutdesc', 'realtimeplugin_phppoll'), 30)

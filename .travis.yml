@@ -14,7 +14,7 @@ cache:
     - $HOME/.npm
 
 php:
-  - 7.2
+  - 7.4
 
 env:
   - DB=pgsql MOODLE_BRANCH=master

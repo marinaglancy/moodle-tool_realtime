@@ -17,21 +17,34 @@ Subscribe in PHP:
 Listen in Javascript:
 ```
 require(['core/pubsub', 'tool_realtime/events'], function(PubSub, RealTimeEvents) {
-    PubSub.subscribe(RealTimeEvents.EVENT, function(context, component, area, itemid, payload) {
-        // ...
+    PubSub.subscribe(RealTimeEvents.EVENT, function(eventData) {
+        // access context, component, area, itemid, payload as keys in event data
+        // example for context
+        document.write(eventData['context']);
+        // access payload by key
+        document.write(eventData['payload']['testkey']);
     });
 });
 ```
-or
+OR
+Dynamic Javascript Subscription
+Initiliase in PHP:
 ```
-import {subscribe} from 'core/pubsub';
-import RealTimeEvents from 'tool_realtime/events';
-
-subscribe(RealTimeEvents.EVENT, (context, component, area, itemid, payload) => {
-    // ...
+tool_realtime\api::init();
+```
+then in Javascript subscribe using:
+```
+require(['core/pubsub', 'tool_realtime/events', 'tool_realtime/api'], function(PubSub, RealTimeEvents, api) {
+    api.subscribe(context, component, area, itemid);
+    PubSub.subscribe(RealTimeEvents.EVENT, function(eventData) {
+        // access context, component, area, itemid, payload as keys in event data
+        // example for context
+        document.write(eventData['context']);
+        // access payload by key
+        document.write(eventData['payload']['testkey']);
+    });
 });
 ```
-
 ### Other uses ###
 
 Check if area is enabled in PHP:
