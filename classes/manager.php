@@ -14,14 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Class manager
- *
- * @package     tool_realtime
- * @copyright   2020 Marina Glancy
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace tool_realtime;
 
 /**
@@ -72,20 +64,17 @@ class manager {
     }
 
     /**
-     * Name of the enabled backend plugin
+     * Name of the enabled backend plugin or null if no plugin is enabled
      *
-     * @return string
+     * @return string|null
      */
-    public static function get_enabled_plugin_name(): string {
+    public static function get_enabled_plugin_name(): ?string {
         $selected = get_config('tool_realtime', 'enabled');
         $all = self::get_installed_plugins();
         if (strlen($selected) && array_key_exists($selected, $all)) {
             return $selected;
         }
-        if (array_key_exists('phppoll', $all)) {
-            return 'phppoll';
-        }
-        return key($all);
+        return null;
     }
 
     /**
@@ -93,11 +82,17 @@ class manager {
      *
      * @return plugin_base
      */
-    public static function get_plugin(): plugin_base {
-        // TODO check for initialisation errors.
+    public static function get_plugin(): ?plugin_base {
+        $enabledpluginname = self::get_enabled_plugin_name();
+        if (!$enabledpluginname) {
+            return null;
+        }
+
         $plugins = \core_component::get_plugin_list_with_class(self::PLUGINTYPE, 'plugin');
         /** @var plugin_base $classname */
-        $classname = $plugins[self::PLUGINTYPE . '_' . self::get_enabled_plugin_name()];
-        return $classname::get_instance();
+        $classname = $plugins[self::PLUGINTYPE . '_' . $enabledpluginname];
+        $instance = $classname::get_instance();
+
+        return $instance->is_set_up() ? $instance : null;
     }
 }

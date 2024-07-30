@@ -14,20 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Class realtimeplugin_phppoll\plugin
- *
- * @package     realtimeplugin_phppoll
- * @copyright   2020 Marina Glancy
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace realtimeplugin_phppoll;
 
 use tool_realtime\plugin_base;
 
 /**
- * Class realtimeplugin_phppoll\plugin
+ * Main class for the realtimeplugin_phppoll plugin
  *
  * @package     realtimeplugin_phppoll
  * @copyright   2020 Marina Glancy

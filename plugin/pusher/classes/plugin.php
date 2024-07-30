@@ -14,14 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Class realtimeplugin_pusher\plugin
- *
- * @package     realtimeplugin_pusher
- * @copyright  2020 Daniel Conquit, Matthew Gray, Nicholas Parker, Dan Thistlethwaite
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace realtimeplugin_pusher;
 
 defined('MOODLE_INTERNAL') || die();
@@ -31,9 +23,9 @@ use tool_realtime\plugin_base;
 require(__DIR__ . '/../vendor/autoload.php');
 
 /**
- * Class realtimeplugin_pusher\plugin
+ * Main class for realtimeplugin_pusher plugin
  *
- * @package     realtimeplugin_pusher
+ * @package    realtimeplugin_pusher
  * @copyright  2020 Daniel Conquit, Matthew Gray, Nicholas Parker, Dan Thistlethwaite
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -48,7 +40,11 @@ class plugin extends plugin_base {
      * @return bool
      */
     public function is_set_up(): bool {
-        return true;
+        $appid = get_config('realtimeplugin_pusher', 'app_id');
+        $key = get_config('realtimeplugin_pusher', 'key');
+        $secret = get_config('realtimeplugin_pusher', 'secret');
+        $cluster = get_config('realtimeplugin_pusher', 'cluster');
+        return $appid && $key && $secret && $cluster;
     }
 
     /**

@@ -14,14 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Class plugin_base
- *
- * @package     tool_realtime
- * @copyright   2020 Marina Glancy
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace tool_realtime;
 
 /**
@@ -36,9 +28,9 @@ abstract class plugin_base {
     /**
      * Name of this plugin
      *
-     * @return false|string
+     * @return string
      */
-    public function get_name() {
+    public function get_name(): string {
         $parts = preg_split("|\\\\|", get_class($this), -1, PREG_SPLIT_NO_EMPTY);
         return substr($parts[0], strlen(manager::PLUGINTYPE) + 1);
     }
@@ -79,12 +71,6 @@ abstract class plugin_base {
      * @param int $itemid
      */
     abstract public function subscribe(\context $context, string $component, string $area, int $itemid): void;
-
-
-    /**
-     * Set up realtime tool on page
-     */
-    abstract public function init(): void;
 
     /**
      * Notifies all subscribers about an event

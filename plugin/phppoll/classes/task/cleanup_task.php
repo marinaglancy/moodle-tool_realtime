@@ -14,13 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Task to cleanup task logs.
- *
- * @package    realtimeplugin_phppoll
- * @copyright  2020 Marina Glancy
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 namespace realtimeplugin_phppoll\task;
 
 use core\task\scheduled_task;
@@ -29,6 +22,7 @@ use realtimeplugin_phppoll\plugin;
 /**
  * A task to cleanup log entries for tasks.
  *
+ * @package    realtimeplugin_phppoll
  * @copyright  2020 Marina Glancy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

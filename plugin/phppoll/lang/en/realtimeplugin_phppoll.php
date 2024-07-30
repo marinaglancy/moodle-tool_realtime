@@ -27,7 +27,6 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['checkinterval'] = 'Check interval, ms';
 $string['checkintervaldesc'] = 'Interval between the polling requests to the server and also sleep interval between checks for new events on the server during long polling, in milliseconds, can not be less than {$a} ms';
-$string['component'] = 'Component';
 $string['pluginname'] = 'PHP polling';
 $string['privacy:metadata'] = 'The PHP polling plugin only stores user information for a short period of time';
 $string['requesttimeout'] = 'Maximum duration for polling requests';

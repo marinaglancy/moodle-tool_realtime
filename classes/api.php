@@ -14,16 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Class api
- *
- * @package     tool_realtime
- * @copyright   2020 Moodle Pty Ltd <support@moodle.com>
- * @author      2020 Marina Glancy
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @license     Moodle Workplace License, distribution is restricted, contact support@moodle.com
- */
-
 namespace tool_realtime;
 
 /**
@@ -46,17 +36,8 @@ class api {
      * @param int $itemid
      */
     public static function subscribe(\context $context, string $component, string $area, int $itemid) {
-        if (self::is_enabled($component, $area)) {
-            manager::get_plugin()->subscribe($context, $component, $area, $itemid);
-        }
-    }
-
-    /**
-     * SEt up realtime tool
-     */
-    public static function init() {
-        if (self::is_enabled('fakecomponent', 'fakearea')) {
-            manager::get_plugin()->init();
+        if (self::is_enabled($component, $area) && ($plugin = manager::get_plugin())) {
+            $plugin->subscribe($context, $component, $area, $itemid);
         }
     }
 
@@ -70,8 +51,8 @@ class api {
      * @param array|null $payload
      */
     public static function notify(\context $context, string $component, string $area, int $itemid, ?array $payload = null) {
-        if (self::is_enabled($component, $area)) {
-            manager::get_plugin()->notify($context, $component, $area, $itemid, $payload);
+        if (self::is_enabled($component, $area) && ($plugin = manager::get_plugin())) {
+            $plugin->notify($context, $component, $area, $itemid, $payload);
         }
     }
 
@@ -83,7 +64,7 @@ class api {
      * @return bool
      */
     public static function is_enabled(string $component, string $area) {
-        // TODO.
+        // TODO this function exists in case we want to provide UI for selective enabling/disabling areas.
         return true;
     }
 }
