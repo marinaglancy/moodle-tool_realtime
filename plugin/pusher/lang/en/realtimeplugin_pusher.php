@@ -25,8 +25,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['pluginname'] = 'Pusher';
 $string['app_id'] = 'Application Identifier';
-$string['key'] = 'Application';
-$string['secret'] = 'Secret Key';
+$string['app_id_desc'] = "Application identifier on <a href=\"https://pusher.com\" target=\"_blank\">pusher.com</a>. Create a new channel and locate the value of the 'app_id' variable in the 'App Keys' section of your pusher dashboard.";
 $string['cluster'] = 'Cluster';
+$string['key'] = 'Key';
+$string['pluginname'] = 'Pusher';
+$string['secret'] = 'Secret';
