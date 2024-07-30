@@ -23,23 +23,24 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+namespace tool_realtime;
 
 /**
  * The tool_realtime test class.
  *
+ * @covers     \tool_realtime\manager
  * @package    tool_realtime
  * @copyright  2020 Marina Glancy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_realtime_tool_realtime_testcase extends advanced_testcase {
+final class manager_test extends \advanced_testcase {
 
-    public function test_is_enabled() {
+    public function test_is_enabled(): void {
         $this->assertNotEmpty(\tool_realtime\manager::get_enabled_plugin_name());
         $this->assertNotEmpty(\tool_realtime\manager::get_installed_plugins());
     }
 
-    public function test_is_set_up() {
+    public function test_is_set_up(): void {
         $this->assertTrue(\tool_realtime\manager::get_plugin()->is_set_up());
         $this->assertTrue(\tool_realtime\manager::get_plugin()->is_enabled());
         $this->assertEquals(\tool_realtime\manager::get_enabled_plugin_name(), \tool_realtime\manager::get_plugin()->get_name());

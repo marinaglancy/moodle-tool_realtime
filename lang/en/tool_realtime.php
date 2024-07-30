@@ -25,19 +25,19 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['area'] = 'Area';
 $string['availableplugins'] = 'Available real time backend plugins';
+$string['channeltable'] = 'Table of Subscribed Channels';
+$string['component'] = 'Component';
+$string['context'] = 'Context';
 $string['enabledplugin'] = 'Enabled real time backend plugin';
 $string['enabledplugindesc'] = 'Select the real time backend plugin that is used on the site. If the selected plugin is not configured it will fall back to the default one';
+$string['eventtesting'] = 'Event Display Area';
+$string['itemid'] = 'Item ID';
+$string['loadtest'] = 'Load Testing Tool';
 $string['managerealtime'] = 'Manage Real time backend plugins';
 $string['pluginname'] = 'Real time events';
 $string['privacy:metadata'] = 'The Real time events plugin does not store any personal data.';
+$string['realtime:page'] = 'Real Time Event Testing';
 $string['subplugintype_realtimeplugin'] = 'Real time backend plugin';
 $string['subplugintype_realtimeplugin_plural'] = 'Real time backend plugins';
-$string['eventtesting'] = 'Event Display Area';
-$string['realtime:page'] = 'Real Time Event Testing';
-$string['channeltable'] = 'Table of Subscribed Channels';
-$string['loadtest'] = 'Load Testing Tool';
-$string['context'] = 'Context';
-$string['component'] = 'Component';
-$string['area'] = 'Area';
-$string['itemid'] = 'Item ID';

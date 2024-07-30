@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -32,12 +31,12 @@ require_once("$CFG->libdir/outputlib.php");
 
 $longparams = [
     'eventcount' => null,
-    'help' => false
+    'help' => false,
 ];
 
 $shortmappings = [
     'ec' => 'eventcount',
-    'h' => 'help'
+    'h' => 'help',
 ];
 
 // Get CLI params.
@@ -68,7 +67,7 @@ if (!is_null($options['eventcount'])) {
     cli_error("Missing arg: id\nAdd -h for help");
 }
 
-// Create context
+// Create context.
 $context = \context::instance_by_id(1);
 
 for ($counter = 0; $counter < $eventcount; $counter++) {

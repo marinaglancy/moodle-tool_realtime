@@ -100,10 +100,10 @@ class plugin extends plugin_base {
         $secret = get_config('realtimeplugin_pusher', 'secret');
         $cluster = get_config('realtimeplugin_pusher', 'cluster');
 
-        $options = array(
+        $options = [
             'cluster' => (string)($cluster),
-            'useTLS' => true
-        );
+            'useTLS' => true,
+        ];
         $pusher = new \Pusher\Pusher(
             (string)($key),
             (string)($secret),

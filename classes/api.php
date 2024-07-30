@@ -26,8 +26,6 @@
 
 namespace tool_realtime;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Class api
  *

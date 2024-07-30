@@ -124,11 +124,11 @@ class setting_manageplugins extends \admin_setting {
         $return .= $OUTPUT->box_start('generalbox realtimeui');
 
         $table = new html_table();
-        $table->head = array(get_string('name'), $strversion, $strenabled, $strsettings, $struninstall);
-        $table->colclasses = array('leftalign', 'centeralign', 'centeralign', 'centeralign', 'centeralign');
+        $table->head = [get_string('name'), $strversion, $strenabled, $strsettings, $struninstall];
+        $table->colclasses = ['leftalign', 'centeralign', 'centeralign', 'centeralign', 'centeralign'];
         $table->id = 'logstoreplugins';
         $table->attributes['class'] = 'admintable generaltable';
-        $table->data = array();
+        $table->data = [];
 
         foreach (manager::get_installed_plugins_menu() as $plugin => $name) {
             $fullname = manager::PLUGINTYPE . '_' . $plugin;
@@ -158,7 +158,7 @@ class setting_manageplugins extends \admin_setting {
             }
 
             // Add a row to the table.
-            $table->data[] = array($icon . $displayname, $version, $isenabled ? $strenabled : '', $settings, $uninstall);
+            $table->data[] = [$icon . $displayname, $version, $isenabled ? $strenabled : '', $settings, $uninstall];
         }
 
         $return .= html_writer::table($table);

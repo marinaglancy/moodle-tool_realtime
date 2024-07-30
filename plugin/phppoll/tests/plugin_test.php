@@ -23,23 +23,27 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+namespace realtimeplugin_phppoll;
+
+use advanced_testcase;
+use context_user;
 
 /**
  * The realtimeplugin_phppoll test class.
  *
+ * @covers     \realtimeplugin_phppoll\plugin
  * @package    realtimeplugin_phppoll
  * @copyright  2020 Marina Glancy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class realtimeplugin_phppoll_testcase extends advanced_testcase {
+final class plugin_test extends advanced_testcase {
 
-    public function test_notify_and_get_all() {
+    public function test_notify_and_get_all(): void {
         global $USER;
         $this->resetAfterTest();
-        /** @var \realtimeplugin_phppoll\plugin $plugin */
+        /** @var plugin $plugin */
         $plugin = \tool_realtime\manager::get_plugin();
-        $this->assertInstanceOf(realtimeplugin_phppoll\plugin::class, $plugin);
+        $this->assertInstanceOf(plugin::class, $plugin);
         $this->setAdminUser();
         $context = context_user::instance($USER->id);
         $plugin->subscribe($context, 'testcomponent', 'testarea', 7);
@@ -57,7 +61,7 @@ class realtimeplugin_phppoll_testcase extends advanced_testcase {
                 'id' => $context->id,
                 'contextlevel' => CONTEXT_USER,
                 'instanceid' => $USER->id,
-            ]
+            ],
         ], $result);
     }
 }

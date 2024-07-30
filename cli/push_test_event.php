@@ -35,7 +35,7 @@ $longparams = [
     'area' => null,
     'id' => null,
     'payload' => null,
-    'help' => false
+    'help' => false,
 ];
 
 $shortmappings = [
@@ -44,7 +44,7 @@ $shortmappings = [
     'a' => 'area',
     'i' => 'id',
     'p' => 'payload',
-    'h' => 'help'
+    'h' => 'help',
 ];
 
 // Get CLI params.

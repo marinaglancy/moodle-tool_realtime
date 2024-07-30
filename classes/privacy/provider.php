@@ -24,8 +24,6 @@
 
 namespace tool_realtime\privacy;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Implementation of the privacy subsystem plugin provider for the tool_realtime
  *

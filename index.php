@@ -23,10 +23,11 @@
  */
 
 require_once(dirname(__FILE__) . '/../../../config.php');
-require_once($CFG->dirroot . '/lib/adminlib.php');
-require "$CFG->libdir/tablelib.php";
 
-//TODO: Make this page visible to any user so that user access permissions may be checked.
+require_once($CFG->dirroot . '/lib/adminlib.php');
+require_once("$CFG->libdir/tablelib.php");
+
+// TODO: Make this page visible to any user so that user access permissions may be checked.
 
 admin_externalpage_setup('tool_realtime_report');
 // Instantiate realtime_tool_form.
@@ -39,21 +40,24 @@ echo $OUTPUT->header();
 
 $action = optional_param('action', '', PARAM_ALPHA);
 
-if(!isset($SESSION->channels) || $action == 'clearall') {
-    $SESSION->channels = array();
+if (!isset($SESSION->channels) || $action == 'clearall') {
+    $SESSION->channels = [];
 }
 
 if ($fromform = $mform->get_data()) {
-    $channeltoappend = array(   "contextid" => $fromform->context,
+    $channeltoappend = [   "contextid" => $fromform->context,
                                 "component" => $fromform->component,
                                 "area" => $fromform->area,
-                                "itemid" => $fromform->itemid);
+                                "itemid" => $fromform->itemid];
     array_push($SESSION->channels, $channeltoappend);
 }
 
 for ($counter = 0; $counter < count($SESSION->channels); $counter++) {
     $contextfromform = context::instance_by_id($SESSION->channels[$counter]["contextid"]);
-    tool_realtime\api::subscribe($contextfromform, $SESSION->channels[$counter]["component"], $SESSION->channels[$counter]["area"], $SESSION->channels[$counter]["itemid"]);
+    tool_realtime\api::subscribe($contextfromform,
+        $SESSION->channels[$counter]["component"],
+        $SESSION->channels[$counter]["area"],
+        $SESSION->channels[$counter]["itemid"]);
 }
 
 $mform->display();
@@ -62,15 +66,15 @@ echo $OUTPUT->heading(get_string('channeltable', 'tool_realtime'));
 if (!empty($SESSION->channels) && count($SESSION->channels) > 0) {
     $table = new html_table();
     $table->attributes['class'] = 'generaltable';
-    $table->head = array(
+    $table->head = [
         get_string('context', 'tool_realtime'),
         get_string('component', 'tool_realtime'),
         get_string('area', 'tool_realtime'),
         get_string('itemid', 'tool_realtime'),
-    );
+    ];
 
     foreach ($SESSION->channels as $channel) {
-        $row = array();
+        $row = [];
         $row[] = $channel['contextid'];
         $row[] = $channel['component'];
         $row[] = $channel['area'];

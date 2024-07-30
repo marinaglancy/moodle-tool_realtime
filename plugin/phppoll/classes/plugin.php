@@ -24,8 +24,6 @@
 
 namespace realtimeplugin_phppoll;
 
-defined('MOODLE_INTERNAL') || die();
-
 use tool_realtime\plugin_base;
 
 /**

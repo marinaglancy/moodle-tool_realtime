@@ -68,7 +68,7 @@ $PAGE->requires->js_amd_inline(<<<EOL
 EOL
 );
 
-?>
+echo <<<EOL
 <p><a class="testform" data-linkid="1" href="#">
     Test1
 </a></p>
@@ -77,5 +77,6 @@ EOL
 </a></p>
 <div id="realtimeresults">
 </div>
-<?php
+EOL;
+
 echo $OUTPUT->footer();

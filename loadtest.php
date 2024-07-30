@@ -24,7 +24,7 @@
 
 require_once(dirname(__FILE__) . '/../../../config.php');
 require_once($CFG->dirroot . '/lib/adminlib.php');
-require "$CFG->libdir/tablelib.php";
+require_once("$CFG->libdir/tablelib.php");
 
 admin_externalpage_setup('tool_realtime_report');
 // Instantiate realtime_tool_form.
