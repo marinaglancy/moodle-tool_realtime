@@ -35,7 +35,7 @@ class api {
      * @param string $area
      * @param int $itemid
      * @param string $channel the same channel that is used when sending notification,
-     *    for example, target user id.
+     *    for example, conversation identifier.
      */
     public static function subscribe(
             \context $context,
@@ -43,22 +43,21 @@ class api {
             string $area,
             int $itemid,
             string $channel) {
+        // TODO validate parameters (clean_param, length, etc).
         if (self::is_enabled($component, $area) && ($plugin = manager::get_plugin())) {
             $plugin->subscribe($context, $component, $area, $itemid, $channel);
         }
     }
 
     /**
-     * Notifies a subscriber about an event
-     *
-     * Notification is only delivered to the FIRST person who subscribes to it.
+     * Notifies all subscribers about an event
      *
      * @param \context $context
      * @param string $component
      * @param string $area
      * @param int $itemid
-     * @param string $channel any description of the communication channel, for example, id of the target user
-     *    or md5 of several properties.
+     * @param string $channel any additional description of the communication channel, for example,
+     *    conversation identifier or md5 of several properties.
      * @param array|null $payload
      */
     public static function notify(
@@ -68,6 +67,7 @@ class api {
             int $itemid,
             string $channel,
             ?array $payload = null) {
+        // TODO validate parameters (clean_param, length, etc).
         if (self::is_enabled($component, $area) && ($plugin = manager::get_plugin())) {
             $plugin->notify($context, $component, $area, $itemid, $channel, $payload);
         }
@@ -85,8 +85,18 @@ class api {
         return true;
     }
 
-    public static function channel_hash(\context $context, string $component, string $area, int $itemid, string $channel) {
-        $params = ['contextid' => (string)$context->id,
+    /**
+     * Helper function creating a unique hash for the channel arguments
+     *
+     * @param int $contextid
+     * @param string $component
+     * @param string $area
+     * @param int $itemid
+     * @param string $channel
+     * @return string
+     */
+    public static function channel_hash(int $contextid, string $component, string $area, int $itemid, string $channel) {
+        $params = ['contextid' => (string)$contextid,
             'component' => (string)$component,
             'area' => (string)$area,
             'itemid' => (string)$itemid,

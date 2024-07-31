@@ -1,3 +1,18 @@
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * Real time events using Pusher
  *
@@ -7,50 +22,57 @@
  */
 
 require.config({
-    enforceDefine: false,
     paths: {
-        "pusher-7.0": 'https://js.pusher.com/7.0/pusher'
+        "pusher": 'https://js.pusher.com/7.0/pusher'
     }
 });
 
-define(['core/pubsub', 'tool_realtime/events', 'pusher-7.0'], function(PubSub, RealTimeEvents, Pusher) {
+import * as PubSub from 'core/pubsub';
+import * as RealTimeEvents from 'tool_realtime/events';
 
-    var params;
-    var pubSub = PubSub;
-    var realTimeEvents = RealTimeEvents;
+let params;
 
-    var plugin =  {
-        init: function(userId, app_id, key, secret, cluster) {
-            if (params && params.userid) {
-                // Log console dev error.
-            } else {
-                params = {
-                    app_id: app_id,
-                    key: key,
-                    secret: secret,
-                    cluster: cluster
-                };
-            }
-        },
-        subscribe: function(hash, context, component, area, itemid, channel) {
-            var pusher = new Pusher(params.key, {
-                cluster: params.cluster
-            });
-
-            var pusherChannel = pusher.subscribe(hash);
-            pusherChannel.bind('event', function(data) {
-                let payload;
-                try {
-                    payload = JSON.parse(data);
-                } catch (_) {
-                    payload = [];
-                }
-                var dataToSend = {
-                    context, component: component, area, itemid, channel, payload
-                };
-                pubSub.publish(realTimeEvents.EVENT, dataToSend);
-            });
-        }
+/**
+ * Initialise plugin
+ *
+ * @param {String} key
+ * @param {String} cluster
+ */
+export function init(key, cluster) {
+    params = {
+        key,
+        cluster
     };
-    return plugin;
-});
+}
+
+/**
+ * Subscribe to events
+ *
+ * @param {String} hash
+ * @param {Number} context
+ * @param {String} component
+ * @param {String} area
+ * @param {Number} itemid
+ * @param {String} channel
+ */
+export function subscribe(hash, context, component, area, itemid, channel) {
+    require(['pusher'], function(Pusher) {
+        var pusher = new Pusher(params.key, {
+            cluster: params.cluster
+        });
+
+        var pusherChannel = pusher.subscribe(hash);
+        pusherChannel.bind('event', function(data) {
+            let payload;
+            try {
+                payload = JSON.parse(data);
+            } catch (_) {
+                payload = [];
+            }
+            var dataToSend = {
+                context, component: component, area, itemid, channel, payload
+            };
+            PubSub.publish(RealTimeEvents.EVENT, dataToSend);
+        });
+    });
+}

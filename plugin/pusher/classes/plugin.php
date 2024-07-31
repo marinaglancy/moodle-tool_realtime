@@ -61,7 +61,7 @@ class plugin extends plugin_base {
         self::init();
         // TODO check that area is defined only as letters and numbers.
         global $PAGE, $USER;
-        $hash = \tool_realtime\api::channel_hash($context, $component, $area, $itemid, $channel);
+        $hash = \tool_realtime\api::channel_hash($context->id, $component, $area, $itemid, $channel);
         $PAGE->requires->js_call_amd('realtimeplugin_pusher/realtime', 'subscribe',
             [$hash, $context->id, $component, $area, $itemid, $channel]);
     }
@@ -75,13 +75,11 @@ class plugin extends plugin_base {
         if (!$this->is_set_up() || !isloggedin() || isguestuser() || self::$initialised) {
             return;
         }
-        $appid = get_config('realtimeplugin_pusher', 'app_id');
         $key = get_config('realtimeplugin_pusher', 'key');
-        $secret = get_config('realtimeplugin_pusher', 'secret');
         $cluster = get_config('realtimeplugin_pusher', 'cluster');
         self::$initialised = true;
         $PAGE->requires->js_call_amd('realtimeplugin_pusher/realtime',  'init',
-            [$USER->id, $appid, $key, $secret, $cluster]);
+            [$key, $cluster]);
     }
 
     /**
@@ -112,7 +110,7 @@ class plugin extends plugin_base {
             $options
         );
 
-        $channelname = \tool_realtime\api::channel_hash($context, $component, $area, $itemid, $channel);
+        $channelname = \tool_realtime\api::channel_hash($context->id, $component, $area, $itemid, $channel);
         $payloadjson = json_encode($payload ?? []);
 
         $pusher->trigger((string)$channelname, 'event', $payloadjson);
@@ -139,5 +137,4 @@ class plugin extends plugin_base {
     protected static function get_token_for_user(int $userid, string $sid) {
         return substr(md5($sid . '/' . $userid . '/' . get_site_identifier()), 0, 10);
     }
-
 }

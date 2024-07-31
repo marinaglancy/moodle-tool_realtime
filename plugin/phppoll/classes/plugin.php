@@ -52,18 +52,15 @@ class plugin extends plugin_base {
      */
     public function subscribe(\context $context, string $component, string $area,
             int $itemid, string $channel): void {
-        // TODO check that area is defined only as letters and numbers.
         global $PAGE, $USER, $DB;
         if (!$this->is_set_up() || !isloggedin() || isguestuser()) {
             return;
         }
         self::init();
-        $fromid = (int)$DB->get_field_sql("SELECT max(id) FROM {" . self::TABLENAME .
-            "} WHERE contextid = ?", [$context->id]);
+        $fromid = (int)$DB->get_field_sql("SELECT max(id) FROM {" . self::TABLENAME . "}");
         $fromtimestamp = microtime(true);
-        $url = new \moodle_url('/admin/tool/realtime/plugin/phppoll/poll.php');
         $PAGE->requires->js_call_amd('realtimeplugin_phppoll/realtime', 'subscribe',
-            [ $context->id, $component, $area, $itemid, $channel, $fromid, $fromtimestamp]);
+            [$context->id, $component, $area, $itemid, $channel, $fromid, $fromtimestamp]);
     }
 
     /**
@@ -71,7 +68,6 @@ class plugin extends plugin_base {
      *
      */
     public function init(): void {
-        // TODO check that area is defined only as letters and numbers.
         global $PAGE, $USER, $DB;
         if (!$this->is_set_up() || !isloggedin() || isguestuser() || self::$initialised) {
             return;
@@ -98,7 +94,7 @@ class plugin extends plugin_base {
         global $DB;
         $time = time();
         $DB->insert_record(self::TABLENAME, [
-            'hash' => \tool_realtime\api::channel_hash($context, $component, $area, $itemid, $channel),
+            'hash' => \tool_realtime\api::channel_hash($context->id, $component, $area, $itemid, $channel),
             'contextid' => $context->id,
             'component' => $component,
             'area' => $area,
@@ -153,65 +149,45 @@ class plugin extends plugin_base {
     /**
      * Get all notifications for a given user
      *
-     * @param int $contextidentifier
-     * @param int $fromid
+     * @param int $contextid
      * @param string $component
      * @param string $area
      * @param int $itemid
      * @param string $channel
+     * @param int $fromid
      * @param float $fromtimestamp
      * @return array
      */
-    public function get_all(int $contextidentifier,
-                            int $fromid, string $component,
-                            string $area, int $itemid, string $channel,
+    public function get_all(int $contextid,
+                            string $component,
+                            string $area,
+                            int $itemid,
+                            string $channel,
+                            int $fromid,
                             float $fromtimestamp): array {
         global $DB;
         $events = [];
         $fromtimestampseconds = floor($fromtimestamp / 1000);
-        if ($fromid == 0) {
-            // TODO use hash to retrieve records.
-            $events = $DB->get_records_select(self::TABLENAME,
-                'contextid = :contextid
-               AND timecreated > :fromtimestamp
-               AND component = :component
-               AND area = :area
-               AND itemid = :itemid
-               AND channel = :channel',
-                [
-                    'contextid' => $contextidentifier,
-                    'fromid' => $fromid,
-                    'component' => $component,
-                    'area' => $area,
-                    'itemid' => $itemid,
-                    'channel' => $channel,
-                    'fromtimestamp' => $fromtimestampseconds,
-                ],
-                'id', 'id, contextid, component, area, itemid, channel, payload');
-        } else {
-            $events = $DB->get_records_select(self::TABLENAME,
-                'contextid = :contextid
-               AND id > :fromid
-               AND component = :component
-               AND area = :area
-               AND itemid = :itemid
-               AND channel = :channel',
-                [
-                    'contextid' => $contextidentifier,
-                    'fromid' => $fromid,
-                    'component' => $component,
-                    'area' => $area,
-                    'itemid' => $itemid,
-                    'channel' => $channel,
-                ],
-                'id', 'id, contextid, component, area, itemid, channel, payload');
-        }
+        $hash = \tool_realtime\api::channel_hash($contextid, $component, $area, $itemid, $channel);
+
+        $sql = $fromid ? 'id > :fromid' : 'timecreated > :fromtimestamp';
+        $params = [
+            'hash' => $hash,
+            'fromid' => $fromid,
+            'fromtimestamp' => $fromtimestampseconds,
+        ];
+        $events = $DB->get_records_select(self::TABLENAME, "hash = :hash AND $sql", $params, 'id',
+            'id, contextid, component, area, itemid, channel, payload');
 
         array_walk($events, function(&$item) {
             $item->payload = @json_decode($item->payload, true);
-            $context = \context::instance_by_id($item->contextid);
-            $item->context = ['id' => $context->id, 'contextlevel' => $context->contextlevel,
-                'instanceid' => $context->instanceid];
+            try {
+                $context = \context::instance_by_id($item->contextid);
+                $item->context = ['id' => $context->id, 'contextlevel' => $context->contextlevel,
+                    'instanceid' => $context->instanceid];
+            } catch (\moodle_exception $e) {
+                $item->context = ['id' => $context->id];
+            }
             unset($item->contextid);
         });
         return $events;

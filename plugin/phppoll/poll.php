@@ -63,8 +63,8 @@ while (true) {
 
     foreach ($channels as $x) {
 
-        if ($events = $plugin->get_all((int)$x['context'], (int)$fromid, (string)$x['component'],
-            (string)$x['area'], (int)$x['itemid'], $x['channel'], (float)$x['fromtimestamp'])) {
+        if ($events = $plugin->get_all((int)$x['context'], (string)$x['component'],
+            (string)$x['area'], (int)$x['itemid'], $x['channel'], (int)$fromid, (float)$x['fromtimestamp'])) {
             // We have some notifications for this user - return them. The JS will then create a new request.
             echo json_encode(['success' => 1, 'events' => array_values($events)]);
         }
