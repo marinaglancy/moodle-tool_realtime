@@ -36,20 +36,8 @@ $fromid = optional_param('fromid', 0, PARAM_INT);
 // Who is the current user making request.
 $userid = optional_param('userid', 0, PARAM_INT);
 $token = optional_param('token', '', PARAM_RAW);
-// Explode parameter strings.
-$paramarray = explode(':', optional_param('channel', '', PARAM_RAW));
-$contextunprocessed = $paramarray[0];
-$context = explode('-', $contextunprocessed);
-$componentunprocessed = $paramarray[1];
-$component = explode('-', $componentunprocessed);
-$areaunprocessed = $paramarray[2];
-$area = explode('-', $areaunprocessed);
-$itemidunprocessed = $paramarray[3];
-$itemid = explode('-', $itemidunprocessed);
-$channelprocessed = $paramarray[4];
-$channel = explode('-', $channelprocessed);
-$fromtimestampprocessed = $paramarray[5];
-$fromtimestamp = explode('-', $fromtimestampprocessed);
+$channeljson = optional_param('channels', '', PARAM_RAW);
+$channels = json_decode($channeljson, true);
 
 if (\tool_realtime\manager::get_enabled_plugin_name() !== 'phppoll') {
     echo json_encode(['error' => 'Plugin is not enabled']);
@@ -73,9 +61,10 @@ while (true) {
 
     // TODO: check user rights to subscribe to channel.
 
-    for ($x = 0; $x < count($component); $x++) {
-        if ($events = $plugin->get_all((intval($context[$x])), (int)$fromid, (string)$component[$x],
-            (string)$area[$x], (int)$itemid[$x], $channel[$x], (float)$fromtimestamp[$x])) {
+    foreach ($channels as $x) {
+
+        if ($events = $plugin->get_all((int)$x['context'], (int)$fromid, (string)$x['component'],
+            (string)$x['area'], (int)$x['itemid'], $x['channel'], (float)$x['fromtimestamp'])) {
             // We have some notifications for this user - return them. The JS will then create a new request.
             echo json_encode(['success' => 1, 'events' => array_values($events)]);
         }

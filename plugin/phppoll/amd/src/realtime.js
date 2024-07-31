@@ -1,135 +1,147 @@
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * Real time events
  *
  * @module     realtimeplugin_phppoll/realtime
  * @copyright  2020 Marina Glancy
  */
-define(['core/pubsub', 'tool_realtime/events'], function(PubSub, RealTimeEvents) {
 
-    var params;
-    var channels = [];
-    var requestscounter = [];
-    var pollURL;
-    var ajax = new XMLHttpRequest(), json;
+import * as PubSub from 'core/pubsub';
+import * as RealTimeEvents from 'tool_realtime/events';
 
-    var checkRequestCounter = function() {
-        var curDate = new Date(),
-            curTime = curDate.getTime();
-        requestscounter.push(curTime);
-        requestscounter = requestscounter.slice(-10);
-        // If there were 10 requests in less than 5 seconds, it must be an error. Stop polling.
-        if (requestscounter.length >= 10 && curTime - requestscounter[0] < 5000) {
-            PubSub.publish(RealTimeEvents.CONNECTION_LOST);
-            return false;
-        }
-        return true;
-    };
+var params;
+var channels = [];
+var requestscounter = [];
+var pollURL;
+var ajax = new XMLHttpRequest();
 
-    var poll = function() {
-        if (!checkRequestCounter()) {
-            // Too many requests, stop polling.
-            return;
-        }
-        ajax.onreadystatechange = function() {
-            if (this.readyState === 4 && this.status === 200) {
-                if (this.status === 200) {
-                    try {
-                        json = JSON.parse(this.responseText);
-                    } catch {
-                        setTimeout(poll, params.timeout);
-                        return;
-                    }
-                    if (!json.success || json.success !== 1) {
-                        // Poll.php returned an error or an exception. Stop trying to poll.
-                        return;
-                    }
+/**
+ * Make sure we don't send requests too often
+ *
+ * @returns {Boolean}
+ */
+function checkRequestCounter() {
+    var curDate = new Date(),
+        curTime = curDate.getTime();
+    requestscounter.push(curTime);
+    requestscounter = requestscounter.slice(-10);
+    // If there were 10 requests in less than 5 seconds, it must be an error. Stop polling.
+    if (requestscounter.length >= 10 && curTime - requestscounter[0] < 5000) {
+        PubSub.publish(RealTimeEvents.CONNECTION_LOST);
+        return false;
+    }
+    return true;
+}
 
-                    // Process results - trigger all necessary Javascript/jQuery events.
-                    var events = json.events;
-                    for (var i in events) {
-                        PubSub.publish(RealTimeEvents.EVENT, events[i]);
-                        // Remember the last id.
-                        params.fromid = events[i].id;
-                    }
-                    // And start polling again.
+/**
+ * Polls for events, schedules the next poll
+ */
+function poll() {
+    if (!checkRequestCounter()) {
+        // Too many requests, stop polling.
+        return;
+    }
+    ajax.onreadystatechange = function() {
+        if (this.readyState === 4 && this.status === 200) {
+            if (this.status === 200) {
+                let json;
+                try {
+                    json = JSON.parse(this.responseText);
+                } catch {
                     setTimeout(poll, params.timeout);
-                } else {
-                    // Must be a server timeout or loss of network - start new process.
-                    setTimeout(poll, params.timeout);
+                    return;
                 }
+                if (!json.success || json.success !== 1) {
+                    // Poll.php returned an error or an exception. Stop trying to poll.
+                    PubSub.publish(RealTimeEvents.CONNECTION_LOST);
+                    return;
+                }
+
+                // Process results - trigger all necessary Javascript/jQuery events.
+                var events = json.events;
+                for (var i in events) {
+                    PubSub.publish(RealTimeEvents.EVENT, events[i]);
+                    // Remember the last id.
+                    params.fromid = events[i].id;
+                }
+                // And start polling again.
+                setTimeout(poll, params.timeout);
+            } else {
+                // Must be a server timeout or loss of network - start new process.
+                setTimeout(poll, params.timeout);
             }
+        }
+    };
+
+    if (channels.length <= 0) {
+        return;
+    }
+    let query = 'userid=' + encodeURIComponent(params.userid) +
+        '&token=' + encodeURIComponent(params.token) +
+        '&fromid=' + encodeURIComponent(params.fromid) +
+        '&channels=' + encodeURIComponent(JSON.stringify(channels));
+
+    ajax.open('POST', pollURL, true);
+    ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    ajax.send(query);
+}
+
+/**
+ * Initialise plugin
+ *
+ * @param {Number} userId
+ * @param {String} token
+ * @param {String} pollURLParam
+ * @param {Number} timeout
+ */
+export function init(userId, token, pollURLParam, timeout) {
+    if (params && params.userid) {
+        // Log console dev error.
+    } else {
+        params = {
+            userid: userId,
+            token: token,
+            timeout: timeout,
         };
-        var url = pollURL + '?userid=' + encodeURIComponent(params.userid) + '&token=' +
-            encodeURIComponent(params.token) + '&fromid=' + encodeURIComponent(params.fromid);
+    }
+    pollURL = pollURLParam;
+}
 
-        if(channels.length <= 0) {
-            return;
-        }
-
-        var contextstring = "";
-        var componentstring = "";
-        var areastring = "";
-        var itemidstring = "";
-        var fromtimestampstring = "";
-        var channelstring = "";
-
-        for (var i = 0; i < channels.length; i++) {
-            if (i == channels.length - 1) {
-                contextstring += channels[i].context;
-                componentstring += channels[i].component;
-                areastring += channels[i].area;
-                itemidstring += channels[i].itemid;
-                channelstring += channels[i].channel;
-                fromtimestampstring += channels[i].fromtimestamp;
-            } else {
-                contextstring += channels[i].context + '-';
-                componentstring += channels[i].component + '-';
-                areastring += channels[i].area + '-';
-                itemidstring += channels[i].itemid + '-';
-                channelstring += channels[i].channel + '-';
-                fromtimestampstring += channels[i].fromtimestamp + '-';
-            }
-        }
-
-        var channelquery = '&channel=' + contextstring + ':'
-                                        + componentstring + ':'
-                                        + areastring + ':'
-                                        + itemidstring + ':'
-                                        + channelstring + ':'
-                                        + fromtimestampstring;
-
-        url += channelquery;
-
-        ajax.open('GET', url, true);
-        ajax.send();
+/**
+ * Subscribe to events
+ *
+ * @param {Number} context
+ * @param {String} component
+ * @param {String} area
+ * @param {Number} itemid
+ * @param {String} channel
+ * @param {Number} fromId
+ * @param {Number} fromtimestamp
+ */
+export function subscribe(context, component, area, itemid, channel, fromId, fromtimestamp) {
+    params.fromid = fromId;
+    var channeltosubto = {
+        context,
+        component,
+        area,
+        itemid,
+        channel,
+        fromtimestamp,
     };
-
-    var plugin = {
-        init: function(userId, token, pollURLParam, timeout) {
-            if (params && params.userid) {
-                // Log console dev error.
-            } else {
-                params = {
-                    userid: userId,
-                    token: token,
-                    timeout: timeout,
-                };
-            }
-            pollURL = pollURLParam;
-        },
-        subscribe: function(context, component, area, itemid, channel, fromId, fromTimeStamp) {
-            params.fromid = fromId;
-            var channeltosubto = {
-                                    context: context,
-                                    component: component,
-                                    area: area,
-                                    itemid: itemid,
-                                    channel: channel,
-                                    fromtimestamp: fromTimeStamp,
-                                };
-            channels.push(channeltosubto);
-            setTimeout(poll, params.timeout);
-        }
-    };
-    return plugin;
-});
+    channels.push(channeltosubto);
+    setTimeout(poll, params.timeout);
+}
