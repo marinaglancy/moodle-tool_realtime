@@ -35,7 +35,7 @@ $PAGE->set_title(get_string('loadtest', 'tool_realtime'));
 $PAGE->set_heading(get_string('loadtest', 'tool_realtime'));
 echo $OUTPUT->header();
 $context = context::instance_by_id(1);
-tool_realtime\api::subscribe($context, 'loadtest', 'loadtest', 1);
+tool_realtime\api::subscribe($context, 'loadtest', 'loadtest', 1, '');
 
 echo $OUTPUT->heading(get_string('eventtesting', 'tool_realtime'));
 Echo

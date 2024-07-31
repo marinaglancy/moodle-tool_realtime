@@ -72,7 +72,7 @@ $context = \context::instance_by_id(1);
 
 for ($counter = 0; $counter < $eventcount; $counter++) {
     $payload["eventReceived"] = microtime(true) * 1000;
-    \tool_realtime\api::notify($context, 'loadtest', 'loadtest', 1, $payload);
+    \tool_realtime\api::notify($context, 'loadtest', 'loadtest', 1, '', $payload);
 }
 
 

@@ -19,6 +19,7 @@ namespace realtimeplugin_phppoll\privacy;
 /**
  * Implementation of the privacy subsystem plugin provider for the realtimeplugin_phppoll
  *
+ * @package    realtimeplugin_phppoll
  * @copyright  2020 Marina Glancy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

@@ -27,6 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['area'] = 'Area';
 $string['availableplugins'] = 'Available real time backend plugins';
+$string['channel'] = 'Channel';
 $string['channeltable'] = 'Table of Subscribed Channels';
 $string['component'] = 'Component';
 $string['context'] = 'Context';

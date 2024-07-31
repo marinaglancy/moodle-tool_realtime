@@ -4,7 +4,7 @@
  * @module     realtimeplugin_phppoll/realtime
  * @copyright  2020 Marina Glancy
  */
-define(['core/pubsub', 'tool_realtime/events', 'tool_realtime/api'], function(PubSub, RealTimeEvents, api) {
+define(['core/pubsub', 'tool_realtime/events'], function(PubSub, RealTimeEvents) {
 
     var params;
     var channels = [];
@@ -71,6 +71,7 @@ define(['core/pubsub', 'tool_realtime/events', 'tool_realtime/api'], function(Pu
         var areastring = "";
         var itemidstring = "";
         var fromtimestampstring = "";
+        var channelstring = "";
 
         for (var i = 0; i < channels.length; i++) {
             if (i == channels.length - 1) {
@@ -78,23 +79,26 @@ define(['core/pubsub', 'tool_realtime/events', 'tool_realtime/api'], function(Pu
                 componentstring += channels[i].component;
                 areastring += channels[i].area;
                 itemidstring += channels[i].itemid;
+                channelstring += channels[i].channel;
                 fromtimestampstring += channels[i].fromtimestamp;
             } else {
                 contextstring += channels[i].context + '-';
                 componentstring += channels[i].component + '-';
                 areastring += channels[i].area + '-';
                 itemidstring += channels[i].itemid + '-';
+                channelstring += channels[i].channel + '-';
                 fromtimestampstring += channels[i].fromtimestamp + '-';
             }
         }
 
-        var channelstring = '&channel=' + contextstring + ':'
+        var channelquery = '&channel=' + contextstring + ':'
                                         + componentstring + ':'
                                         + areastring + ':'
                                         + itemidstring + ':'
+                                        + channelstring + ':'
                                         + fromtimestampstring;
 
-        url += channelstring;
+        url += channelquery;
 
         ajax.open('GET', url, true);
         ajax.send();
@@ -112,22 +116,18 @@ define(['core/pubsub', 'tool_realtime/events', 'tool_realtime/api'], function(Pu
                 };
             }
             pollURL = pollURLParam;
-            api.setImplementation(plugin);
         },
-        subscribe: function(context, component, area, itemid, fromId, fromTimeStamp) {
+        subscribe: function(context, component, area, itemid, channel, fromId, fromTimeStamp) {
             params.fromid = fromId;
             var channeltosubto = {
                                     context: context,
                                     component: component,
                                     area: area,
                                     itemid: itemid,
+                                    channel: channel,
                                     fromtimestamp: fromTimeStamp,
                                 };
-            if (channeltosubto) {
-                channels.push(channeltosubto);
-            }
-            // eslint-disable-next-line no-console
-            console.log('Subscribe to', channels);
+            channels.push(channeltosubto);
             setTimeout(poll, params.timeout);
         }
     };

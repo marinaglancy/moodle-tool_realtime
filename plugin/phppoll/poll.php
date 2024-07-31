@@ -46,8 +46,10 @@ $areaunprocessed = $paramarray[2];
 $area = explode('-', $areaunprocessed);
 $itemidunprocessed = $paramarray[3];
 $itemid = explode('-', $itemidunprocessed);
-$fromtimestamp = $paramarray[4];
-$fromtimestampprocessed = explode('-', $fromtimestamp);
+$channelprocessed = $paramarray[4];
+$channel = explode('-', $channelprocessed);
+$fromtimestampprocessed = $paramarray[5];
+$fromtimestamp = explode('-', $fromtimestampprocessed);
 
 if (\tool_realtime\manager::get_enabled_plugin_name() !== 'phppoll') {
     echo json_encode(['error' => 'Plugin is not enabled']);
@@ -73,7 +75,7 @@ while (true) {
 
     for ($x = 0; $x < count($component); $x++) {
         if ($events = $plugin->get_all((intval($context[$x])), (int)$fromid, (string)$component[$x],
-            (string)$area[$x], (int)$itemid[$x], (float)$fromtimestampprocessed[$x])) {
+            (string)$area[$x], (int)$itemid[$x], $channel[$x], (float)$fromtimestamp[$x])) {
             // We have some notifications for this user - return them. The JS will then create a new request.
             echo json_encode(['success' => 1, 'events' => array_values($events)]);
         }

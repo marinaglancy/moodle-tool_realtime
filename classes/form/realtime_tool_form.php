@@ -54,6 +54,9 @@ class realtime_tool_form extends \moodleform {
         $mform->addElement('text', 'itemid', get_string('itemid', 'tool_realtime'));
         $mform->setType('itemid', PARAM_INT);
 
+        $mform->addElement('text', 'channel', get_string('channel', 'tool_realtime'));
+        $mform->setType('channel', PARAM_INT);
+
         $this->add_action_buttons();
     }
 

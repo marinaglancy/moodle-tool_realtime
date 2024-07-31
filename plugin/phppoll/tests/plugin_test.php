@@ -46,9 +46,9 @@ final class plugin_test extends advanced_testcase {
         $this->assertInstanceOf(plugin::class, $plugin);
         $this->setAdminUser();
         $context = context_user::instance($USER->id);
-        $plugin->subscribe($context, 'testcomponent', 'testarea', 7);
-        $plugin->notify($context, 'testcomponent', 'testarea', 7, ['a' => 'b']);
-        $results = $plugin->get_all($context->id, 0, 'testcomponent', 'testarea', 7, 0);
+        $plugin->subscribe($context, 'testcomponent', 'testarea', 7, 'x');
+        $plugin->notify($context, 'testcomponent', 'testarea', 7, 'x', ['a' => 'b']);
+        $results = $plugin->get_all($context->id, 0, 'testcomponent', 'testarea', 7, 'x', 0);
         $this->assertCount(1, $results);
         $result = (array)reset($results);
         unset($result['id']);
@@ -56,6 +56,7 @@ final class plugin_test extends advanced_testcase {
             'component' => 'testcomponent',
             'area' => 'testarea',
             'itemid' => 7,
+            'channel' => 'x',
             'payload' => ['a' => 'b'],
             'context' => [
                 'id' => $context->id,

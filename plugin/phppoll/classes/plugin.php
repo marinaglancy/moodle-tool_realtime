@@ -48,8 +48,10 @@ class plugin extends plugin_base {
      * @param string $component
      * @param string $area
      * @param int $itemid
+     * @param string $channel
      */
-    public function subscribe(\context $context, string $component, string $area, int $itemid): void {
+    public function subscribe(\context $context, string $component, string $area,
+            int $itemid, string $channel): void {
         // TODO check that area is defined only as letters and numbers.
         global $PAGE, $USER, $DB;
         if (!$this->is_set_up() || !isloggedin() || isguestuser()) {
@@ -61,7 +63,7 @@ class plugin extends plugin_base {
         $fromtimestamp = microtime(true);
         $url = new \moodle_url('/admin/tool/realtime/plugin/phppoll/poll.php');
         $PAGE->requires->js_call_amd('realtimeplugin_phppoll/realtime', 'subscribe',
-            [ $context->id, $component, $area, $itemid, $fromid, $fromtimestamp]);
+            [ $context->id, $component, $area, $itemid, $channel, $fromid, $fromtimestamp]);
     }
 
     /**
@@ -88,16 +90,20 @@ class plugin extends plugin_base {
      * @param string $component
      * @param string $area
      * @param int $itemid
+     * @param string $channel
      * @param array|null $payload
      */
-    public function notify(\context $context, string $component, string $area, int $itemid, ?array $payload = null): void {
+    public function notify(\context $context, string $component, string $area,
+            int $itemid, string $channel, ?array $payload = null): void {
         global $DB;
         $time = time();
         $DB->insert_record(self::TABLENAME, [
+            'hash' => \tool_realtime\api::channel_hash($context, $component, $area, $itemid, $channel),
             'contextid' => $context->id,
             'component' => $component,
             'area' => $area,
             'itemid' => $itemid,
+            'channel' => $channel,
             'payload' => json_encode($payload ?? []),
             'timecreated' => $time,
             'timemodified' => $time,
@@ -152,47 +158,53 @@ class plugin extends plugin_base {
      * @param string $component
      * @param string $area
      * @param int $itemid
+     * @param string $channel
      * @param float $fromtimestamp
      * @return array
      */
     public function get_all(int $contextidentifier,
                             int $fromid, string $component,
-                            string $area, int $itemid,
+                            string $area, int $itemid, string $channel,
                             float $fromtimestamp): array {
         global $DB;
         $events = [];
         $fromtimestampseconds = floor($fromtimestamp / 1000);
         if ($fromid == 0) {
+            // TODO use hash to retrieve records.
             $events = $DB->get_records_select(self::TABLENAME,
                 'contextid = :contextid
                AND timecreated > :fromtimestamp
                AND component = :component
                AND area = :area
-               AND itemid = :itemid',
+               AND itemid = :itemid
+               AND channel = :channel',
                 [
                     'contextid' => $contextidentifier,
                     'fromid' => $fromid,
                     'component' => $component,
                     'area' => $area,
                     'itemid' => $itemid,
+                    'channel' => $channel,
                     'fromtimestamp' => $fromtimestampseconds,
                 ],
-                'id', 'id, contextid, component, area, itemid, payload');
+                'id', 'id, contextid, component, area, itemid, channel, payload');
         } else {
             $events = $DB->get_records_select(self::TABLENAME,
                 'contextid = :contextid
                AND id > :fromid
                AND component = :component
                AND area = :area
-               AND itemid = :itemid',
+               AND itemid = :itemid
+               AND channel = :channel',
                 [
                     'contextid' => $contextidentifier,
                     'fromid' => $fromid,
                     'component' => $component,
                     'area' => $area,
                     'itemid' => $itemid,
+                    'channel' => $channel,
                 ],
-                'id', 'id, contextid, component, area, itemid, payload');
+                'id', 'id, contextid, component, area, itemid, channel, payload');
         }
 
         array_walk($events, function(&$item) {

@@ -106,5 +106,5 @@ if (!is_null($options['payload'])) {
 $payload["eventReceived"] = microtime(true) * 1000;
 
 
-\tool_realtime\api::notify($context, $component, $area, $id, $payload);
+\tool_realtime\api::notify($context, $component, $area, $id, '', $payload);
 

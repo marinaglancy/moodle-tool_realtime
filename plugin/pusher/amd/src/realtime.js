@@ -13,27 +13,11 @@ require.config({
     }
 });
 
-define(['core/pubsub', 'tool_realtime/events', 'pusher-7.0', 'tool_realtime/api'], function(PubSub, RealTimeEvents, Pusher, api) {
+define(['core/pubsub', 'tool_realtime/events', 'pusher-7.0'], function(PubSub, RealTimeEvents, Pusher) {
 
     var params;
-    var channels = [];
     var pubSub = PubSub;
     var realTimeEvents = RealTimeEvents;
-    var subToChannel = function(context, component, area, itemid) {
-        var pusher = new Pusher(params.key, {
-            cluster: params.cluster
-        });
-
-        var channelString = context + '-' + component + '-' + area + '-' + itemid;
-
-        var channel = pusher.subscribe(channelString);
-        channel.bind('event', function(data) {
-            var channelObj = channelString.split('-');
-            var payload = JSON.parse(data);
-            var dataToSend = {"itemid" : channelObj[3], "component" : channelObj[1], "area" : channelObj[2], "payload" : payload};
-            pubSub.publish(realTimeEvents.EVENT, dataToSend);
-        });
-    };
 
     var plugin =  {
         init: function(userId, app_id, key, secret, cluster) {
@@ -47,20 +31,25 @@ define(['core/pubsub', 'tool_realtime/events', 'pusher-7.0', 'tool_realtime/api'
                     cluster: cluster
                 };
             }
-            api.setImplementation(plugin);
         },
-        subscribe: function(context, component, area, itemid, fromId, fromTimeStamp) {
-            var channeltosubto = {
-                context: context,
-                component: component,
-                area: area,
-                fromid: fromId,
-                fromtimestamp: fromTimeStamp
-            };
-            if(channeltosubto) {
-                channels.push(channeltosubto);
-            }
-            subToChannel(context, component, area, itemid);
+        subscribe: function(hash, context, component, area, itemid, channel) {
+            var pusher = new Pusher(params.key, {
+                cluster: params.cluster
+            });
+
+            var pusherChannel = pusher.subscribe(hash);
+            pusherChannel.bind('event', function(data) {
+                let payload;
+                try {
+                    payload = JSON.parse(data);
+                } catch (_) {
+                    payload = [];
+                }
+                var dataToSend = {
+                    context, component: component, area, itemid, channel, payload
+                };
+                pubSub.publish(realTimeEvents.EVENT, dataToSend);
+            });
         }
     };
     return plugin;

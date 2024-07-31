@@ -34,25 +34,42 @@ class api {
      * @param string $component
      * @param string $area
      * @param int $itemid
+     * @param string $channel the same channel that is used when sending notification,
+     *    for example, target user id.
      */
-    public static function subscribe(\context $context, string $component, string $area, int $itemid) {
+    public static function subscribe(
+            \context $context,
+            string $component,
+            string $area,
+            int $itemid,
+            string $channel) {
         if (self::is_enabled($component, $area) && ($plugin = manager::get_plugin())) {
-            $plugin->subscribe($context, $component, $area, $itemid);
+            $plugin->subscribe($context, $component, $area, $itemid, $channel);
         }
     }
 
     /**
-     * Notifies all subscribers about an event
+     * Notifies a subscriber about an event
+     *
+     * Notification is only delivered to the FIRST person who subscribes to it.
      *
      * @param \context $context
      * @param string $component
      * @param string $area
      * @param int $itemid
+     * @param string $channel any description of the communication channel, for example, id of the target user
+     *    or md5 of several properties.
      * @param array|null $payload
      */
-    public static function notify(\context $context, string $component, string $area, int $itemid, ?array $payload = null) {
+    public static function notify(
+            \context $context,
+            string $component,
+            string $area,
+            int $itemid,
+            string $channel,
+            ?array $payload = null) {
         if (self::is_enabled($component, $area) && ($plugin = manager::get_plugin())) {
-            $plugin->notify($context, $component, $area, $itemid, $payload);
+            $plugin->notify($context, $component, $area, $itemid, $channel, $payload);
         }
     }
 
@@ -66,5 +83,14 @@ class api {
     public static function is_enabled(string $component, string $area) {
         // TODO this function exists in case we want to provide UI for selective enabling/disabling areas.
         return true;
+    }
+
+    public static function channel_hash(\context $context, string $component, string $area, int $itemid, string $channel) {
+        $params = ['contextid' => (string)$context->id,
+            'component' => (string)$component,
+            'area' => (string)$area,
+            'itemid' => (string)$itemid,
+            'channel' => (string)$channel];
+        return md5(json_encode($params));
     }
 }

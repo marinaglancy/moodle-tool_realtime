@@ -54,13 +54,16 @@ class plugin extends plugin_base {
      * @param string $component
      * @param string $area
      * @param int $itemid
+     * @param string $channel
      */
-    public function subscribe(\context $context, string $component, string $area, int $itemid): void {
+    public function subscribe(\context $context, string $component, string $area,
+            int $itemid, string $channel): void {
         self::init();
         // TODO check that area is defined only as letters and numbers.
         global $PAGE, $USER;
+        $hash = \tool_realtime\api::channel_hash($context, $component, $area, $itemid, $channel);
         $PAGE->requires->js_call_amd('realtimeplugin_pusher/realtime', 'subscribe',
-            [$context->id, $component, $area, $itemid]);
+            [$hash, $context->id, $component, $area, $itemid, $channel]);
     }
 
     /**
@@ -88,9 +91,11 @@ class plugin extends plugin_base {
      * @param string $component
      * @param string $area
      * @param int $itemid
+     * @param string $channel
      * @param array|null $payload
      */
-    public function notify(\context $context, string $component, string $area, int $itemid, ?array $payload = null): void {
+    public function notify(\context $context, string $component, string $area,
+            int $itemid, string $channel, ?array $payload = null): void {
         $appid = get_config('realtimeplugin_pusher', 'app_id');
         $key = get_config('realtimeplugin_pusher', 'key');
         $secret = get_config('realtimeplugin_pusher', 'secret');
@@ -107,7 +112,7 @@ class plugin extends plugin_base {
             $options
         );
 
-        $channelname = (string)($context->id) . '-' . (string)($component) . '-' . (string)($area) . '-' . (string)($itemid);
+        $channelname = \tool_realtime\api::channel_hash($context, $component, $area, $itemid, $channel);
         $payloadjson = json_encode($payload ?? []);
 
         $pusher->trigger((string)$channelname, 'event', $payloadjson);

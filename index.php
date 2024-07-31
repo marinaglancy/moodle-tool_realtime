@@ -48,16 +48,22 @@ if ($fromform = $mform->get_data()) {
     $channeltoappend = [   "contextid" => $fromform->context,
                                 "component" => $fromform->component,
                                 "area" => $fromform->area,
-                                "itemid" => $fromform->itemid];
+                                "itemid" => $fromform->itemid,
+                                "channel" => $fromform->channel];
     array_push($SESSION->channels, $channeltoappend);
 }
 
 for ($counter = 0; $counter < count($SESSION->channels); $counter++) {
-    $contextfromform = context::instance_by_id($SESSION->channels[$counter]["contextid"]);
+    try {
+        $contextfromform = context::instance_by_id((int)($SESSION->channels[$counter]["contextid"]));
+    } catch (moodle_exception $e) {
+        $contextfromform = context_system::instance();
+    }
     tool_realtime\api::subscribe($contextfromform,
         $SESSION->channels[$counter]["component"],
         $SESSION->channels[$counter]["area"],
-        $SESSION->channels[$counter]["itemid"]);
+        $SESSION->channels[$counter]["itemid"],
+        $SESSION->channels[$counter]["channel"]);
 }
 
 $mform->display();
@@ -71,6 +77,7 @@ if (!empty($SESSION->channels) && count($SESSION->channels) > 0) {
         get_string('component', 'tool_realtime'),
         get_string('area', 'tool_realtime'),
         get_string('itemid', 'tool_realtime'),
+        get_string('channel', 'tool_realtime'),
     ];
 
     foreach ($SESSION->channels as $channel) {
@@ -79,6 +86,7 @@ if (!empty($SESSION->channels) && count($SESSION->channels) > 0) {
         $row[] = $channel['component'];
         $row[] = $channel['area'];
         $row[] = $channel['itemid'];
+        $row[] = $channel['channel'];
 
         $table->data[] = $row;
     }

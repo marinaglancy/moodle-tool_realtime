@@ -36,12 +36,12 @@ $PAGE->set_context(context_system::instance());
 $PAGE->set_pagelayout('admin');
 
 if ($test = optional_param('test', 0, PARAM_INT)) {
-    \tool_realtime\api::notify(context_user::instance($USER->id), 'tool_realtime', 'test', 0, ['data' => $test]);
+    \tool_realtime\api::notify(context_user::instance($USER->id), 'tool_realtime', 'test', 0, '', ['data' => $test]);
     exit;
 }
 
 $pluginname = \tool_realtime\manager::get_enabled_plugin_name();
-\tool_realtime\api::subscribe(context_user::instance($USER->id), 'tool_realtime', 'test', 0);
+\tool_realtime\api::subscribe(context_user::instance($USER->id), 'tool_realtime', 'test', 0, '');
 echo $OUTPUT->header();
 $PAGE->requires->js_amd_inline(<<<EOL
     M.util.js_pending('initrealtimetest');

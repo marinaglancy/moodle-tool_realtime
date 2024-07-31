@@ -69,8 +69,10 @@ abstract class plugin_base {
      * @param string $component
      * @param string $area
      * @param int $itemid
+     * @param string $channel
      */
-    abstract public function subscribe(\context $context, string $component, string $area, int $itemid): void;
+    abstract public function subscribe(\context $context, string $component, string $area,
+        int $itemid, string $channel): void;
 
     /**
      * Notifies all subscribers about an event
@@ -79,7 +81,9 @@ abstract class plugin_base {
      * @param string $component
      * @param string $area
      * @param int $itemid
+     * @param string $channel
      * @param array|null $payload
      */
-    abstract public function notify(\context $context, string $component, string $area, int $itemid, ?array $payload = null): void;
+    abstract public function notify(\context $context, string $component, string $area,
+        int $itemid, string $channel, ?array $payload = null): void;
 }
