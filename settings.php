@@ -37,10 +37,8 @@ if ($hassiteconfig) {
     $temp->add(new \tool_realtime\setting_manageplugins());
     $ADMIN->add('realtime', $temp);
 
-    $choices = fn() => [
-        '' => get_string('none', 'moodle'),
-        ...\tool_realtime\manager::get_installed_plugins_menu(),
-    ];
+    $choices = fn() => ['' => get_string('none', 'moodle')] +
+        \tool_realtime\manager::get_installed_plugins_menu();
     $temp->add(new admin_setting_configselect('tool_realtime/enabled',
             new lang_string('enabledplugin', 'tool_realtime'),
             new lang_string('enabledplugindesc', 'tool_realtime'),

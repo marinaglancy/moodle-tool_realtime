@@ -5,46 +5,28 @@
 ### Notify about an event in PHP: ###
 
 ```
-\tool_realtime\api::notify($context, $component, $area, $itemid, $payload);
+\tool_realtime\api::notify($context, $component, $area, $itemid, $channel, $payload);
 ```
 
 ### Subscribe and listen to events: ###
 
-Subscribe in PHP:
+Subscribe in PHP before rendering the page:
 ```
-\tool_realtime\api::subscribe($context, $component, $area, $itemid);
+\tool_realtime\api::subscribe($context, $component, $area, $itemid, $channel);
 ```
-Listen in Javascript:
+Listen in Javascript on the page:
 ```
-require(['core/pubsub', 'tool_realtime/events'], function(PubSub, RealTimeEvents) {
-    PubSub.subscribe(RealTimeEvents.EVENT, function(eventData) {
-        // access context, component, area, itemid, payload as keys in event data
-        // example for context
-        document.write(eventData['context']);
-        // access payload by key
-        document.write(eventData['payload']['testkey']);
-    });
+import * as PubSub from 'core/pubsub';
+import * as RealTimeEvents from 'tool_realtime/events';
+
+
+PubSub.subscribe(RealTimeEvents.EVENT, (eventData) => {
+    if (eventData.component === 'mycomponent' && eventData.area === 'myarea') {
+        console.log('Received event', eventData);
+    }
 });
 ```
-OR
-Dynamic Javascript Subscription
-Initiliase in PHP:
-```
-tool_realtime\api::init();
-```
-then in Javascript subscribe using:
-```
-require(['core/pubsub', 'tool_realtime/events', 'tool_realtime/api'], function(PubSub, RealTimeEvents, api) {
-    api.subscribe(context, component, area, itemid);
-    PubSub.subscribe(RealTimeEvents.EVENT, function(eventData) {
-        // access context, component, area, itemid, payload as keys in event data
-        // example for context
-        document.write(eventData['context']);
-        // access payload by key
-        document.write(eventData['payload']['testkey']);
-    });
-});
-```
+
 ### Other uses ###
 
 Check if area is enabled in PHP:
@@ -54,5 +36,6 @@ if (\tool_realtime\api::is_enabled($component, $area)) {
 }
 ```
 
+### Examples ###
 
-TODO: Connection lost JS event, change the favicon, etc.
+[mod_rplace (inspired by reddit r/place)](https://github.com/marinaglancy/moodle-mod_rplace)
