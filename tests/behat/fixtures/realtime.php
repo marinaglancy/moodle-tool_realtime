@@ -25,6 +25,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use tool_realtime\channel;
+
 require_once(__DIR__.'/../../../../../../config.php');
 
 // Only continue for behat site.
@@ -35,13 +37,15 @@ $PAGE->set_url('/admin/tool/realtime/tests/behat/fixtures/realtime.php');
 $PAGE->set_context(context_system::instance());
 $PAGE->set_pagelayout('admin');
 
+$channel = new channel(context_user::instance($USER->id), 'tool_realtime', 'test', 0);
+
 if ($test = optional_param('test', 0, PARAM_INT)) {
-    \tool_realtime\api::notify(context_user::instance($USER->id), 'tool_realtime', 'test', 0, '', ['data' => $test]);
+    $channel->notify(['data' => $test]);
     exit;
 }
 
 $pluginname = \tool_realtime\manager::get_enabled_plugin_name();
-\tool_realtime\api::subscribe(context_user::instance($USER->id), 'tool_realtime', 'test', 0, '');
+$hcannel->subscribe();
 echo $OUTPUT->header();
 $PAGE->requires->js_amd_inline(<<<EOL
     M.util.js_pending('initrealtimetest');

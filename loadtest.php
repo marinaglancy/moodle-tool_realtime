@@ -22,6 +22,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use tool_realtime\channel;
+
 require_once(dirname(__FILE__) . '/../../../config.php');
 require_once($CFG->dirroot . '/lib/adminlib.php');
 require_once("$CFG->libdir/tablelib.php");
@@ -35,7 +37,7 @@ $PAGE->set_title(get_string('loadtest', 'tool_realtime'));
 $PAGE->set_heading(get_string('loadtest', 'tool_realtime'));
 echo $OUTPUT->header();
 $context = context::instance_by_id(1);
-tool_realtime\api::subscribe($context, 'loadtest', 'loadtest', 1, '');
+(new channel($context, 'loadtest', 'loadtest', 1))->subscribe();
 
 echo $OUTPUT->heading(get_string('eventtesting', 'tool_realtime'));
 Echo

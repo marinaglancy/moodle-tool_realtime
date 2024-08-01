@@ -23,6 +23,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use tool_realtime\channel;
+
 define('CLI_SCRIPT', true);
 
 require(__DIR__ . '/../../../../config.php');
@@ -105,6 +107,5 @@ if (!is_null($options['payload'])) {
 // Append server time before sending.
 $payload["eventReceived"] = microtime(true) * 1000;
 
-
-\tool_realtime\api::notify($context, $component, $area, $id, '', $payload);
+(new channel($context, $component, $area, $id))->notify($payload);
 

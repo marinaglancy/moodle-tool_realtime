@@ -92,8 +92,10 @@ function poll() {
     }
     let query = 'userid=' + encodeURIComponent(params.userid) +
         '&token=' + encodeURIComponent(params.token) +
-        '&fromid=' + encodeURIComponent(params.fromid) +
-        '&channels=' + encodeURIComponent(JSON.stringify(channels));
+        '&fromid=' + encodeURIComponent(params.fromid);
+    for (let i = 0; i < channels.length; i++) {
+        query += `&channels[${i}]=` + encodeURIComponent(channels[i]);
+    }
 
     ajax.open('POST', pollURL, true);
     ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -124,24 +126,12 @@ export function init(userId, token, pollURLParam, timeout) {
 /**
  * Subscribe to events
  *
- * @param {Number} context
- * @param {String} component
- * @param {String} area
- * @param {Number} itemid
- * @param {String} channel
+ * @param {String} hash
+ * @param {Object} properties
  * @param {Number} fromId
- * @param {Number} fromtimestamp
  */
-export function subscribe(context, component, area, itemid, channel, fromId, fromtimestamp) {
+export function subscribe(hash, properties, fromId) {
     params.fromid = fromId;
-    var channeltosubto = {
-        context,
-        component,
-        area,
-        itemid,
-        channel,
-        fromtimestamp,
-    };
-    channels.push(channeltosubto);
+    channels.push(hash);
     setTimeout(poll, params.timeout);
 }

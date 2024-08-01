@@ -36,8 +36,7 @@ $fromid = optional_param('fromid', 0, PARAM_INT);
 // Who is the current user making request.
 $userid = optional_param('userid', 0, PARAM_INT);
 $token = optional_param('token', '', PARAM_RAW);
-$channeljson = optional_param('channels', '', PARAM_RAW);
-$channels = json_decode($channeljson, true);
+$channels = optional_param_array('channels', [], PARAM_RAW);
 
 if (\tool_realtime\manager::get_enabled_plugin_name() !== 'phppoll') {
     echo json_encode(['error' => 'Plugin is not enabled']);
@@ -61,10 +60,9 @@ while (true) {
 
     // TODO: check user rights to subscribe to channel.
 
-    foreach ($channels as $x) {
+    foreach ($channels as $hash) {
 
-        if ($events = $plugin->get_all((int)$x['context'], (string)$x['component'],
-            (string)$x['area'], (int)$x['itemid'], $x['channel'], (int)$fromid, (float)$x['fromtimestamp'])) {
+        if ($events = $plugin->get_all($hash, (int)$fromid)) {
             // We have some notifications for this user - return them. The JS will then create a new request.
             echo json_encode(['success' => 1, 'events' => array_values($events)]);
         }

@@ -95,4 +95,16 @@ class manager {
 
         return $instance->is_set_up() ? $instance : null;
     }
+
+    /**
+     * Checks if the given area is enabled
+     *
+     * @param string $component
+     * @param string $area
+     * @return bool
+     */
+    public static function is_enabled(string $component, string $area) {
+        // TODO this function exists in case we want to provide UI for selective enabling/disabling areas.
+        return true;
+    }
 }

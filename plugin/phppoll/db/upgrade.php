@@ -35,39 +35,44 @@ function xmldb_realtimeplugin_phppoll_upgrade($oldversion) {
     global $DB;
     $dbman = $DB->get_manager();
 
-    if ($oldversion < 2024073100) {
+    if ($oldversion < 2024080100) {
 
-        $DB->delete_records('realtimeplugin_phppoll');
-
-        // Define field hash to be added to realtimeplugin_phppoll.
+        // Define table realtimeplugin_phppoll to be dropped.
         $table = new xmldb_table('realtimeplugin_phppoll');
-        $field = new xmldb_field('hash', XMLDB_TYPE_CHAR, '32', null, XMLDB_NOTNULL, null, null, 'id');
 
-        // Conditionally launch add field hash.
-        if (!$dbman->field_exists($table, $field)) {
-            $dbman->add_field($table, $field);
+        // Conditionally launch drop table for realtimeplugin_phppoll.
+        if ($dbman->table_exists($table)) {
+            $dbman->drop_table($table);
         }
 
-        // Define field channel to be added to realtimeplugin_phppoll.
+        // Define table realtimeplugin_phppoll to be created.
         $table = new xmldb_table('realtimeplugin_phppoll');
-        $field = new xmldb_field('channel', XMLDB_TYPE_CHAR, '100', null, XMLDB_NOTNULL, null, null, 'itemid');
 
-        // Conditionally launch add field channel.
-        if (!$dbman->field_exists($table, $field)) {
-            $dbman->add_field($table, $field);
-        }
+        // Adding fields to table realtimeplugin_phppoll.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('hash', XMLDB_TYPE_CHAR, '32', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('contextid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('component', XMLDB_TYPE_CHAR, '255', null, null, null, null);
+        $table->add_field('area', XMLDB_TYPE_CHAR, '255', null, null, null, null);
+        $table->add_field('itemid', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('channeldetails', XMLDB_TYPE_CHAR, '100', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
 
-        // Define index hash (not unique) to be added to realtimeplugin_phppoll.
-        $table = new xmldb_table('realtimeplugin_phppoll');
-        $index = new xmldb_index('hash', XMLDB_INDEX_NOTUNIQUE, ['hash']);
+        // Adding keys to table realtimeplugin_phppoll.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
 
-        // Conditionally launch add index hash.
-        if (!$dbman->index_exists($table, $index)) {
-            $dbman->add_index($table, $index);
+        // Adding indexes to table realtimeplugin_phppoll.
+        $table->add_index('timecreated', XMLDB_INDEX_NOTUNIQUE, ['timecreated']);
+        $table->add_index('hashid', XMLDB_INDEX_NOTUNIQUE, ['hash', 'id']);
+
+        // Conditionally launch create table for realtimeplugin_phppoll.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
         }
 
         // Phppoll savepoint reached.
-        upgrade_plugin_savepoint(true, 2024073100, 'realtimeplugin', 'phppoll');
+        upgrade_plugin_savepoint(true, 2024080100, 'realtimeplugin', 'phppoll');
     }
 
     return true;

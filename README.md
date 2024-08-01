@@ -5,20 +5,21 @@
 ### Notify about an event in PHP: ###
 
 ```
-\tool_realtime\api::notify($context, $component, $area, $itemid, $channel, $payload);
+$channel = new \tool_realtime\channel($context, $component, $area, $itemid, $channeldetails);
+$channel->notify($payload);
 ```
 
 ### Subscribe and listen to events: ###
 
 Subscribe in PHP before rendering the page:
 ```
-\tool_realtime\api::subscribe($context, $component, $area, $itemid, $channel);
+$channel = new \tool_realtime\channel($context, $component, $area, $itemid, $channeldetails);
+$channel->subscribe();
 ```
 Listen in Javascript on the page:
 ```
 import * as PubSub from 'core/pubsub';
 import * as RealTimeEvents from 'tool_realtime/events';
-
 
 PubSub.subscribe(RealTimeEvents.EVENT, (eventData) => {
     if (eventData.component === 'mycomponent' && eventData.area === 'myarea') {
@@ -31,7 +32,7 @@ PubSub.subscribe(RealTimeEvents.EVENT, (eventData) => {
 
 Check if area is enabled in PHP:
 ```
-if (\tool_realtime\api::is_enabled($component, $area)) {
+if (\tool_realtime\manager::is_enabled($component, $area)) {
     // ...
 }
 ```

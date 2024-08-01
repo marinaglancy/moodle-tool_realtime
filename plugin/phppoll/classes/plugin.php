@@ -16,6 +16,7 @@
 
 namespace realtimeplugin_phppoll;
 
+use tool_realtime\channel;
 use tool_realtime\plugin_base;
 
 /**
@@ -44,14 +45,9 @@ class plugin extends plugin_base {
     /**
      * Subscribe the current page to receive notifications about events
      *
-     * @param \context $context
-     * @param string $component
-     * @param string $area
-     * @param int $itemid
-     * @param string $channel
+     * @param channel $channel
      */
-    public function subscribe(\context $context, string $component, string $area,
-            int $itemid, string $channel): void {
+    public function subscribe(channel $channel): void {
         global $PAGE, $USER, $DB;
         if (!$this->is_set_up() || !isloggedin() || isguestuser()) {
             return;
@@ -60,7 +56,7 @@ class plugin extends plugin_base {
         $fromid = (int)$DB->get_field_sql("SELECT max(id) FROM {" . self::TABLENAME . "}");
         $fromtimestamp = microtime(true);
         $PAGE->requires->js_call_amd('realtimeplugin_phppoll/realtime', 'subscribe',
-            [$context->id, $component, $area, $itemid, $channel, $fromid, $fromtimestamp]);
+            [$channel->get_hash(), $channel->get_properties(), $fromid, $fromtimestamp]);
     }
 
     /**
@@ -82,28 +78,18 @@ class plugin extends plugin_base {
     /**
      * Notifies all subscribers about an event
      *
-     * @param \context $context
-     * @param string $component
-     * @param string $area
-     * @param int $itemid
-     * @param string $channel
+     * @param channel $channel
      * @param array|null $payload
      */
-    public function notify(\context $context, string $component, string $area,
-            int $itemid, string $channel, ?array $payload = null): void {
+    public function notify(channel $channel, ?array $payload = null): void {
         global $DB;
         $time = time();
         $DB->insert_record(self::TABLENAME, [
-            'hash' => \tool_realtime\api::channel_hash($context->id, $component, $area, $itemid, $channel),
-            'contextid' => $context->id,
-            'component' => $component,
-            'area' => $area,
-            'itemid' => $itemid,
-            'channel' => $channel,
+            'hash' => $channel->get_hash(),
             'payload' => json_encode($payload ?? []),
             'timecreated' => $time,
             'timemodified' => $time,
-        ]);
+        ] + $channel->get_properties());
     }
 
     /**
@@ -149,34 +135,20 @@ class plugin extends plugin_base {
     /**
      * Get all notifications for a given user
      *
-     * @param int $contextid
-     * @param string $component
-     * @param string $area
-     * @param int $itemid
-     * @param string $channel
+     * @param string $hash
      * @param int $fromid
-     * @param float $fromtimestamp
      * @return array
      */
-    public function get_all(int $contextid,
-                            string $component,
-                            string $area,
-                            int $itemid,
-                            string $channel,
-                            int $fromid,
-                            float $fromtimestamp): array {
+    public function get_all(string $hash, int $fromid): array {
         global $DB;
         $events = [];
-        $fromtimestampseconds = floor($fromtimestamp / 1000);
-        $hash = \tool_realtime\api::channel_hash($contextid, $component, $area, $itemid, $channel);
 
-        $sql = $fromid ? 'id > :fromid' : 'timecreated > :fromtimestamp';
+        $sql = $fromid ? 'AND id > :fromid' : '';
         $params = [
             'hash' => $hash,
             'fromid' => $fromid,
-            'fromtimestamp' => $fromtimestampseconds,
         ];
-        $events = $DB->get_records_select(self::TABLENAME, "hash = :hash AND $sql", $params, 'id',
+        $events = $DB->get_records_select(self::TABLENAME, "hash = :hash $sql", $params, 'id',
             'id, contextid, component, area, itemid, channel, payload');
 
         array_walk($events, function(&$item) {

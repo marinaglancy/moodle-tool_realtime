@@ -18,6 +18,7 @@ namespace realtimeplugin_pusher;
 
 defined('MOODLE_INTERNAL') || die();
 
+use tool_realtime\channel;
 use tool_realtime\plugin_base;
 
 require(__DIR__ . '/../vendor/autoload.php');
@@ -50,20 +51,13 @@ class plugin extends plugin_base {
     /**
      * Subscribe the current page to receive notifications about events
      *
-     * @param \context $context
-     * @param string $component
-     * @param string $area
-     * @param int $itemid
-     * @param string $channel
+     * @param channel $channel
      */
-    public function subscribe(\context $context, string $component, string $area,
-            int $itemid, string $channel): void {
+    public function subscribe(channel $channel): void {
         self::init();
-        // TODO check that area is defined only as letters and numbers.
         global $PAGE, $USER;
-        $hash = \tool_realtime\api::channel_hash($context->id, $component, $area, $itemid, $channel);
         $PAGE->requires->js_call_amd('realtimeplugin_pusher/realtime', 'subscribe',
-            [$hash, $context->id, $component, $area, $itemid, $channel]);
+            [$channel->get_hash(), $channel->get_properties()]);
     }
 
     /**
@@ -85,15 +79,10 @@ class plugin extends plugin_base {
     /**
      * Notifies all subscribers about an event
      *
-     * @param \context $context
-     * @param string $component
-     * @param string $area
-     * @param int $itemid
-     * @param string $channel
+     * @param channel $channel
      * @param array|null $payload
      */
-    public function notify(\context $context, string $component, string $area,
-            int $itemid, string $channel, ?array $payload = null): void {
+    public function notify(channel $channel, ?array $payload = null): void {
         $appid = get_config('realtimeplugin_pusher', 'app_id');
         $key = get_config('realtimeplugin_pusher', 'key');
         $secret = get_config('realtimeplugin_pusher', 'secret');
@@ -110,7 +99,7 @@ class plugin extends plugin_base {
             $options
         );
 
-        $channelname = \tool_realtime\api::channel_hash($context->id, $component, $area, $itemid, $channel);
+        $channelname = $channel->get_hash();
         $payloadjson = json_encode($payload ?? []);
 
         $pusher->trigger((string)$channelname, 'event', $payloadjson);

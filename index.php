@@ -22,6 +22,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use tool_realtime\channel;
+
 require_once(dirname(__FILE__) . '/../../../config.php');
 
 require_once($CFG->dirroot . '/lib/adminlib.php');
@@ -59,11 +61,12 @@ for ($counter = 0; $counter < count($SESSION->channels); $counter++) {
     } catch (moodle_exception $e) {
         $contextfromform = context_system::instance();
     }
-    tool_realtime\api::subscribe($contextfromform,
+    $channel = new channel($contextfromform,
         $SESSION->channels[$counter]["component"],
         $SESSION->channels[$counter]["area"],
         $SESSION->channels[$counter]["itemid"],
         $SESSION->channels[$counter]["channel"]);
+    $channel->subscribe();
 }
 
 $mform->display();

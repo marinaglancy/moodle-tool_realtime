@@ -49,13 +49,9 @@ export function init(key, cluster) {
  * Subscribe to events
  *
  * @param {String} hash
- * @param {Number} context
- * @param {String} component
- * @param {String} area
- * @param {Number} itemid
- * @param {String} channel
+ * @param {Object} properties
  */
-export function subscribe(hash, context, component, area, itemid, channel) {
+export function subscribe(hash, properties) {
     require(['pusher'], function(Pusher) {
         var pusher = new Pusher(params.key, {
             cluster: params.cluster
@@ -69,9 +65,7 @@ export function subscribe(hash, context, component, area, itemid, channel) {
             } catch (_) {
                 payload = [];
             }
-            var dataToSend = {
-                context, component: component, area, itemid, channel, payload
-            };
+            var dataToSend = {...properties, payload};
             PubSub.publish(RealTimeEvents.EVENT, dataToSend);
         });
     });
