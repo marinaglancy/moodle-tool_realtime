@@ -45,7 +45,7 @@ if ($test = optional_param('test', 0, PARAM_INT)) {
 }
 
 $pluginname = \tool_realtime\manager::get_enabled_plugin_name();
-$hcannel->subscribe();
+$channel->subscribe();
 echo $OUTPUT->header();
 $PAGE->requires->js_amd_inline(<<<EOL
     M.util.js_pending('initrealtimetest');
