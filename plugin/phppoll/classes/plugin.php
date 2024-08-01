@@ -149,7 +149,7 @@ class plugin extends plugin_base {
             'fromid' => $fromid,
         ];
         $events = $DB->get_records_select(self::TABLENAME, "hash = :hash $sql", $params, 'id',
-            'id, contextid, component, area, itemid, channel, payload');
+            'id, contextid, component, area, itemid, channeldetails, payload');
 
         array_walk($events, function(&$item) {
             $item->payload = @json_decode($item->payload, true);

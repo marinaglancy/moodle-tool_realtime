@@ -35,7 +35,7 @@ function xmldb_realtimeplugin_phppoll_upgrade($oldversion) {
     global $DB;
     $dbman = $DB->get_manager();
 
-    if ($oldversion < 2024080100) {
+    if ($oldversion < 2024080101) {
 
         // Define table realtimeplugin_phppoll to be dropped.
         $table = new xmldb_table('realtimeplugin_phppoll');
@@ -56,6 +56,7 @@ function xmldb_realtimeplugin_phppoll_upgrade($oldversion) {
         $table->add_field('area', XMLDB_TYPE_CHAR, '255', null, null, null, null);
         $table->add_field('itemid', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0');
         $table->add_field('channeldetails', XMLDB_TYPE_CHAR, '100', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('payload', XMLDB_TYPE_TEXT, null, null, null, null, null);
         $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
         $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
 
@@ -72,7 +73,7 @@ function xmldb_realtimeplugin_phppoll_upgrade($oldversion) {
         }
 
         // Phppoll savepoint reached.
-        upgrade_plugin_savepoint(true, 2024080100, 'realtimeplugin', 'phppoll');
+        upgrade_plugin_savepoint(true, 2024080101, 'realtimeplugin', 'phppoll');
     }
 
     return true;
