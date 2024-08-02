@@ -54,9 +54,12 @@ class plugin extends plugin_base {
         }
         self::init();
         $fromid = (int)$DB->get_field_sql("SELECT max(id) FROM {" . self::TABLENAME . "}");
-        $fromtimestamp = microtime(true);
+        $hash = $channel->get_hash();
+        // Create a user key to be used with this channel for this user id (use userid as an instance).
+        $key = create_user_key("realtimeplugin_phppoll:$hash", $USER->id, $USER->id);
+
         $PAGE->requires->js_call_amd('realtimeplugin_phppoll/realtime', 'subscribe',
-            [$channel->get_hash(), $channel->get_properties(), $fromid, $fromtimestamp]);
+            [$hash, $key, $fromid]);
     }
 
     /**
@@ -71,8 +74,7 @@ class plugin extends plugin_base {
         self::$initialised = true;
         $url = new \moodle_url('/admin/tool/realtime/plugin/phppoll/poll.php');
         $PAGE->requires->js_call_amd('realtimeplugin_phppoll/realtime',  'init',
-            [$USER->id, self::get_token(), $url->out(false),
-                $this->get_delay_between_checks()]);
+            [$USER->id, $url->out(false), $this->get_delay_between_checks(), substr(session_id(), 0, 5)]);
     }
 
     /**
@@ -93,62 +95,20 @@ class plugin extends plugin_base {
     }
 
     /**
-     * Get token for current user and current session
-     *
-     * @return string
-     */
-    public static function get_token() {
-        global $USER;
-        $sid = session_id();
-        return self::get_token_for_user($USER->id, $sid);
-    }
-
-    /**
-     * Get token for a given user and given session
-     *
-     * @param int $userid
-     * @param string $sid
-     * @return false|string
-     */
-    protected static function get_token_for_user(int $userid, string $sid) {
-        return substr(md5($sid . '/' . $userid . '/' . get_site_identifier()), 0, 10);
-    }
-
-    /**
-     * Validate that a token corresponds to one of the users open sessions
-     *
-     * @param int $userid
-     * @param string $token
-     * @return bool
-     */
-    public static function validate_token(int $userid, string $token) {
-        global $DB;
-        $sessions = $DB->get_records('sessions', ['userid' => $userid]);
-        foreach ($sessions as $session) {
-            if (self::get_token_for_user($userid, $session->sid) === $token) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
      * Get all notifications for a given user
      *
-     * @param string $hash
-     * @param int $fromid
+     * @param array $hashes List of all channel hashes we want to collect events from
+     * @param int $fromid id in the 'realtimeplugin_phppoll' at which we already received events in the previous cycles
      * @return array
      */
-    public function get_all(string $hash, int $fromid): array {
+    public function get_all(array $hashes, int $fromid): array {
         global $DB;
         $events = [];
 
-        $sql = $fromid ? 'AND id > :fromid' : '';
-        $params = [
-            'hash' => $hash,
-            'fromid' => $fromid,
-        ];
-        $events = $DB->get_records_select(self::TABLENAME, "hash = :hash $sql", $params, 'id',
+        [$sql, $params] = $DB->get_in_or_equal($hashes, SQL_PARAMS_NAMED);
+        $sql .= $fromid ? ' AND id > :fromid' : '';
+        $params['fromid'] = $fromid;
+        $events = $DB->get_records_select(self::TABLENAME, "hash $sql", $params, 'id',
             'id, contextid, component, area, itemid, channeldetails, payload');
 
         array_walk($events, function(&$item) {

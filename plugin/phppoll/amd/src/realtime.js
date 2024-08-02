@@ -91,10 +91,11 @@ function poll() {
         return;
     }
     let query = 'userid=' + encodeURIComponent(params.userid) +
-        '&token=' + encodeURIComponent(params.token) +
-        '&fromid=' + encodeURIComponent(params.fromid);
+        '&fromid=' + encodeURIComponent(params.fromid) +
+        '&sid=' + encodeURIComponent(params.sid);
     for (let i = 0; i < channels.length; i++) {
-        query += `&channels[${i}]=` + encodeURIComponent(channels[i]);
+        query += `&channels[${i}]=` + encodeURIComponent(channels[i].hash);
+        query += `&key[${i}]=` + encodeURIComponent(channels[i].key);
     }
 
     ajax.open('POST', pollURL, true);
@@ -106,18 +107,18 @@ function poll() {
  * Initialise plugin
  *
  * @param {Number} userId
- * @param {String} token
  * @param {String} pollURLParam
  * @param {Number} timeout
+ * @param {String} sid
  */
-export function init(userId, token, pollURLParam, timeout) {
+export function init(userId, pollURLParam, timeout, sid) {
     if (params && params.userid) {
         // Log console dev error.
     } else {
         params = {
             userid: userId,
-            token: token,
             timeout: timeout,
+            sid
         };
     }
     pollURL = pollURLParam;
@@ -127,11 +128,11 @@ export function init(userId, token, pollURLParam, timeout) {
  * Subscribe to events
  *
  * @param {String} hash
- * @param {Object} properties
+ * @param {String} key
  * @param {Number} fromId
  */
-export function subscribe(hash, properties, fromId) {
+export function subscribe(hash, key, fromId) {
     params.fromid = fromId;
-    channels.push(hash);
+    channels.push({hash, key});
     setTimeout(poll, params.timeout);
 }

@@ -49,7 +49,7 @@ final class plugin_test extends advanced_testcase {
         $channel = new \tool_realtime\channel($context, 'testcomponent', 'testarea', 7, 'x');
         $plugin->subscribe($channel);
         $plugin->notify($channel, ['a' => 'b']);
-        $results = $plugin->get_all($channel->get_hash(), 0);
+        $results = $plugin->get_all([$channel->get_hash()], 0);
         $this->assertCount(1, $results);
         $result = (array)reset($results);
         unset($result['id']);
