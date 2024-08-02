@@ -66,7 +66,7 @@ cli_heading('Push Test Event');
 if (!is_null($options['eventcount'])) {
     $eventcount = intval($options['eventcount']);
 } else {
-    cli_error("Missing arg: id\nAdd -h for help");
+    cli_error("Missing arg: --eventcount\nAdd -h for help");
 }
 
 // Create context.

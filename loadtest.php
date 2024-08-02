@@ -46,7 +46,7 @@ echo $OUTPUT->footer();
 ?>
 
 <script type="text/javascript">
-    require(['core/pubsub', 'tool_realtime/events', 'tool_realtime/api'], function(PubSub, RealTimeEvents, api) {
+    require(['core/pubsub', 'tool_realtime/events'], function(PubSub, RealTimeEvents) {
         var eventcounter = 0;
         var latency = 0;
         var averagelatency = 0;
