@@ -15,17 +15,27 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Plugin version and other meta-data are defined here.
+ * External functions and service declaration for Real time events
  *
- * @package     tool_realtime
- * @copyright   2020 Marina Glancy
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * Documentation: {@link https://moodledev.io/docs/apis/subsystems/external/description}
+ *
+ * @package    tool_realtime
+ * @category   webservice
+ * @copyright  Marina Glancy
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'tool_realtime';
-$plugin->release = '1.3';
-$plugin->version = 2024080101;
-$plugin->requires = 2022112800;
-$plugin->supported = [401, 405];
+$functions = [
+
+    'tool_realtime_request' => [
+        'classname' => tool_realtime\external\request::class,
+        'description' => 'Request',
+        'type' => 'write',
+        'ajax' => true,
+    ],
+];
+
+$services = [
+];

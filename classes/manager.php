@@ -16,6 +16,8 @@
 
 namespace tool_realtime;
 
+use core\exception\coding_exception;
+
 /**
  * Class manager
  *
@@ -106,5 +108,15 @@ class manager {
     public static function is_enabled(string $component, string $area) {
         // TODO this function exists in case we want to provide UI for selective enabling/disabling areas.
         return true;
+    }
+
+    public static function event_received(array $channelproperties, $payload): array {
+        $channel = channel::create_from_properties($channelproperties);
+        $component = $channel->get_properties()['component'];
+        $res = component_callback($component, 'realtime_event_received', [$channel, $payload]);
+        if ($res && !is_array($res)) {
+            throw new coding_exception('Callback '.$component.'_realtime_event_received returned value with an invalid type');
+        }
+        return $res ?: [];
     }
 }

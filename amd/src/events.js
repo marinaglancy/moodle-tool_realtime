@@ -21,6 +21,10 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 export default {
+    // Events you can subscribe to.
     EVENT: 'tool-realtime-event',
     CONNECTION_LOST: 'tool-realtime-connection-lost',
+    UPDATE_FAILED: 'tool-realtime-update-failed',
+    // Events you can publish.
+    UPDATE: 'tool-realtime-update',
 };

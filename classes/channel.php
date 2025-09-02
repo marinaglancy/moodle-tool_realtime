@@ -113,4 +113,15 @@ class channel {
             'itemid' => $this->itemid,
             'channeldetails' => $this->channeldetails];
     }
+
+    public static function create_from_properties(array $properties) {
+        $context = context::instance_by_id(clean_param($properties['contextid'], PARAM_INT));
+        return new self(
+            $context,
+            $properties['component'],
+            $properties['area'],
+            clean_param($properties['itemid'], PARAM_INT),
+            $properties['channeldetails'] ?? '',
+        );
+    }
 }
