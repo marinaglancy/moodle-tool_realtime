@@ -67,7 +67,7 @@ export function sendToServerAjax(channel, payload) {
         args: {
             channel: JSON.stringify(channel), payload: JSON.stringify(payload)
         }
-    }]).then((responses) => {
-        return responses[0].response;
+    }])[0].then((response) => {
+        return response;
     });
 }
