@@ -110,6 +110,14 @@ class manager {
         return true;
     }
 
+    /**
+     * Invoked when an event is received from the backend
+     *
+     * @param array $channelproperties
+     * @param mixed $payload
+     * @throws \core\exception\coding_exception
+     * @return array
+     */
     public static function event_received(array $channelproperties, $payload): array {
         $channel = channel::create_from_properties($channelproperties);
         $component = $channel->get_properties()['component'];

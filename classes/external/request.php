@@ -45,7 +45,8 @@ class request extends external_api {
     /**
      * Implementation of web service realtimeplugin_centrifugo_request
      *
-     * @param mixed $param1
+     * @param string $channelproperties
+     * @param string $payload
      */
     public static function execute($channelproperties, $payload) {
         // Parameter validation.
@@ -73,7 +74,7 @@ class request extends external_api {
      */
     public static function execute_returns(): external_single_structure {
         return new external_single_structure([
-            'response' => new external_value(PARAM_RAW, 'JSON-encoded response from the component callback')
+            'response' => new external_value(PARAM_RAW, 'JSON-encoded response from the component callback'),
         ]);
     }
 }
