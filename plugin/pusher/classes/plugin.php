@@ -31,9 +31,8 @@ require(__DIR__ . '/../vendor/autoload.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class plugin extends plugin_base {
-
     /** @var bool */
-    static protected $initialised = false;
+    protected static $initialised = false;
 
     /**
      * Is the plugin setup completed
@@ -56,8 +55,11 @@ class plugin extends plugin_base {
     public function subscribe(channel $channel): void {
         self::init();
         global $PAGE, $USER;
-        $PAGE->requires->js_call_amd('realtimeplugin_pusher/realtime', 'subscribe',
-            [$channel->get_hash(), $channel->get_properties()]);
+        $PAGE->requires->js_call_amd(
+            'realtimeplugin_pusher/realtime',
+            'subscribe',
+            [$channel->get_hash(), $channel->get_properties()]
+        );
     }
 
     /**
@@ -72,8 +74,11 @@ class plugin extends plugin_base {
         $key = get_config('realtimeplugin_pusher', 'key');
         $cluster = get_config('realtimeplugin_pusher', 'cluster');
         self::$initialised = true;
-        $PAGE->requires->js_call_amd('realtimeplugin_pusher/realtime',  'init',
-            [$key, $cluster]);
+        $PAGE->requires->js_call_amd(
+            'realtimeplugin_pusher/realtime',
+            'init',
+            [$key, $cluster]
+        );
     }
 
     /**

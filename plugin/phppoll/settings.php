@@ -25,13 +25,17 @@
 defined('MOODLE_INTERNAL') || die();
 
 if ($hassiteconfig) {
-    $settings->add(new admin_setting_configduration('realtimeplugin_phppoll/requesttimeout',
-            new lang_string('requesttimeout', 'realtimeplugin_phppoll'),
-            new lang_string('requesttimeoutdesc', 'realtimeplugin_phppoll'), 30)
-    );
+    $settings->add(new admin_setting_configduration(
+        'realtimeplugin_phppoll/requesttimeout',
+        new lang_string('requesttimeout', 'realtimeplugin_phppoll'),
+        new lang_string('requesttimeoutdesc', 'realtimeplugin_phppoll'),
+        30
+    ));
 
-    $settings->add(new admin_setting_configtext('realtimeplugin_phppoll/checkinterval',
-            new lang_string('checkinterval', 'realtimeplugin_phppoll'),
-            new lang_string('checkintervaldesc', 'realtimeplugin_phppoll', 200), 1000)
-    );
+    $settings->add(new admin_setting_configtext(
+        'realtimeplugin_phppoll/checkinterval',
+        new lang_string('checkinterval', 'realtimeplugin_phppoll'),
+        new lang_string('checkintervaldesc', 'realtimeplugin_phppoll', 200),
+        1000
+    ));
 }

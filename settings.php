@@ -25,12 +25,13 @@
 defined('MOODLE_INTERNAL') || die();
 
 if ($hassiteconfig) {
-
     $ADMIN->add('tools', new admin_category('realtime', new lang_string('pluginname', 'tool_realtime')));
 
-    $ADMIN->add('reports', new admin_externalpage('tool_realtime_report',
+    $ADMIN->add('reports', new admin_externalpage(
+        'tool_realtime_report',
         get_string('realtime:page', 'tool_realtime'),
-        new moodle_url('/admin/tool/realtime/index.php')));
+        new moodle_url('/admin/tool/realtime/index.php')
+    ));
 
 
     $temp = new admin_settingpage('managerealtime', new lang_string('managerealtime', 'tool_realtime'));
@@ -39,12 +40,13 @@ if ($hassiteconfig) {
 
     $choices = fn() => ['' => get_string('none', 'moodle')] +
         \tool_realtime\manager::get_installed_plugins_menu();
-    $temp->add(new admin_setting_configselect('tool_realtime/enabled',
-            new lang_string('enabledplugin', 'tool_realtime'),
-            new lang_string('enabledplugindesc', 'tool_realtime'),
-            'phppoll',
-            $choices)
-    );
+    $temp->add(new admin_setting_configselect(
+        'tool_realtime/enabled',
+        new lang_string('enabledplugin', 'tool_realtime'),
+        new lang_string('enabledplugindesc', 'tool_realtime'),
+        'phppoll',
+        $choices
+    ));
 
     foreach (core_plugin_manager::instance()->get_plugins_of_type('realtimeplugin') as $plugin) {
         /** @var \tool_realtime\plugininfo\realtimeplugin $plugin */

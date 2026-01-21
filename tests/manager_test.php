@@ -25,7 +25,6 @@ namespace tool_realtime;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class manager_test extends \advanced_testcase {
-
     public function test_is_enabled(): void {
         $this->assertNotEmpty(\tool_realtime\manager::get_enabled_plugin_name());
         $this->assertNotEmpty(\tool_realtime\manager::get_installed_plugins());

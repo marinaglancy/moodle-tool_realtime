@@ -27,9 +27,8 @@ use tool_realtime\plugin_base;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class plugin extends plugin_base {
-
     /** @var bool */
-    static protected $initialised = false;
+    protected static $initialised = false;
     /** @var string */
     const TABLENAME = 'realtimeplugin_phppoll';
 
@@ -58,8 +57,11 @@ class plugin extends plugin_base {
         // Create a user key to be used with this channel for this user id (use userid as an instance).
         $key = create_user_key("realtimeplugin_phppoll:$hash", $USER->id, $USER->id);
 
-        $PAGE->requires->js_call_amd('realtimeplugin_phppoll/realtime', 'subscribe',
-            [$hash, $key, $fromid]);
+        $PAGE->requires->js_call_amd(
+            'realtimeplugin_phppoll/realtime',
+            'subscribe',
+            [$hash, $key, $fromid]
+        );
     }
 
     /**
@@ -73,8 +75,11 @@ class plugin extends plugin_base {
         }
         self::$initialised = true;
         $url = new \moodle_url('/admin/tool/realtime/plugin/phppoll/poll.php');
-        $PAGE->requires->js_call_amd('realtimeplugin_phppoll/realtime',  'init',
-            [$USER->id, $url->out(false), $this->get_delay_between_checks(), substr(session_id(), 0, 5)]);
+        $PAGE->requires->js_call_amd(
+            'realtimeplugin_phppoll/realtime',
+            'init',
+            [$USER->id, $url->out(false), $this->get_delay_between_checks(), substr(session_id(), 0, 5)]
+        );
     }
 
     /**
@@ -108,10 +113,15 @@ class plugin extends plugin_base {
         [$sql, $params] = $DB->get_in_or_equal($hashes, SQL_PARAMS_NAMED);
         $sql .= $fromid ? ' AND id > :fromid' : '';
         $params['fromid'] = $fromid;
-        $events = $DB->get_records_select(self::TABLENAME, "hash $sql", $params, 'id',
-            'id, contextid, component, area, itemid, channeldetails, payload');
+        $events = $DB->get_records_select(
+            self::TABLENAME,
+            "hash $sql",
+            $params,
+            'id',
+            'id, contextid, component, area, itemid, channeldetails, payload'
+        );
 
-        array_walk($events, function(&$item) {
+        array_walk($events, function (&$item) {
             $item->payload = @json_decode($item->payload, true);
             try {
                 $context = \context::instance_by_id($item->contextid);

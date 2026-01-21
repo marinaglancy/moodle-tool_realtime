@@ -34,7 +34,6 @@ use tool_realtime\manager;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class realtimeplugin extends \core\plugininfo\base {
-
     /**
      * Returns the information about plugin availability
      *

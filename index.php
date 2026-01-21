@@ -61,11 +61,13 @@ for ($counter = 0; $counter < count($SESSION->channels); $counter++) {
     } catch (moodle_exception $e) {
         $contextfromform = context_system::instance();
     }
-    $channel = new channel($contextfromform,
+    $channel = new channel(
+        $contextfromform,
         $SESSION->channels[$counter]["component"],
         $SESSION->channels[$counter]["area"],
         $SESSION->channels[$counter]["itemid"],
-        $SESSION->channels[$counter]["channel"]);
+        $SESSION->channels[$counter]["channel"]
+    );
     $channel->subscribe();
 }
 
@@ -96,7 +98,7 @@ if (!empty($SESSION->channels) && count($SESSION->channels) > 0) {
     echo html_writer::table($table);
 }
 
-$clearurl = new moodle_url('/admin/tool/realtime/',  ['action' => 'clearall']);
+$clearurl = new moodle_url('/admin/tool/realtime/', ['action' => 'clearall']);
 echo $OUTPUT->single_button($clearurl, 'Clear all channels');
 
 echo "<br>";

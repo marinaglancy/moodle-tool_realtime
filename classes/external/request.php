@@ -29,7 +29,6 @@ use core_external\external_value;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class request extends external_api {
-
     /**
      * Describes the parameters for tool_realtime_request
      *
@@ -62,7 +61,7 @@ class request extends external_api {
         $component = $channel->get_properties()['component'];
         $res = component_callback($component, 'realtime_event_received', [$channel, $payload]);
         if ($res && !is_array($res)) {
-            throw new \coding_exception('Callback '.$component.'_realtime_event_received returned value with an invalid type');
+            throw new \coding_exception('Callback ' . $component . '_realtime_event_received returned value with an invalid type');
         }
         return ['response' => json_encode($res)];
     }

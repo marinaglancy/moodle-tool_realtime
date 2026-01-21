@@ -42,7 +42,7 @@ $shortmappings = [
 ];
 
 // Get CLI params.
-list($options, $unrecognized) = cli_get_params($longparams, $shortmappings);
+[$options, $unrecognized] = cli_get_params($longparams, $shortmappings);
 
 if ($unrecognized) {
     $unrecognized = implode("\n  ", $unrecognized);
@@ -77,5 +77,3 @@ for ($counter = 0; $counter < $eventcount; $counter++) {
     $channel = new channel($context, 'loadtest', 'loadtest', 1);
     $channel->notify($payload);
 }
-
-

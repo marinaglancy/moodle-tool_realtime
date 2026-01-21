@@ -1,0 +1,3 @@
+filter:
+  notPaths:
+    - plugin/pusher/vendor

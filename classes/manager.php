@@ -26,7 +26,6 @@ use core\exception\coding_exception;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class manager {
-
     /** @var string */
     const PLUGINTYPE = 'realtimeplugin';
 
@@ -39,7 +38,7 @@ class manager {
         $plugins = \core_component::get_plugin_list_with_class(self::PLUGINTYPE, 'plugin');
         $res = [];
         foreach (array_keys($plugins) as $fullname) {
-            list($type, $name) = \core_component::normalize_component($fullname);
+            [$type, $name] = \core_component::normalize_component($fullname);
             $res[$name] = $fullname;
         }
         return $res;
@@ -123,7 +122,7 @@ class manager {
         $component = $channel->get_properties()['component'];
         $res = component_callback($component, 'realtime_event_received', [$channel, $payload]);
         if ($res && !is_array($res)) {
-            throw new coding_exception('Callback '.$component.'_realtime_event_received returned value with an invalid type');
+            throw new coding_exception('Callback ' . $component . '_realtime_event_received returned value with an invalid type');
         }
         return $res ?: [];
     }

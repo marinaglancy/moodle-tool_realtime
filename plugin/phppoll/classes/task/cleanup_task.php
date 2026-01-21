@@ -27,7 +27,6 @@ use realtimeplugin_phppoll\plugin;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class cleanup_task extends scheduled_task {
-
     /**
      * Get a descriptive name for this task (shown to admins).
      *

@@ -24,7 +24,6 @@ namespace tool_realtime;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class plugin_base {
-
     /**
      * Name of this plugin
      *

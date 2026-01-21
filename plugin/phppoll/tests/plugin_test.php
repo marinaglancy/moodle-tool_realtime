@@ -37,7 +37,6 @@ use context_user;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class plugin_test extends advanced_testcase {
-
     public function test_notify_and_get_all(): void {
         global $USER;
         $this->resetAfterTest();

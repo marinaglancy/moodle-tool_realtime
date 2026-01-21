@@ -65,8 +65,11 @@ while (true) {
 
     // Validate that the user session is still active.
     // We check this in a loop because user session may end while we are still waiting.
-    $hassessions = $DB->count_records_select('sessions', 'userid = ? AND sid LIKE ? AND timemodified >= ?',
-        [$userid, $sidpart . '%', time() - $CFG->sessiontimeout]);
+    $hassessions = $DB->count_records_select(
+        'sessions',
+        'userid = ? AND sid LIKE ? AND timemodified >= ?',
+        [$userid, $sidpart . '%', time() - $CFG->sessiontimeout]
+    );
     if (strlen($sidpart) < 5 || !$hassessions) {
         throw new moodle_exception('sessionexpired');
     }

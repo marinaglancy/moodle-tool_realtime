@@ -36,7 +36,6 @@ function xmldb_realtimeplugin_phppoll_upgrade($oldversion) {
     $dbman = $DB->get_manager();
 
     if ($oldversion < 2024080101) {
-
         // Define table realtimeplugin_phppoll to be dropped.
         $table = new xmldb_table('realtimeplugin_phppoll');
 

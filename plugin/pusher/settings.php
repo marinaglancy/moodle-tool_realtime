@@ -25,20 +25,31 @@
 defined('MOODLE_INTERNAL') || die();
 
 if ($hassiteconfig) {
-    $settings->add(new admin_setting_configtext('realtimeplugin_pusher/app_id',
-            new lang_string('app_id', 'realtimeplugin_pusher'),
-            new lang_string('app_id_desc', 'realtimeplugin_pusher'), '')
-    );
+    $settings->add(new admin_setting_configtext(
+        'realtimeplugin_pusher/app_id',
+        new lang_string('app_id', 'realtimeplugin_pusher'),
+        new lang_string('app_id_desc', 'realtimeplugin_pusher'),
+        ''
+    ));
 
-    $settings->add(new admin_setting_configtext('realtimeplugin_pusher/key',
-            new lang_string('key', 'realtimeplugin_pusher'), '', '')
-    );
+    $settings->add(new admin_setting_configtext(
+        'realtimeplugin_pusher/key',
+        new lang_string('key', 'realtimeplugin_pusher'),
+        '',
+        ''
+    ));
 
-    $settings->add(new admin_setting_configtext('realtimeplugin_pusher/secret',
-            new lang_string('secret', 'realtimeplugin_pusher'), '', '')
-    );
+    $settings->add(new admin_setting_configtext(
+        'realtimeplugin_pusher/secret',
+        new lang_string('secret', 'realtimeplugin_pusher'),
+        '',
+        ''
+    ));
 
-    $settings->add(new admin_setting_configtext('realtimeplugin_pusher/cluster',
-            new lang_string('cluster', 'realtimeplugin_pusher'), '', '')
-    );
+    $settings->add(new admin_setting_configtext(
+        'realtimeplugin_pusher/cluster',
+        new lang_string('cluster', 'realtimeplugin_pusher'),
+        '',
+        ''
+    ));
 }

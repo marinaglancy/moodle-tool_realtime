@@ -50,7 +50,7 @@ $shortmappings = [
 ];
 
 // Get CLI params.
-list($options, $unrecognized) = cli_get_params($longparams, $shortmappings);
+[$options, $unrecognized] = cli_get_params($longparams, $shortmappings);
 
 if ($unrecognized) {
     $unrecognized = implode("\n  ", $unrecognized);
@@ -108,4 +108,3 @@ if (!is_null($options['payload'])) {
 $payload["eventReceived"] = microtime(true) * 1000;
 
 (new channel($context, $component, $area, $id))->notify($payload);
-

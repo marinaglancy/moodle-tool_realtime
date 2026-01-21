@@ -40,7 +40,7 @@ $context = context::instance_by_id(1);
 (new channel($context, 'loadtest', 'loadtest', 1))->subscribe();
 
 echo $OUTPUT->heading(get_string('eventtesting', 'tool_realtime'));
-Echo
+echo
 "<div id='testarea'></div>";
 echo $OUTPUT->footer();
 ?>
