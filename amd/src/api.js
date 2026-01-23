@@ -36,6 +36,9 @@ export function sendToServer(channel, payload) {
     if (!delegatedplugin || !delegatedplugin.sendToServer) {
        return sendToServerAjax(channel, payload);
     }
+    if (!channel.component || !channel.area || !channel.contextid) {
+        throw Error('Object `channel` must contain attributes `component`, `area` and `contextid`');
+    }
     return delegatedplugin.sendToServer({
         contextid: channel.contextid,
         component: channel.component,
