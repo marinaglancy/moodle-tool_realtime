@@ -8,7 +8,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:15
+        image: postgres:16
         env:
           POSTGRES_USER: 'postgres'
           POSTGRES_HOST_AUTH_METHOD: 'trust'
@@ -58,8 +58,6 @@ jobs:
           - php: '8.3'
             moodle-branch: 'MOODLE_405_STABLE'
             database: 'pgsql'
-            # Main job. Run all checks that do not require setup and only need to be run once.
-            runchecks: 'all'
           - php: '8.1'
             moodle-branch: 'MOODLE_405_STABLE'
             database: 'mariadb'
@@ -70,9 +68,17 @@ jobs:
             moodle-branch: 'MOODLE_500_STABLE'
             database: 'pgsql'
           - php: '8.4'
+            moodle-branch: 'MOODLE_501_STABLE'
+            database: 'mariadb'
+          - php: '8.3'
+            # Main job. Run all checks that do not require setup and only need to be run once.
+            runchecks: 'all'
+            moodle-branch: 'MOODLE_501_STABLE'
+            database: 'pgsql'
+          - php: '8.4'
             moodle-branch: 'main'
             database: 'pgsql'
-          - php: '8.2'
+          - php: '8.3'
             moodle-branch: 'main'
             database: 'mariadb'
 
