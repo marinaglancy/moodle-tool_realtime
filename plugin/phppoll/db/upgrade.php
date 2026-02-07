@@ -75,5 +75,17 @@ function xmldb_realtimeplugin_phppoll_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2024080101, 'realtimeplugin', 'phppoll');
     }
 
+    if ($oldversion < 2026020700) {
+        // Changing precision of field itemid on table realtimeplugin_phppoll to (10).
+        $table = new xmldb_table('realtimeplugin_phppoll');
+        $field = new xmldb_field('itemid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'area');
+
+        // Launch change of precision for field itemid.
+        $dbman->change_field_precision($table, $field);
+
+        // Phppoll savepoint reached.
+        upgrade_plugin_savepoint(true, 2026020700, 'realtimeplugin', 'phppoll');
+    }
+
     return true;
 }
