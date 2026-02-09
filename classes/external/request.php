@@ -36,8 +36,10 @@ class request extends external_api {
      */
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters([
-            'component' => new external_value(PARAM_COMPONENT,
-                'Moodle component name, used to route the request to the correct callback'),
+            'component' => new external_value(
+                PARAM_COMPONENT,
+                'Moodle component name, used to route the request to the correct callback'
+            ),
             'payload' => new external_value(PARAM_RAW, 'Payload, JSON-encoded'),
         ]);
     }
