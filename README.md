@@ -4,6 +4,39 @@ This plugin provides a framework for real-time communication between the server 
 in Moodle plugins. Depending on the enabled backend plugin, communication can be performed
 via polling or websockets.
 
+## Communication overview ##
+
+```
+  SERVER (PHP)                                          CLIENT (Browser JS)
+  Multiple processes by same                            Single page session
+  or different users or cron
+ ┌───────────────────────────┐                         ┌─────────────────────────────┐
+ │                           │    1. Page load         │                             │
+ │ $channel->subscribe()   ──┼─>  (channel hash   ────>│  JS receives hash & key     │
+ │ (userA)                   │    embedded in page)    │  and starts polling /       │
+ │                           │                         │  opens websocket            │
+ │                           │                         │                             │
+ │───────────────────────────│                         │                             │
+ │                           │    2. Server→Client     │                             │
+ │ $channel->notify($data) ──┼─>  (polling response /  │  PubSub EVENT fired         │
+ │ (other user, cron)        │    websocket message) ─>│  with event data            │
+ │                           │                         │                             │
+ │───────────────────────────│                         │                             │
+ │                           │    3. Client→Server     │                             │
+ │ PLUGIN_realtime_event_  <─┼──  (websocket or    <───┼─ RealTimeApi.sendToServer() │
+ │   received() callback     │    web service)         │                             │
+ │ (userA)                   │                         │                             │
+ │                           │                         │                             │
+ └───────────────────────────┘                         └─────────────────────────────┘
+```
+
+1. **Subscribe**: PHP registers the channel and embeds the channel hash in the
+   page. The JS client uses this hash to authenticate polling or websocket requests.
+2. **Server to client**: PHP calls `$channel->notify()` to store an event. The client
+   receives it via polling or websocket and fires a PubSub EVENT.
+3. **Client to server** (optional): JS sends data via `sendToServer()`. The server
+   dispatches it to the plugin's `_realtime_event_received()` callback.
+
 ## How to use in plugins ##
 
 ### Channel parameters ###
@@ -16,6 +49,11 @@ A channel is defined by the following parameters:
 - `$channeldetails` - Optional additional channel identifier string
 
 ### Subscribe and listen to events (client receives from server) ###
+
+For security reasons, subscription is only allowed from PHP. The channel hash is
+generated on the server and verified when polling, which ensures that attackers
+cannot guess the channel from the JavaScript. For example, if you subscribe to
+events in module 15, you cannot guess the channel hash for module 16.
 
 Subscribe in PHP before rendering the page:
 ```php
@@ -43,6 +81,10 @@ PubSub.subscribe(RealTimeEvents.CONNECTION_LOST, (e) => {
 
 ### Notify subscribers from server (server sends to client) ###
 
+Notifications can be sent from any PHP process — any user's session, or a cron
+task. For example, a teacher updates course contents and all subscribed students
+receive the update without reloading the page.
+
 ```php
 $channel = new \tool_realtime\channel($context, $component, $area, $itemid, $channeldetails);
 $channel->notify($payload); // $payload is an array
@@ -50,50 +92,46 @@ $channel->notify($payload); // $payload is an array
 
 ### Send data from client to server ###
 
+Some backend plugins may enable bi-directional websockets, which means that
+communication is faster when both receiving and sending data. Even in broadcasting
+channels, data sent to the server is never visible to other subscribers.
+
+If bi-directional websockets are not available in the current backend plugin,
+this will be performed via a regular Moodle web service request.
+
 In Javascript, use the API module to send data to the server:
 ```javascript
 import * as RealTimeApi from 'tool_realtime/api';
 
-RealTimeApi.sendToServer({
-    contextid: contextId,
-    component: 'mod_myplugin',
-    area: 'myarea',
-    itemid: 0,
-}, {
-    action: 'myaction',
-    // ... additional payload data
+RealTimeApi.sendToServer('mod_myplugin', payload)
+.then((response) => {
+    console.log('Server response', response);
+})
+.catch((error) => {
+    console.error('Error sending data to server', error);
 });
 ```
 
 ### Handle client requests on server ###
 
-Implement a callback function in your plugin's `lib.php`:
+If you send data from client to server using the realtime API described in the
+previous section, you need to implement a callback function in your plugin's `lib.php`:
 ```php
 /**
  * Callback for tool_realtime
  *
- * @param \tool_realtime\channel $channel
  * @param mixed $payload
  * @return array
  */
-function PLUGINNAME_realtime_event_received($channel, $payload) {
-    // Process the request and optionally notify other subscribers
-    $props = $channel->get_properties(); // contextid, component, area, itemid, channeldetails
+function PLUGINNAME_realtime_event_received($payload) {
+    // The user who sent a request is already set as $USER.
 
-    // Example: notify other clients about the update
-    $notifyChannel = new \tool_realtime\channel($context, 'mod_myplugin', 'updates', 0);
-    $notifyChannel->notify(['updated' => true]);
+    // Check permissions and perform action based on the payload.
 
+    // You can return a JSON-encodable response that will be passed on to the JS caller.
     return [];
 }
 ```
-
-### Available JS events ###
-
-The `tool_realtime/events` module exports:
-- `EVENT` - Fired when a real-time event is received from the server
-- `CONNECTION_LOST` - Fired when the connection to the server is lost
-- `UPDATE_FAILED` - Fired when an update operation fails
 
 ### Other uses ###
 

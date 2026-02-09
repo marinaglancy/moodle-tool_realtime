@@ -24,7 +24,4 @@ export default {
     // Events you can subscribe to.
     EVENT: 'tool-realtime-event',
     CONNECTION_LOST: 'tool-realtime-connection-lost',
-    UPDATE_FAILED: 'tool-realtime-update-failed',
-    // Events you can publish.
-    UPDATE: 'tool-realtime-update',
 };

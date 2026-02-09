@@ -28,30 +28,21 @@ let delegatedplugin = null;
 /**
  * Can be used by any plugins to send data to server using the realtime API
  *
- * @param {Object} channel object with attributes component, area, itemid, channeldetails
+ * @param {String} component The Moodle component name, used to route the request to the correct callback
  * @param {Object} payload
  * @return {Promise}
  */
-export function sendToServer(channel, payload) {
+export function sendToServer(component, payload) {
     if (!delegatedplugin || !delegatedplugin.sendToServer) {
-       return sendToServerAjax(channel, payload);
+       return sendToServerAjax(component, payload);
     }
-    if (!channel.component || !channel.area || !channel.contextid) {
-        throw Error('Object `channel` must contain attributes `component`, `area` and `contextid`');
-    }
-    return delegatedplugin.sendToServer({
-        contextid: channel.contextid,
-        component: channel.component,
-        area: channel.area,
-        itemid: parseInt(channel.itemid ?? 0),
-        channeldetails: channel.channeldetails,
-    }, payload);
+    return delegatedplugin.sendToServer(component, payload);
 }
 
 /**
  * Used by realtime plugins to set the currently active implementation.
  *
- * The plugin must contain a method sendToServer(channel, payload) that returns a Promise
+ * The plugin must contain a method sendToServer(component, payload) that returns a Promise
  *
  * @param {Object} plugin
  */
@@ -60,17 +51,18 @@ export function setImplementation(plugin) {
 }
 
 /**
+ * Send data to server using Ajax, without using any plugin implementation.
  *
- * @param {Object} channel
+ * @param {string} component
  * @param {Object} payload
+ * @return {Promise}
  */
-export function sendToServerAjax(channel, payload) {
-    return Ajax.call([{
+export async function sendToServerAjax(component, payload) {
+    const response = await Ajax.call([{
         methodname: 'tool_realtime_request',
         args: {
-            channel: JSON.stringify(channel), payload: JSON.stringify(payload)
+            component, payload: JSON.stringify(payload)
         }
-    }])[0].then((response) => {
-        return response;
-    });
+    }])[0];
+    return response.response ? JSON.parse(response.response) : null;
 }

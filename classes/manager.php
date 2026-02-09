@@ -16,8 +16,6 @@
 
 namespace tool_realtime;
 
-use core\exception\coding_exception;
-
 /**
  * Class manager
  *
@@ -112,17 +110,20 @@ class manager {
     /**
      * Invoked when an event is received from the backend
      *
-     * @param array $channelproperties
+     * @param string $component
      * @param mixed $payload
      * @throws \core\exception\coding_exception
      * @return array
      */
-    public static function event_received(array $channelproperties, $payload): array {
-        $channel = channel::create_from_properties($channelproperties);
-        $component = $channel->get_properties()['component'];
-        $res = component_callback($component, 'realtime_event_received', [$channel, $payload]);
+    public static function event_received(string $component, $payload): array {
+        $component = clean_param($component, PARAM_COMPONENT);
+        if (!$component) {
+            return [];
+        }
+        $res = component_callback($component, 'realtime_event_received', [$payload]);
         if ($res && !is_array($res)) {
-            throw new coding_exception('Callback ' . $component . '_realtime_event_received returned value with an invalid type');
+            throw new \coding_exception('Callback ' .
+                $component . '_realtime_event_received returned value with an invalid type');
         }
         return $res ?: [];
     }

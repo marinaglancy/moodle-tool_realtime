@@ -36,34 +36,29 @@ class request extends external_api {
      */
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters([
-            'channel' => new external_value(PARAM_RAW, 'Channel properties'),
-            'payload' => new external_value(PARAM_RAW, 'Payload'),
+            'component' => new external_value(PARAM_COMPONENT,
+                'Moodle component name, used to route the request to the correct callback'),
+            'payload' => new external_value(PARAM_RAW, 'Payload, JSON-encoded'),
         ]);
     }
 
     /**
      * Implementation of web service realtimeplugin_centrifugo_request
      *
-     * @param string $channelproperties
+     * @param string $component
      * @param string $payload
      */
-    public static function execute($channelproperties, $payload) {
+    public static function execute($component, $payload) {
         // Parameter validation.
-        ['channel' => $channelproperties, 'payload' => $payload] = self::validate_parameters(
+        ['component' => $component, 'payload' => $payload] = self::validate_parameters(
             self::execute_parameters(),
-            ['channel' => $channelproperties, 'payload' => $payload]
+            ['component' => $component, 'payload' => $payload]
         );
 
-        $channelproperties = json_decode($channelproperties, true);
         $payload = json_decode($payload, true);
 
-        $channel = \tool_realtime\channel::create_from_properties($channelproperties);
-        $component = $channel->get_properties()['component'];
-        $res = component_callback($component, 'realtime_event_received', [$channel, $payload]);
-        if ($res && !is_array($res)) {
-            throw new \coding_exception('Callback ' . $component . '_realtime_event_received returned value with an invalid type');
-        }
-        return ['response' => json_encode($res)];
+        $resp = \tool_realtime\manager::event_received($component, $payload);
+        return ['response' => json_encode($resp)];
     }
 
     /**
