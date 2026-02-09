@@ -28,6 +28,7 @@ var channels = [];
 var requestscounter = [];
 var pollURL;
 var ajax = new XMLHttpRequest();
+var pollTimer = null;
 
 /**
  * Make sure we don't send requests too often
@@ -48,48 +49,77 @@ function checkRequestCounter() {
 }
 
 /**
+ * Schedule the next poll if one is not already scheduled or in-flight
+ */
+function schedulePoll() {
+    if (pollTimer === null) {
+        pollTimer = setTimeout(poll, params.timeout);
+    }
+}
+
+/**
+ * Abort any in-flight request and pending timer, then schedule a fresh poll
+ */
+function restartPoll() {
+    if (pollTimer !== null) {
+        clearTimeout(pollTimer);
+        pollTimer = null;
+    }
+    // Abort in-flight request so it doesn't reschedule on completion.
+    if (ajax.readyState !== 0 && ajax.readyState !== 4) {
+        ajax.abort();
+    }
+    schedulePoll();
+}
+
+/**
  * Polls for events, schedules the next poll
  */
 function poll() {
+    pollTimer = null;
     if (!checkRequestCounter()) {
         // Too many requests, stop polling.
         return;
     }
-    ajax.onreadystatechange = function() {
-        if (this.readyState === 4 && this.status === 200) {
-            if (this.status === 200) {
-                let json;
-                try {
-                    json = JSON.parse(this.responseText);
-                } catch {
-                    setTimeout(poll, params.timeout);
-                    return;
-                }
-                if (!json.success || json.success !== 1) {
-                    // Poll.php returned an error or an exception. Stop trying to poll.
-                    PubSub.publish(RealTimeEvents.CONNECTION_LOST);
-                    return;
-                }
-
-                // Process results - trigger all necessary Javascript/jQuery events.
-                var events = json.events;
-                for (var i in events) {
-                    PubSub.publish(RealTimeEvents.EVENT, events[i]);
-                    // Remember the last id.
-                    params.fromid = events[i].id;
-                }
-                // And start polling again.
-                setTimeout(poll, params.timeout);
-            } else {
-                // Must be a server timeout or loss of network - start new process.
-                setTimeout(poll, params.timeout);
-            }
-        }
-    };
 
     if (channels.length <= 0) {
         return;
     }
+
+    ajax.onreadystatechange = function() {
+        if (this.readyState !== 4) {
+            return;
+        }
+        // Status 0 means the request was aborted - don't reschedule, the caller handles it.
+        if (this.status === 0) {
+            return;
+        }
+        if (this.status === 200) {
+            let json;
+            try {
+                json = JSON.parse(this.responseText);
+            } catch {
+                schedulePoll();
+                return;
+            }
+            if (!json.success || json.success !== 1) {
+                // Poll.php returned an error or an exception. Stop trying to poll.
+                PubSub.publish(RealTimeEvents.CONNECTION_LOST);
+                return;
+            }
+
+            // Process results - trigger all necessary Javascript/jQuery events.
+            var events = json.events;
+            for (var i in events) {
+                PubSub.publish(RealTimeEvents.EVENT, events[i]);
+                // Remember the last id.
+                params.fromid = events[i].id;
+            }
+        }
+        // Schedule next poll for both successful and failed (non-abort) responses.
+        schedulePoll();
+    };
+
     let query = 'userid=' + encodeURIComponent(params.userid) +
         '&fromid=' + encodeURIComponent(params.fromid) +
         '&sid=' + encodeURIComponent(params.sid);
@@ -134,5 +164,5 @@ export function init(userId, pollURLParam, timeout, sid) {
 export function subscribe(hash, key, fromId) {
     params.fromid = fromId;
     channels.push({hash, key});
-    setTimeout(poll, params.timeout);
+    restartPoll();
 }
