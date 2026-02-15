@@ -30,13 +30,21 @@ let delegatedplugin = null;
  *
  * @param {String} component The Moodle component name, used to route the request to the correct callback
  * @param {Object} payload
+ * @param {Boolean} noFallback used in test_settings - does not fallback to the Ajax if the delegated plugin failed.
  * @return {Promise}
  */
-export function sendToServer(component, payload) {
+export function sendToServer(component, payload, noFallback = false) {
     if (!delegatedplugin || !delegatedplugin.sendToServer) {
        return sendToServerAjax(component, payload);
     }
-    return delegatedplugin.sendToServer(component, payload);
+    const promise = delegatedplugin.sendToServer(component, payload);
+    if (noFallback) {
+        return promise;
+    }
+    return promise.catch((error) => {
+        window.console.error('Delegated plugin error: ', error);
+        return sendToServerAjax(component, payload);
+    });
 }
 
 /**

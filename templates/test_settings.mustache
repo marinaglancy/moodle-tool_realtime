@@ -1,0 +1,144 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template tool_realtime/test_settings
+
+    Test settings page for realtime events.
+
+    Example context (json):
+    {}
+}}
+<div id="tool-realtime-test-settings">
+    {{! Card 1: Event Delivery (Server -> Browser) }}
+    <div class="card mb-3">
+        <div class="card-header">
+            <h4 class="mb-0">{{#str}}testsettings_receive_heading, tool_realtime{{/str}}</h4>
+        </div>
+        <div class="card-body">
+            <p class="text-muted">{{#str}}testsettings_receive_desc, tool_realtime{{/str}}</p>
+            <div class="mb-3">
+                <div class="mb-2">
+                    <button type="button" class="btn btn-primary" data-action="receive-single">
+                        {{#str}}testsettings_receive_single, tool_realtime{{/str}}
+                    </button>,
+                    {{#str}}operator_or, moodle{{/str}}</div>
+                <div class="d-flex flex-wrap align-items-center mb-2">
+                    <label class="mb-0 mx-1" for="receive-burst-count">{{#str}}testsettings_eventcount, tool_realtime{{/str}}</label>
+                    <input type="number" id="receive-burst-count" class="form-control mx-1" style="width: 100px;"
+                           value="100" min="1" max="10000" data-field="receive-burst-count">
+                    <label class="mb-0 mx-1" for="receive-burst-delay">{{#str}}testsettings_delay, tool_realtime{{/str}}</label>
+                    <input type="number" id="receive-burst-delay" class="form-control mx-1" style="width: 100px;"
+                           value="500" min="0" max="60000" data-field="receive-burst-delay">
+                    <button type="button" class="btn btn-primary mx-1" data-action="receive-burst">
+                        {{#str}}testsettings_receive_burst, tool_realtime{{/str}}
+                    </button>
+                </div>
+                <div>
+                    <button type="button" class="btn btn-link btn-sm d-none" data-action="receive-reset">
+                        {{#str}}reset{{/str}}
+                    </button>
+                </div>
+            </div>
+            <div data-region="receive-results" class="d-none">
+                <table class="table table-sm table-bordered w-auto">
+                    <caption class="sr-only">{{#str}}testsettings_receive_results, tool_realtime{{/str}}</caption>
+                    <tbody>
+                        <tr>
+                            <th>{{#str}}testsettings_status, tool_realtime{{/str}}</th>
+                            <td data-stat="receive-status">—</td>
+                        </tr>
+                        <tr>
+                            <th>{{#str}}testsettings_eventsreceived, tool_realtime{{/str}}</th>
+                            <td data-stat="receive-count">0</td>
+                        </tr>
+                        <tr>
+                            <th>{{#str}}testsettings_avglatency, tool_realtime{{/str}}</th>
+                            <td data-stat="receive-avg">—</td>
+                        </tr>
+                        <tr>
+                            <th>{{#str}}testsettings_minmaxlatency, tool_realtime{{/str}}</th>
+                            <td data-stat="receive-minmax">—</td>
+                        </tr>
+                        <tr>
+                            <th>{{#str}}testsettings_errors, tool_realtime{{/str}}</th>
+                            <td data-stat="receive-errors">0</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div data-region="receive-error-details" class="d-none">
+                    <div class="alert alert-danger" data-region="receive-error-messages"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{! Card 2: Event Push (Browser -> Server) }}
+    <div class="card mb-3">
+        <div class="card-header">
+            <h4 class="mb-0">{{#str}}testsettings_push_heading, tool_realtime{{/str}}</h4>
+        </div>
+        <div class="card-body">
+            <p class="text-muted">{{#str}}testsettings_push_desc, tool_realtime{{/str}}</p>
+            <div class="d-flex flex-wrap align-items-center mb-3">
+                <div class="d-flex align-items-center mx-1">
+                    <label class="mb-0 mx-1" for="push-burst-count">{{#str}}testsettings_eventcount, tool_realtime{{/str}}</label>
+                    <input type="number" id="push-burst-count" class="form-control mx-1" style="width: 100px;"
+                           value="1" min="1" max="10000" data-field="push-burst-count">
+                    <label class="mb-0 mx-1" for="push-burst-delay">{{#str}}testsettings_delay, tool_realtime{{/str}}</label>
+                    <input type="number" id="push-burst-delay" class="form-control mx-1" style="width: 100px;"
+                           value="0" min="0" max="60000" data-field="push-burst-delay">
+                    <button type="button" class="btn btn-primary mx-1" data-action="push-burst">
+                        {{#str}}testsettings_send_to_server, tool_realtime{{/str}}
+                    </button>
+                </div>
+                <button type="button" class="btn btn-link btn-sm mx-1 d-none" data-action="push-reset">
+                    {{#str}}reset{{/str}}
+                </button>
+            </div>
+            <div data-region="push-results" class="d-none">
+                <table class="table table-sm table-bordered w-auto">
+                    <caption class="sr-only">{{#str}}testsettings_push_results, tool_realtime{{/str}}</caption>
+                    <tbody>
+                        <tr>
+                            <th>{{#str}}testsettings_status, tool_realtime{{/str}}</th>
+                            <td data-stat="push-status">—</td>
+                        </tr>
+                        <tr>
+                            <th>{{#str}}testsettings_eventssent, tool_realtime{{/str}}</th>
+                            <td data-stat="push-count">0</td>
+                        </tr>
+                        <tr>
+                            <th>{{#str}}testsettings_avgroundtrip, tool_realtime{{/str}}</th>
+                            <td data-stat="push-avg">—</td>
+                        </tr>
+                        <tr>
+                            <th>{{#str}}testsettings_minmaxroundtrip, tool_realtime{{/str}}</th>
+                            <td data-stat="push-minmax">—</td>
+                        </tr>
+                        <tr>
+                            <th>{{#str}}testsettings_errors, tool_realtime{{/str}}</th>
+                            <td data-stat="push-errors">0</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div data-region="push-error-details" class="d-none">
+                    <div class="alert alert-danger" data-region="push-error-messages"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

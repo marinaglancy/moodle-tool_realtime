@@ -15,17 +15,25 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Plugin version and other meta-data are defined here.
+ * Callbacks for tool_realtime
  *
- * @package     tool_realtime
- * @copyright   2020 Marina Glancy
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    tool_realtime
+ * @copyright  Marina Glancy
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
-$plugin->component = 'tool_realtime';
-$plugin->release = '2.0';
-$plugin->version = 2026021502;
-$plugin->requires = 2022112800;
-$plugin->supported = [401, 501];
+/**
+ * Handles events received from the client via the sendToServer API
+ *
+ * Used by the test settings page to test the browser-to-server communication path.
+ *
+ * @param array $payload
+ * @return array
+ */
+function tool_realtime_realtime_event_received($payload) {
+    require_capability('moodle/site:config', context_system::instance());
+    return [
+        'receivedtime' => (int)(microtime(true) * 1000),
+        'echo' => $payload,
+    ];
+}

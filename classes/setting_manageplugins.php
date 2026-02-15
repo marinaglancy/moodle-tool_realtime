@@ -114,6 +114,7 @@ class setting_manageplugins extends \admin_setting {
         global $OUTPUT, $PAGE;
 
         $strsettings = get_string('settings');
+        $strtestsettings = get_string('testsettings', 'tool_realtime');
         $struninstall = get_string('uninstallplugin', 'core_admin');
         $strversion = get_string('version');
         $strenabled = get_string('enabled', 'core_admin');
@@ -124,9 +125,9 @@ class setting_manageplugins extends \admin_setting {
         $return .= $OUTPUT->box_start('generalbox realtimeui');
 
         $table = new html_table();
-        $table->head = [get_string('name'), $strversion, $strenabled, $strsettings, $struninstall];
-        $table->colclasses = ['leftalign', 'centeralign', 'centeralign', 'centeralign', 'centeralign'];
-        $table->id = 'logstoreplugins';
+        $table->head = [get_string('name'), $strversion, $strenabled, $strsettings, $strtestsettings, $struninstall];
+        $table->colclasses = ['leftalign', 'centeralign', 'centeralign', 'centeralign', 'centeralign', 'centeralign'];
+        $table->id = 'realtimeplugins';
         $table->attributes['class'] = 'admintable generaltable';
         $table->data = [];
 
@@ -157,8 +158,16 @@ class setting_manageplugins extends \admin_setting {
                 $uninstall = html_writer::link($uninstallurl, $struninstall);
             }
 
+            // Test settings link (only for the enabled plugin).
+            $testsettings = '';
+            if ($isenabled) {
+                $testurl = new \moodle_url('/admin/tool/realtime/test_settings.php');
+                $testsettings = html_writer::link($testurl, $strtestsettings);
+            }
+
             // Add a row to the table.
-            $table->data[] = [$icon . $displayname, $version, $isenabled ? $strenabled : '', $settings, $uninstall];
+            $table->data[] = [$icon . $displayname, $version, $isenabled ? $strenabled : '',
+                $settings, $testsettings, $uninstall];
         }
 
         $return .= html_writer::table($table);

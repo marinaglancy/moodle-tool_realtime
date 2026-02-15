@@ -35,6 +35,13 @@ $functions = [
         'type' => 'write',
         'ajax' => true,
     ],
+
+    'tool_realtime_send_test_events' => [
+        'classname' => tool_realtime\external\send_test_events::class,
+        'description' => 'Send test events for the test settings page',
+        'type' => 'write',
+        'ajax' => true,
+    ],
 ];
 
 $services = [
