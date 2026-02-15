@@ -46,8 +46,8 @@ class burst_test extends \core\task\adhoc_task {
         $scheduledtime = (int)($data->scheduledtime ?? 0);
 
         // Abort if the task is too old — the client is no longer listening.
-        if ($scheduledtime > 0 && (time() - $scheduledtime) > 30) {
-            mtrace("Burst test task skipped: scheduled " . (time() - $scheduledtime) . "s ago (limit 30s).");
+        if ($scheduledtime > 0 && (time() - $scheduledtime) > 90) {
+            mtrace("Burst test task skipped: scheduled " . (time() - $scheduledtime) . "s ago (limit 90s).");
             return;
         }
 

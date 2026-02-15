@@ -27,7 +27,7 @@ import RealTimeEvents from 'tool_realtime/events';
 import {sendToServer} from 'tool_realtime/api';
 
 /** @type {number} Seconds without events before showing timeout warning */
-const RECEIVE_TIMEOUT_SEC = 30;
+const RECEIVE_TIMEOUT_SEC = 90;
 
 const SELECTORS = {
     root: '#tool-realtime-test-settings',
