@@ -70,7 +70,7 @@ Options:
 Example:
 
 \$ php admin/tool/realtime/cli/push_test_event.php --context=3\
-        --component=thiscomponent --area=pingtest --id=123 --payload='{\"testkey1\":\"testvalue1\",\"testkey2\":\"testvalue2\"}'\n";
+        --component=this_component --area=pingtest --id=123 --payload='{\"testkey1\":\"testvalue1\",\"testkey2\":\"testvalue2\"}'\n";
     die;
 }
 

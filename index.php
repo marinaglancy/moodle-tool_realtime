@@ -94,6 +94,7 @@ if (!empty($SESSION->channels) && count($SESSION->channels) > 0) {
         $row[] = $channel['channel'];
 
         $table->data[] = $row;
+        (new channel(\context::instance_by_id($channel['contextid']), $channel['component'], $channel['area'], $channel['itemid']))->subscribe();
     }
     echo html_writer::table($table);
 }

@@ -46,7 +46,7 @@ class realtime_tool_form extends \moodleform {
         $mform->setType('context', PARAM_INT);
 
         $mform->addElement('text', 'component', get_string('component', 'tool_realtime'));
-        $mform->setType('component', PARAM_TEXT);
+        $mform->setType('component', PARAM_COMPONENT);
 
         $mform->addElement('text', 'area', get_string('area', 'tool_realtime'));
         $mform->setType('area', PARAM_TEXT);
@@ -70,10 +70,6 @@ class realtime_tool_form extends \moodleform {
      */
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);
-        // TODO: context and component Moodle checks exists.
-        if (preg_match('/[^A-Za-z0-9]/', $data['component'])) {
-            $errors['component'] = "Only English letters and digits allowed.";
-        }
         if (!preg_match('/[^-]/', $data['area'])) {
             $errors['area'] = "No hyphens (-) allowed.";
         }

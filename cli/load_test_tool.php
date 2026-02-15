@@ -57,7 +57,7 @@ Options:
 
 Example:
 
-\$ php admin/tool/realtime/cli/push_test_event.php --eventcount=3\n";
+\$ php admin/tool/realtime/cli/load_test_tool.php --eventcount=3\n";
     die;
 }
 
