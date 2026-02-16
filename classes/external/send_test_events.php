@@ -71,19 +71,12 @@ class send_test_events extends external_api {
             throw new \invalid_parameter_exception('Delay must be between 0 and 60000');
         }
 
-        // Compute request start time for clock offset calibration.
-        global $PERF;
-        [$usec, $sec] = explode(' ', $PERF->starttime);
-        $startms = (int)(((float)$sec + (float)$usec) * 1000);
-
         if ($useadhoc) {
             $task = new \tool_realtime\task\burst_test();
             $task->set_custom_data(['count' => $count, 'burstid' => $burstid, 'delay' => $delay,
                 'scheduledtime' => time()]);
             \core\task\manager::queue_adhoc_task($task);
-            // Return the midpoint of request start and now to split processing time evenly.
-            $servertime = (int)(($startms + microtime(true) * 1000) / 2);
-            return ['status' => true, 'servertime' => $servertime];
+            return ['status' => true];
         }
 
         $channel = new channel($context, 'tool_realtime', 'test', 0);
@@ -99,9 +92,7 @@ class send_test_events extends external_api {
             ]);
         }
 
-        // Return the midpoint of request start and now to split processing time evenly.
-        $servertime = (int)(($startms + microtime(true) * 1000) / 2);
-        return ['status' => true, 'servertime' => $servertime];
+        return ['status' => true];
     }
 
     /**
@@ -112,7 +103,6 @@ class send_test_events extends external_api {
     public static function execute_returns(): external_single_structure {
         return new external_single_structure([
             'status' => new external_value(PARAM_BOOL, 'Whether the operation was successful'),
-            'servertime' => new external_value(PARAM_INT, 'Server midpoint timestamp in milliseconds', VALUE_DEFAULT, 0),
         ]);
     }
 }

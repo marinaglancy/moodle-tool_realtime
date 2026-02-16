@@ -22,6 +22,7 @@
  */
 
 import Ajax from 'core/ajax';
+import Config from 'core/config';
 import * as PubSub from 'core/pubsub';
 import RealTimeEvents from 'tool_realtime/events';
 import {sendToServer} from 'tool_realtime/api';
@@ -72,9 +73,7 @@ const resetReceiveStats = (burstid = '') => {
         totalLatency: 0,
         min: Infinity,
         max: -Infinity,
-        adjustedTotalLatency: 0,
-        adjustedMin: Infinity,
-        adjustedMax: -Infinity,
+        latencies: [],
         errors: 0,
         errorMessages: [],
         seqReceived: new Set(),
@@ -243,6 +242,35 @@ const resetReceiveTimeout = () => {
 };
 
 /**
+ * Update the adjusted latency column from raw latencies and current clockOffset.
+ * Can be called after recalibration to refresh already-displayed results.
+ */
+const updateAdjustedDisplay = () => {
+    if (!receiveStats || receiveStats.count === 0) {
+        updateStat('receive-avg-adjusted', '');
+        updateStat('receive-minmax-adjusted', '');
+        return;
+    }
+    if (clockOffset === null) {
+        updateStat('receive-avg-adjusted', '');
+        updateStat('receive-minmax-adjusted', '');
+        return;
+    }
+    let total = 0;
+    let min = Infinity;
+    let max = -Infinity;
+    for (const raw of receiveStats.latencies) {
+        const adjusted = raw + clockOffset;
+        total += adjusted;
+        min = Math.min(min, adjusted);
+        max = Math.max(max, adjusted);
+    }
+    const avg = total / receiveStats.latencies.length;
+    updateStat('receive-avg-adjusted', formatMs(avg) + ' (adjusted)');
+    updateStat('receive-minmax-adjusted', formatMs(min) + ' / ' + formatMs(max) + ' (adjusted)');
+};
+
+/**
  * Update receive stats display
  */
 const updateReceiveDisplay = () => {
@@ -260,15 +288,7 @@ const updateReceiveDisplay = () => {
         updateStat('receive-avg', formatMs(avg));
         updateStat('receive-minmax', formatMs(receiveStats.min) + ' / ' + formatMs(receiveStats.max));
 
-        if (clockOffset !== null) {
-            const adjustedAvg = receiveStats.adjustedTotalLatency / receiveStats.count;
-            updateStat('receive-avg-adjusted', formatMs(adjustedAvg) + ' (adjusted)');
-            updateStat('receive-minmax-adjusted',
-                formatMs(receiveStats.adjustedMin) + ' / ' + formatMs(receiveStats.adjustedMax) + ' (adjusted)');
-        } else {
-            updateStat('receive-avg-adjusted', '');
-            updateStat('receive-minmax-adjusted', '');
-        }
+        updateAdjustedDisplay();
     }
 
     if (receiveStats.errors > 0) {
@@ -362,14 +382,11 @@ const onEventReceived = (data) => {
     }
 
     const latency = now - senttime;
-    const adjustedLatency = latency + (clockOffset || 0);
     receiveStats.count++;
     receiveStats.totalLatency += latency;
     receiveStats.min = Math.min(receiveStats.min, latency);
     receiveStats.max = Math.max(receiveStats.max, latency);
-    receiveStats.adjustedTotalLatency += adjustedLatency;
-    receiveStats.adjustedMin = Math.min(receiveStats.adjustedMin, adjustedLatency);
-    receiveStats.adjustedMax = Math.max(receiveStats.adjustedMax, adjustedLatency);
+    receiveStats.latencies.push(latency);
 
     updateStat('receive-status', 'Receiving...');
     resetReceiveTimeout();
@@ -395,17 +412,18 @@ const calibrateClockOffset = async() => {
         recalibrateLink.classList.add('d-none');
     }
 
+    const timeUrl = Config.wwwroot + '/admin/tool/realtime/time.php';
     const toServerSamples = [];
     const fromServerSamples = [];
 
     for (let i = 0; i < CALIBRATION_SAMPLES; i++) {
         try {
             const t1 = Date.now();
-            const burstid = generateBurstId();
-            const response = await sendTestEvents(1, false, burstid, 0);
+            const response = await fetch(timeUrl);
             const t4 = Date.now();
+            const text = await response.text();
+            const t2 = Math.round(parseFloat(text) * 1000);
 
-            const t2 = response?.servertime;
             if (t2 > 0) {
                 toServerSamples.push(t2 - t1);
                 fromServerSamples.push(t4 - t2);
@@ -424,17 +442,19 @@ const calibrateClockOffset = async() => {
 
     const avgToServer = toServerSamples.reduce((a, b) => a + b) / toServerSamples.length;
     const avgFromServer = fromServerSamples.reduce((a, b) => a + b) / fromServerSamples.length;
-    clockOffset = (avgToServer - avgFromServer) / 2;
+    const estimatedOffset = (avgToServer - avgFromServer) / 2;
+    const threshold = 5;
 
     if (infoEl) {
         let text = 'Average request delay: ' + Math.round(avgToServer) + ' ms (browser \u2192 server), '
             + Math.round(avgFromServer) + ' ms (server \u2192 browser).';
-        const threshold = 5;
-        if (Math.abs(avgToServer - avgFromServer) > threshold) {
+        if (Math.abs(estimatedOffset) > threshold) {
+            clockOffset = estimatedOffset;
             const sign = clockOffset >= 0 ? '+' : '';
             text += ' Clocks appear to differ by ~' + sign + Math.round(clockOffset)
                 + ' ms. Latency values will be adjusted.';
         } else {
+            clockOffset = null;
             text += ' Browser and server clocks appear to be synchronised.';
         }
         infoEl.textContent = text;
@@ -445,6 +465,9 @@ const calibrateClockOffset = async() => {
     if (link) {
         link.classList.remove('d-none');
     }
+
+    // Refresh adjusted column for any already-displayed results.
+    updateAdjustedDisplay();
 };
 
 /**
@@ -648,6 +671,6 @@ export const init = () => {
         }
     });
 
-    // Run clock offset calibration (non-blocking).
-    calibrateClockOffset();
+    // Run clock offset calibration.
+    setTimeout(calibrateClockOffset, 1000);
 };

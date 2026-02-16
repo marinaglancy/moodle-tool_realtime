@@ -35,6 +35,7 @@ $string['subplugintype_realtimeplugin'] = 'Real time backend plugin';
 $string['subplugintype_realtimeplugin_plural'] = 'Real time backend plugins';
 $string['task_burst_test'] = 'Burst test events';
 $string['testsettings'] = 'Test settings';
+$string['testsettings_desc'] = 'This page allows you to test the real-time event delivery with the currently enabled backend plugin. The first section measures how quickly events sent from the server reach your browser (latency). The second section measures the round-trip time when your browser sends an event to the server and receives a response. For more detailed diagnostics, open your browser\'s developer tools and monitor the Network tab — for polling-based plugins you will see periodic HTTP requests, and for WebSocket-based plugins you can inspect individual messages in the WebSocket connection.';
 $string['testsettings_avglatency'] = 'Avg latency';
 $string['testsettings_avgroundtrip'] = 'Avg round-trip';
 $string['testsettings_delay'] = 'Delay (ms):';
