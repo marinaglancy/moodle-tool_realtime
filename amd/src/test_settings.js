@@ -520,11 +520,9 @@ export const init = () => {
     // Subscribe to realtime events for the receive test.
     PubSub.subscribe(RealTimeEvents.EVENT, onEventReceived);
     PubSub.subscribe(RealTimeEvents.CONNECTION_LOST, () => {
-        if (receiveStats) {
-            addReceiveError('Connection lost');
-            updateStat('receive-status', 'Connection lost');
-            updateReceiveDisplay();
-        }
+        addReceiveError('Connection lost');
+        updateStat('receive-status', 'Connection lost');
+        updateReceiveDisplay();
     });
 
     // Bind button click handlers.
