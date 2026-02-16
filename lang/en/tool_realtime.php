@@ -46,6 +46,7 @@ $string['testsettings_minmaxlatency'] = 'Min / Max latency';
 $string['testsettings_minmaxroundtrip'] = 'Min / Max round-trip';
 $string['testsettings_noplugin'] = 'No real time backend plugin is enabled. Enable a plugin in the settings first.';
 $string['testsettings_notsetup'] = 'The enabled real time backend plugin is not set up correctly.';
+$string['testsettings_recalibrate'] = 'Recalibrate';
 $string['testsettings_push_desc'] = 'Tests sending events from your browser to the server and measures round-trip time.';
 $string['testsettings_push_heading'] = 'Event push (browser to server)';
 $string['testsettings_push_results'] = 'Event push results';

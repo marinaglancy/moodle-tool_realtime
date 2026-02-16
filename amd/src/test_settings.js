@@ -46,6 +46,12 @@ let pushStats = null;
 /** @type {number|null} Timer ID for receive timeout detection */
 let receiveTimeoutId = null;
 
+/** @type {number|null} Estimated clock offset (server - browser) in ms, null if not yet calibrated */
+let clockOffset = null;
+
+/** @type {number} Number of calibration round-trips */
+const CALIBRATION_SAMPLES = 5;
+
 /**
  * Generate a unique burst identifier
  *
@@ -66,6 +72,9 @@ const resetReceiveStats = (burstid = '') => {
         totalLatency: 0,
         min: Infinity,
         max: -Infinity,
+        adjustedTotalLatency: 0,
+        adjustedMin: Infinity,
+        adjustedMax: -Infinity,
         errors: 0,
         errorMessages: [],
         seqReceived: new Set(),
@@ -250,6 +259,16 @@ const updateReceiveDisplay = () => {
         const avg = receiveStats.totalLatency / receiveStats.count;
         updateStat('receive-avg', formatMs(avg));
         updateStat('receive-minmax', formatMs(receiveStats.min) + ' / ' + formatMs(receiveStats.max));
+
+        if (clockOffset !== null) {
+            const adjustedAvg = receiveStats.adjustedTotalLatency / receiveStats.count;
+            updateStat('receive-avg-adjusted', formatMs(adjustedAvg) + ' (adjusted)');
+            updateStat('receive-minmax-adjusted',
+                formatMs(receiveStats.adjustedMin) + ' / ' + formatMs(receiveStats.adjustedMax) + ' (adjusted)');
+        } else {
+            updateStat('receive-avg-adjusted', '');
+            updateStat('receive-minmax-adjusted', '');
+        }
     }
 
     if (receiveStats.errors > 0) {
@@ -343,14 +362,89 @@ const onEventReceived = (data) => {
     }
 
     const latency = now - senttime;
+    const adjustedLatency = latency + (clockOffset || 0);
     receiveStats.count++;
     receiveStats.totalLatency += latency;
     receiveStats.min = Math.min(receiveStats.min, latency);
     receiveStats.max = Math.max(receiveStats.max, latency);
+    receiveStats.adjustedTotalLatency += adjustedLatency;
+    receiveStats.adjustedMin = Math.min(receiveStats.adjustedMin, adjustedLatency);
+    receiveStats.adjustedMax = Math.max(receiveStats.adjustedMax, adjustedLatency);
 
     updateStat('receive-status', 'Receiving...');
     resetReceiveTimeout();
     updateReceiveDisplay();
+};
+
+/**
+ * Calibrate the clock offset between browser and server
+ *
+ * Sends CALIBRATION_SAMPLES AJAX requests and measures apparent one-way delays in each direction.
+ * The server returns its midpoint timestamp, so processing time is split evenly.
+ * offset = (avgToServer - avgFromServer) / 2 estimates the server-browser clock difference.
+ *
+ * @return {Promise<void>}
+ */
+const calibrateClockOffset = async() => {
+    const infoEl = getRoot().querySelector(SELECTORS.region('calibration-info'));
+    if (infoEl) {
+        infoEl.textContent = 'Calibrating...';
+    }
+    const recalibrateLink = getRoot().querySelector(SELECTORS.action('recalibrate'));
+    if (recalibrateLink) {
+        recalibrateLink.classList.add('d-none');
+    }
+
+    const toServerSamples = [];
+    const fromServerSamples = [];
+
+    for (let i = 0; i < CALIBRATION_SAMPLES; i++) {
+        try {
+            const t1 = Date.now();
+            const burstid = generateBurstId();
+            const response = await sendTestEvents(1, false, burstid, 0);
+            const t4 = Date.now();
+
+            const t2 = response?.servertime;
+            if (t2 > 0) {
+                toServerSamples.push(t2 - t1);
+                fromServerSamples.push(t4 - t2);
+            }
+        } catch (err) {
+            window.console.warn('Clock calibration sample failed:', err);
+        }
+    }
+
+    if (toServerSamples.length === 0) {
+        if (infoEl) {
+            infoEl.textContent = 'Clock calibration failed.';
+        }
+        return;
+    }
+
+    const avgToServer = toServerSamples.reduce((a, b) => a + b) / toServerSamples.length;
+    const avgFromServer = fromServerSamples.reduce((a, b) => a + b) / fromServerSamples.length;
+    clockOffset = (avgToServer - avgFromServer) / 2;
+
+    if (infoEl) {
+        let text = 'Average request delay: ' + Math.round(avgToServer) + ' ms (browser \u2192 server), '
+            + Math.round(avgFromServer) + ' ms (server \u2192 browser).';
+        const threshold = 5;
+        if (Math.abs(avgToServer - avgFromServer) > threshold) {
+            const sign = clockOffset >= 0 ? '+' : '';
+            text += ' Clocks appear to differ by ~' + sign + Math.round(clockOffset)
+                + ' ms. Latency values will be adjusted.';
+        } else {
+            text += ' Browser and server clocks appear to be synchronised.';
+        }
+        infoEl.textContent = text;
+    }
+
+    // Show the recalibrate link.
+    const link = getRoot().querySelector(SELECTORS.action('recalibrate'));
+    if (link) {
+        link.classList.remove('d-none');
+    }
 };
 
 /**
@@ -397,6 +491,8 @@ const handleReceiveBurst = async() => {
     updateStat('receive-count', '0 / ' + count);
     updateStat('receive-avg', '—');
     updateStat('receive-minmax', '—');
+    updateStat('receive-avg-adjusted', '');
+    updateStat('receive-minmax-adjusted', '');
     updateStat('receive-errors', '0');
     hideRegion('receive-error-details');
     showRegion('receive-results');
@@ -537,6 +633,7 @@ export const init = () => {
         'receive-reset': handleReceiveReset,
         'push-burst': handlePushBurst,
         'push-reset': handlePushReset,
+        'recalibrate': calibrateClockOffset,
     };
 
     root.addEventListener('click', (e) => {
@@ -546,8 +643,11 @@ export const init = () => {
         }
         const action = button.dataset.action;
         if (actions[action]) {
+            e.preventDefault();
             actions[action]();
         }
     });
 
+    // Run clock offset calibration (non-blocking).
+    calibrateClockOffset();
 };

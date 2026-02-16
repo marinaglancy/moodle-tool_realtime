@@ -30,6 +30,10 @@
         </div>
         <div class="card-body">
             <p class="text-muted">{{#str}}testsettings_receive_desc, tool_realtime{{/str}}</p>
+            <p class="small">
+                <span data-region="calibration-info"></span>
+                <a href="#" class="d-none" data-action="recalibrate">{{#str}}testsettings_recalibrate, tool_realtime{{/str}}</a>
+            </p>
             <div class="mb-3">
                 <div class="mb-2">
                     <button type="button" class="btn btn-primary" data-action="receive-single">
@@ -60,22 +64,27 @@
                         <tr>
                             <th>{{#str}}testsettings_status, tool_realtime{{/str}}</th>
                             <td data-stat="receive-status">—</td>
+                            <td></td>
                         </tr>
                         <tr>
                             <th>{{#str}}testsettings_eventsreceived, tool_realtime{{/str}}</th>
                             <td data-stat="receive-count">0</td>
+                            <td></td>
                         </tr>
                         <tr>
                             <th>{{#str}}testsettings_avglatency, tool_realtime{{/str}}</th>
                             <td data-stat="receive-avg">—</td>
+                            <td data-stat="receive-avg-adjusted" class="text-muted"></td>
                         </tr>
                         <tr>
                             <th>{{#str}}testsettings_minmaxlatency, tool_realtime{{/str}}</th>
                             <td data-stat="receive-minmax">—</td>
+                            <td data-stat="receive-minmax-adjusted" class="text-muted"></td>
                         </tr>
                         <tr>
                             <th>{{#str}}testsettings_errors, tool_realtime{{/str}}</th>
                             <td data-stat="receive-errors">0</td>
+                            <td></td>
                         </tr>
                     </tbody>
                 </table>
