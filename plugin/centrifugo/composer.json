@@ -1,0 +1,5 @@
+{
+    "require": {
+        "centrifugal/phpcent": "~6.0"
+    }
+}

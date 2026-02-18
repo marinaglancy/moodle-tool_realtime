@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<libraries>
+    <library>
+        <location>vendor/centrifugal/phpcent</location>
+        <name>phpcent</name>
+        <version>6.0.1</version>
+        <license>MIT</license>
+        <licenseversion></licenseversion>
+    </library>
+    <library>
+        <location>vendor/composer</location>
+        <name>composer</name>
+        <version></version>
+        <license>Expat</license>
+        <licenseversion></licenseversion>
+    </library>
+    <library>
+        <location>vendor/autoload.php</location>
+        <name>composer autoload</name>
+        <version></version>
+        <license></license>
+        <licenseversion></licenseversion>
+    </library>
+    <library>
+        <location>amd/src/centrifuge-lazy.js</location>
+        <name>centrifuge-js</name>
+        <description>JavaScript SDK for Centrifugo real-time messaging server</description>
+        <version>5.5.3</version>
+        <license>MIT</license>
+        <licenseversion></licenseversion>
+        <repository>https://github.com/centrifugal/centrifuge-js</repository>
+    </library>
+</libraries>

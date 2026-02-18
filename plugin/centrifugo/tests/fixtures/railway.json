@@ -1,0 +1,18 @@
+{
+  "CENTRIFUGO_ADMIN_ENABLED": "true",
+  "CENTRIFUGO_ADMIN_PASSWORD": "someadminpassword",
+  "CENTRIFUGO_ADMIN_SECRET": "someadminsecret",
+  "CENTRIFUGO_CHANNEL_NAMESPACES": "[{\"name\":\"anypush\",\"allow_subscribe_for_client\":true,\"allow_publish_for_client\":true},{\"name\":\"server\",\"allow_subscribe_for_client\":true,\"allow_publish_for_client\":false}]",
+  "CENTRIFUGO_CHANNEL_WITHOUT_NAMESPACE_ALLOW_PUBLISH_FOR_CLIENT": "false",
+  "CENTRIFUGO_CHANNEL_WITHOUT_NAMESPACE_ALLOW_SUBSCRIBE_FOR_CLIENT": "true",
+  "CENTRIFUGO_CLIENT_ALLOWED_ORIGINS": "*",
+  "CENTRIFUGO_CLIENT_TOKEN_HMAC_SECRET_KEY": "rail-hmac-secret-key",
+  "CENTRIFUGO_HTTP_API_KEY": "rail-http-api-key",
+  "CENTRIFUGO_HTTP_SERVER_PORT": "${{centrifugo.PORT}}",
+  "CENTRIFUGO_PROXIES": "[{\"name\":\"rpc-moodle\",\"endpoint\":\"${{centrifugo.MOODLE_WEBHOOK_URL}}\",\"include_connection_meta\":true,\"http\":{\"static_headers\":{\"X-Moodle-Key\":\"${{centrifugo.MOODLE_WEBHOOK_KEY}}\"}},\"http_headers\":[\"Cookie\",\"User-Agent\",\"Authorization\",\"X-Real-Ip\",\"X-Forwarded-For\",\"X-Request-Id\"]}]",
+  "CENTRIFUGO_RPC_WITHOUT_NAMESPACE_PROXY_ENABLED": "true",
+  "CENTRIFUGO_RPC_WITHOUT_NAMESPACE_PROXY_NAME": "rpc-moodle",
+  "MOODLE_WEBHOOK_KEY": "rail-webhook-key",
+  "MOODLE_WEBHOOK_URL": "https://example.com/admin/tool/realtime/plugin/centrifugo/webhook-rpc.php",
+  "PORT": "8000"
+}
