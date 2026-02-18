@@ -27,6 +27,6 @@ defined('MOODLE_INTERNAL') || die();
 $plugin->component    = 'realtimeplugin_centrifugo';
 $plugin->release      = '1.0';
 $plugin->version      = 2026021601;
-$plugin->requires     = 2024100700;
+$plugin->requires     = 2022112800;
 $plugin->supported    = [405, 405];
 $plugin->maturity     = MATURITY_STABLE;

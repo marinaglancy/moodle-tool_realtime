@@ -1,4 +1,4 @@
-@realtimeplugin @realtimeplugin_centrifugo @javascript
+@tool @tool_realtime @realtimeplugin @realtimeplugin_centrifugo @javascript
 Feature: Import Centrifugo settings from configuration
   As an admin
   I want to import Centrifugo settings from configuration files
