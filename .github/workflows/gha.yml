@@ -111,7 +111,7 @@ jobs:
         env:
           DB: ${{ matrix.database }}
           MOODLE_BRANCH: ${{ matrix.moodle-branch }}
-          IGNORE_PATHS: 'plugin/pusher/vendor'
+          IGNORE_PATHS: 'plugin/centrifugo/vendor'
           # Uncomment this to run Behat tests using the Moodle App.
           # MOODLE_APP: 'true'
 
