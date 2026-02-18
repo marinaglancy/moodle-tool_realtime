@@ -25,11 +25,12 @@ Feature: Management of real time backend plugins
     When I click on "Receive single event" "button"
     And I wait "1" seconds
     And I should see "Complete" in the "[data-stat='receive-status']" "css_element"
+    Given the site is running Moodle version 4.2 or higher
     Then the following should exist in the "Event delivery results" table:
-      | -1-              | -2-      |
-      | Status           | Complete |
-      | Events received  | 1 / 1   |
-      | Errors           | 0        |
+      | -1-             | -2-      |
+      | Status          | Complete |
+      | Events received | 1 / 1    |
+      | Errors          | 0        |
 
   Scenario: Receive multiple events from the server via ad-hoc task
     Given I log in as "admin"
@@ -41,6 +42,7 @@ Feature: Management of real time backend plugins
     And I run all adhoc tasks
     And I wait "1" seconds
     And I should see "Complete" in the "[data-stat='receive-status']" "css_element"
+    Given the site is running Moodle version 4.2 or higher
     Then the following should exist in the "Event delivery results" table:
       | -1-              | -2-      |
       | Status           | Complete |
@@ -54,6 +56,7 @@ Feature: Management of real time backend plugins
     When I click on "Send to server" "button"
     And I wait "1" seconds
     And I should see "Complete" in the "[data-stat='push-status']" "css_element"
+    Given the site is running Moodle version 4.2 or higher
     Then the following should exist in the "Event push results" table:
       | -1-         | -2-      |
       | Status      | Complete |
