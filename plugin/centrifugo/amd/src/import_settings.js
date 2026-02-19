@@ -73,6 +73,7 @@ const parseRailwayJson = (data) => ({
     apikey: data.CENTRIFUGO_HTTP_API_KEY || '',
     tokensecret: data.CENTRIFUGO_CLIENT_TOKEN_HMAC_SECRET_KEY || '',
     webhookkey: data.MOODLE_WEBHOOK_KEY || '',
+    host: data.HOST || '',
 });
 
 /**
@@ -124,7 +125,7 @@ const parseInput = (text) => {
             // Otherwise treat as native Centrifugo config.
             result = parseCentrifugoConfig(data);
         }
-        if (!result.apikey && !result.tokensecret && !result.webhookkey) {
+        if (!result.apikey && !result.tokensecret && !result.webhookkey && !result.host) {
             return null;
         }
         return result;
@@ -207,6 +208,7 @@ export const init = async() => {
         setFieldValue('apikey', result.apikey);
         setFieldValue('tokensecret', result.tokensecret);
         setFieldValue('webhookkey', result.webhookkey);
+        setFieldValue('host', result.host);
         modal.hide();
     });
 

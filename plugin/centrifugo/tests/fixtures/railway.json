@@ -12,6 +12,7 @@
   "CENTRIFUGO_PROXIES": "[{\"name\":\"rpc-moodle\",\"endpoint\":\"${{centrifugo.MOODLE_WEBHOOK_URL}}\",\"include_connection_meta\":true,\"http\":{\"static_headers\":{\"X-Moodle-Key\":\"${{centrifugo.MOODLE_WEBHOOK_KEY}}\"}},\"http_headers\":[\"Cookie\",\"User-Agent\",\"Authorization\",\"X-Real-Ip\",\"X-Forwarded-For\",\"X-Request-Id\"]}]",
   "CENTRIFUGO_RPC_WITHOUT_NAMESPACE_PROXY_ENABLED": "true",
   "CENTRIFUGO_RPC_WITHOUT_NAMESPACE_PROXY_NAME": "rpc-moodle",
+  "HOST": "rail-centrifugo.example.com:8000",
   "MOODLE_WEBHOOK_KEY": "rail-webhook-key",
   "MOODLE_WEBHOOK_URL": "https://example.com/admin/tool/realtime/plugin/centrifugo/webhook-rpc.php",
   "PORT": "8000"

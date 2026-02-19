@@ -31,6 +31,7 @@ Feature: Import Centrifugo settings from configuration
     Then the field "HTTP API key" matches value "rail-http-api-key"
     And the field "Token HMAC secret" matches value "rail-hmac-secret-key"
     And the field "Webhook key" matches value "rail-webhook-key"
+    And the field "Host" matches value "rail-centrifugo.example.com:8000"
 
   Scenario: Import from Railway .env format
     When I import centrifugo settings from "railway.env" fixture

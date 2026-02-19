@@ -31,14 +31,15 @@ $string['apikey'] = 'HTTP API key';
 $string['apikey_desc'] = 'API key for authenticating server-to-Centrifugo requests (publishing events). Corresponds to `api_key` in Centrifugo server configuration. Railway template variable: `CENTRIFUGO_HTTP_API_KEY`.';
 $string['configintro'] = 'This plugin enables real-time communication via WebSockets using <a href="https://centrifugal.dev/" target="_blank">Centrifugo</a>, an open-source scalable real-time messaging server.
 
-The easiest way to set up your own Centrifugo hosting is to use the <a href="{$a->railwayurl}" target="_blank">Railway template</a>. When deploying from the template, set `MOODLE_WEBHOOK_URL` to `{$a->webhookurl}` and all secrets will be randomly generated. After that, copy the deployed URL and other variables into the settings below.';
+The easiest way to set up your own Centrifugo hosting is to use the <a href="{$a->railwayurl}" target="_blank">Railway template</a>. When deploying from the template, set `MOODLE_WEBHOOK_URL` to `{$a->webhookurl}` and all secrets will be randomly generated. After that, copy the deployed URL and other variables into the settings below.<br><br>
+Step-by-step deployment instructions are available at <a href="https://lmscloud.io/plugins/tool_realtime/" target="_blank">lmscloud.io/plugins/tool_realtime</a>.';
 $string['host'] = 'Host';
 $string['host_desc'] = "Host and port of Centrifugo, example: `abcdef.com:8000`
 
 Do not include protocol or path. They will be added automatically, in the example above the full URLs will be `wss://abcdef.com:8000/connection/websocket` for the websocket and `https://abcdef.com:8000/api` for requesting authentication tokens.";
-$string['importbody'] = 'Paste Centrifugo server configuration (JSON) or Railway template variables (JSON or .env format) below.<br><br>
-Values for <b>HTTP API key</b>, <b>Token HMAC secret</b> and <b>Webhook key</b> will be extracted and inserted into the settings form. No other settings will be used or stored. You will need to submit the settings form to save the changes.';
-$string['importbutton'] = 'Import from configuration';
+$string['importbody'] = 'Paste the contents of the <b>_EXPORT_TO_MOODLE</b> variable after deploying the Railway template, or paste your Centrifugo server configuration.<br><br>
+Values for <b>HTTP API key</b>, <b>Token HMAC secret</b>, <b>Webhook key</b> and <b>Host</b> (if present) will be extracted and inserted into the settings form. No other settings will be used or stored. You will need to submit the settings form to save the changes.';
+$string['importbutton'] = 'Import settings';
 $string['importerror'] = 'Could not parse the configuration.';
 $string['importtitle'] = 'Import settings';
 $string['pluginname'] = 'Centrifugo';
