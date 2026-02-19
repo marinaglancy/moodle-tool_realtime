@@ -117,7 +117,7 @@ class plugin extends plugin_base {
     }
 
     #[\Override]
-    public function notify(channel $channel, array|null $payload = null): void {
+    public function notify(channel $channel, ?array $payload = null): void {
         $channelname = $channel->get_hash();
         $client = new \phpcent\Client($this->get_api_url());
         $client->setApiKey($this->get_api_key());

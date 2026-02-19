@@ -45,7 +45,12 @@ class get_token extends external_api {
         $context = \context_system::instance();
         self::validate_context($context);
 
-        return ['token' => (new \realtimeplugin_centrifugo\plugin())->get_token()];
+        $plugin = \tool_realtime\manager::get_plugin();
+        if ($plugin && $plugin instanceof \realtimeplugin_centrifugo\plugin && $plugin->is_set_up()) {
+            return ['token' => $plugin->get_token()];
+        } else {
+            throw new \moodle_exception('Centrifugo plugin is not enabled');
+        }
     }
 
     /**
