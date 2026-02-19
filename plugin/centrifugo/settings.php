@@ -43,7 +43,7 @@ if ($hassiteconfig) {
             'configintro',
             'realtimeplugin_centrifugo',
             [
-                'railwayurl' => 'https://railway.com/deploy/k078iX',
+                'railwayurl' => 'https://railway.com/deploy/centrifugo-for-moodle',
                 'webhookurl' => $rpcendpoint,
             ]
         ) . '<br/>' . $importbtn
