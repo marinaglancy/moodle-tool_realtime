@@ -50,21 +50,6 @@ function xmldb_realtimeplugin_centrifugo_upgrade($oldversion) {
             if ($tokensecret !== '') {
                 set_config('tokensecret', $tokensecret, 'realtimeplugin_centrifugo');
             }
-
-            // Migrate webhook key.
-            $webhookkey = $config['MOODLE_WEBHOOK_KEY'] ?? '';
-            if ($webhookkey === '' && !empty($config['proxies'])) {
-                foreach ($config['proxies'] as $proxy) {
-                    $key = $proxy['http']['static_headers']['X-Moodle-Key'] ?? '';
-                    if ($key !== '') {
-                        $webhookkey = $key;
-                        break;
-                    }
-                }
-            }
-            if ($webhookkey !== '') {
-                set_config('webhookkey', $webhookkey, 'realtimeplugin_centrifugo');
-            }
         }
 
         // Delete the jsonconfig setting.

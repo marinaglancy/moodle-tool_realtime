@@ -34,34 +34,10 @@ const SETTINGS_PREFIX = 'id_s_realtimeplugin_centrifugo_';
  * @param {Object} data Parsed JSON object
  * @returns {Object} Extracted settings
  */
-const parseCentrifugoConfig = (data) => {
-    const result = {
-        apikey: data?.http_api?.key || '',
-        tokensecret: data?.client?.token?.hmac_secret_key || '',
-        webhookkey: '',
-    };
-
-    if (Array.isArray(data?.proxies)) {
-        let fallbackKey = '';
-        for (const proxy of data.proxies) {
-            const headers = proxy?.http?.static_headers || {};
-            const headerEntry = Object.entries(headers).find(([k]) => k.toLowerCase() === 'x-moodle-key');
-            const key = headerEntry ? headerEntry[1] : '';
-            if (key) {
-                fallbackKey = key;
-                if (proxy.endpoint && proxy.endpoint.includes('webhook-rpc.php')) {
-                    result.webhookkey = key;
-                    break;
-                }
-            }
-        }
-        if (!result.webhookkey) {
-            result.webhookkey = fallbackKey;
-        }
-    }
-
-    return result;
-};
+const parseCentrifugoConfig = (data) => ({
+    apikey: data?.http_api?.key || '',
+    tokensecret: data?.client?.token?.hmac_secret_key || '',
+});
 
 /**
  * Parse Railway template variables (flat key-value JSON).
@@ -72,7 +48,6 @@ const parseCentrifugoConfig = (data) => {
 const parseRailwayJson = (data) => ({
     apikey: data.CENTRIFUGO_HTTP_API_KEY || '',
     tokensecret: data.CENTRIFUGO_CLIENT_TOKEN_HMAC_SECRET_KEY || '',
-    webhookkey: data.MOODLE_WEBHOOK_KEY || '',
     host: data.HOST || '',
 });
 
@@ -93,7 +68,6 @@ const parseEnvFormat = (text) => {
     return {
         apikey: vars.CENTRIFUGO_HTTP_API_KEY || '',
         tokensecret: vars.CENTRIFUGO_CLIENT_TOKEN_HMAC_SECRET_KEY || '',
-        webhookkey: vars.MOODLE_WEBHOOK_KEY || '',
     };
 };
 
@@ -125,7 +99,7 @@ const parseInput = (text) => {
             // Otherwise treat as native Centrifugo config.
             result = parseCentrifugoConfig(data);
         }
-        if (!result.apikey && !result.tokensecret && !result.webhookkey && !result.host) {
+        if (!result.apikey && !result.tokensecret && !result.host) {
             return null;
         }
         return result;
@@ -133,7 +107,7 @@ const parseInput = (text) => {
 
     // Try .env format.
     const result = parseEnvFormat(text);
-    if (!result.apikey && !result.tokensecret && !result.webhookkey) {
+    if (!result.apikey && !result.tokensecret) {
         return null;
     }
     return result;
@@ -207,7 +181,6 @@ export const init = async() => {
 
         setFieldValue('apikey', result.apikey);
         setFieldValue('tokensecret', result.tokensecret);
-        setFieldValue('webhookkey', result.webhookkey);
         setFieldValue('host', result.host);
         modal.hide();
     });

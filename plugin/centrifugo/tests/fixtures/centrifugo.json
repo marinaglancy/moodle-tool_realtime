@@ -12,29 +12,5 @@
   },
   "http_api": {
     "key": "cfgo-http-api-key"
-  },
-  "proxies": [
-    {
-      "name": "another proxy",
-      "endpoint": "https://someotherurl/another/path",
-      "http": {
-        "static_headers": {
-          "X-Moodle-Key": "wrong-proxy-key"
-        }
-      }
-    },
-    {
-      "name": "rpc-moodle",
-      "endpoint": "https://example.com/admin/tool/realtime/plugin/centrifugo/webhook-rpc.php",
-      "include_connection_meta": true,
-      "http": {
-        "static_headers": {
-          "X-Moodle-Key": "cfgo-webhook-key"
-        }
-      },
-      "http_headers": [
-        "User-Agent"
-      ]
-    }
-  ]
+  }
 }

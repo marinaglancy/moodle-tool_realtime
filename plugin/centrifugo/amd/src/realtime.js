@@ -24,17 +24,10 @@
 import * as PubSub from 'core/pubsub';
 import * as RealTimeEvents from 'tool_realtime/events';
 import * as Ajax from 'core/ajax';
-import * as api from 'tool_realtime/api';
-import * as config from 'core/config';
 import {Centrifuge, UnauthorizedError} from './centrifuge-lazy';
 
 let params;
 let centrifuge;
-
-const sendToServer = (component, payload) => {
-    return centrifuge.rpc('user.event', {component, sesskey: config.sesskey, payload})
-        .then((response) => response.data);
-};
 
 /**
  * Initialise plugin
@@ -44,9 +37,6 @@ const sendToServer = (component, payload) => {
 export function init(initParams) {
     params = initParams;
     centrifuge = new Centrifuge(params.host, {token: params.token, getToken: getToken});
-    if (params.userpc) {
-        api.setImplementation({sendToServer});
-    }
 }
 
 const getToken = async() => {

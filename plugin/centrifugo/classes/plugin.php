@@ -88,16 +88,6 @@ class plugin extends plugin_base {
     }
 
     /**
-     * Whether RPC is enabled and properly configured
-     *
-     * @return bool
-     */
-    public function use_rpc(): bool {
-        return (bool) get_config('realtimeplugin_centrifugo', 'userpc')
-            && $this->get_rpc_header() !== null;
-    }
-
-    /**
      * Intitialises realtime tool for Javascript subscriptions
      *
      */
@@ -112,7 +102,7 @@ class plugin extends plugin_base {
         $PAGE->requires->js_call_amd(
             'realtimeplugin_centrifugo/realtime',
             'init',
-            [['host' => $host, 'token' => $token, 'userpc' => $this->use_rpc()]]
+            [['host' => $host, 'token' => $token]]
         );
     }
 
@@ -153,25 +143,5 @@ class plugin extends plugin_base {
             $meta
         );
         return $token;
-    }
-
-    /**
-     * Get the RPC webhook endpoint URL
-     *
-     * @return string
-     */
-    public function get_rpc_endpoint(): string {
-        global $CFG;
-        return $CFG->wwwroot . '/admin/tool/realtime/plugin/centrifugo/webhook-rpc.php';
-    }
-
-    /**
-     * Get the expected authentication header value for RPC requests
-     *
-     * @return string|null
-     */
-    public function get_rpc_header(): ?string {
-        $webhookkey = get_config('realtimeplugin_centrifugo', 'webhookkey');
-        return !empty($webhookkey) ? $webhookkey : null;
     }
 }

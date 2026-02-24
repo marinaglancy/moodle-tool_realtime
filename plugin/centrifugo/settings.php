@@ -26,7 +26,6 @@
 
 if ($hassiteconfig) {
     global $PAGE;
-    $rpcendpoint = $CFG->wwwroot . '/admin/tool/realtime/plugin/centrifugo/webhook-rpc.php';
     $importbtn = html_writer::tag(
         'button',
         get_string('importbutton', 'realtimeplugin_centrifugo'),
@@ -42,10 +41,7 @@ if ($hassiteconfig) {
         get_string(
             'configintro',
             'realtimeplugin_centrifugo',
-            [
-                'railwayurl' => 'https://railway.com/deploy/centrifugo-for-moodle',
-                'webhookurl' => $rpcendpoint,
-            ]
+            ['railwayurl' => 'https://railway.com/deploy/centrifugo-for-moodle']
         ) . '<br/>' . $importbtn
     ));
     $PAGE->requires->js_call_amd('realtimeplugin_centrifugo/import_settings', 'init');
@@ -72,23 +68,6 @@ if ($hassiteconfig) {
         'realtimeplugin_centrifugo/tokensecret',
         new lang_string('tokensecret', 'realtimeplugin_centrifugo'),
         new lang_string('tokensecret_desc', 'realtimeplugin_centrifugo'),
-        ''
-    ));
-    $settings->add(new admin_setting_configselect(
-        'realtimeplugin_centrifugo/userpc',
-        new lang_string('userpc', 'realtimeplugin_centrifugo'),
-        new lang_string('userpc_desc', 'realtimeplugin_centrifugo'),
-        1,
-        [0 => get_string('no'), 1 => get_string('yes')]
-    ));
-    $settings->add(new admin_setting_configpasswordunmask(
-        'realtimeplugin_centrifugo/webhookkey',
-        new lang_string('webhookkey', 'realtimeplugin_centrifugo'),
-        new lang_string(
-            'webhookkey_desc',
-            'realtimeplugin_centrifugo',
-            $rpcendpoint
-        ),
         ''
     ));
 }

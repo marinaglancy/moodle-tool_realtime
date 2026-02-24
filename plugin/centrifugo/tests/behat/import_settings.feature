@@ -12,9 +12,9 @@ Feature: Import Centrifugo settings from configuration
     And I navigate to "Plugins > Admin tools > Real time events > Centrifugo" in site administration
 
   Scenario: Import invalid configuration shows error
-    When I click on "Import from configuration" "button"
+    When I click on "Import settings" "button"
     And I set the field "centrifugo-import-textarea" to "this is not a valid config"
-    And I click on "Import from configuration" "button" in the "Import settings" "dialogue"
+    And I click on "Import settings" "button" in the "Import settings" "dialogue"
     Then I should see "Could not parse the configuration." in the "Import settings" "dialogue"
     And I click on "Cancel" "button" in the "Import settings" "dialogue"
 
@@ -23,14 +23,12 @@ Feature: Import Centrifugo settings from configuration
     And I press "Save changes"
     Then the field "HTTP API key" matches value "cfgo-http-api-key"
     And the field "Token HMAC secret" matches value "cfgo-hmac-secret-key"
-    And the field "Webhook key" matches value "cfgo-webhook-key"
 
   Scenario: Import from Railway JSON variables
     When I import centrifugo settings from "railway.json" fixture
     And I press "Save changes"
     Then the field "HTTP API key" matches value "rail-http-api-key"
     And the field "Token HMAC secret" matches value "rail-hmac-secret-key"
-    And the field "Webhook key" matches value "rail-webhook-key"
     And the field "Host" matches value "rail-centrifugo.example.com:8000"
 
   Scenario: Import from Railway .env format
@@ -38,4 +36,3 @@ Feature: Import Centrifugo settings from configuration
     And I press "Save changes"
     Then the field "HTTP API key" matches value "env-http-api-key"
     And the field "Token HMAC secret" matches value "env-hmac-secret-key"
-    And the field "Webhook key" matches value "env-webhook-key"

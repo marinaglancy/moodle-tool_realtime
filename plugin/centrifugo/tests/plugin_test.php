@@ -62,55 +62,6 @@ final class plugin_test extends \advanced_testcase {
         $this->assertFalse($plugin->is_set_up());
     }
 
-    public function test_use_rpc_enabled_with_key(): void {
-        $this->resetAfterTest();
-        set_config('userpc', '1', 'realtimeplugin_centrifugo');
-        set_config('webhookkey', 'testkey', 'realtimeplugin_centrifugo');
-
-        $plugin = new plugin();
-        $this->assertTrue($plugin->use_rpc());
-    }
-
-    public function test_use_rpc_disabled(): void {
-        $this->resetAfterTest();
-        set_config('userpc', '0', 'realtimeplugin_centrifugo');
-        set_config('webhookkey', 'testkey', 'realtimeplugin_centrifugo');
-
-        $plugin = new plugin();
-        $this->assertFalse($plugin->use_rpc());
-    }
-
-    public function test_use_rpc_enabled_without_key(): void {
-        $this->resetAfterTest();
-        set_config('userpc', '1', 'realtimeplugin_centrifugo');
-
-        $plugin = new plugin();
-        $this->assertFalse($plugin->use_rpc());
-    }
-
-    public function test_get_rpc_header(): void {
-        $this->resetAfterTest();
-        set_config('webhookkey', 'mykey', 'realtimeplugin_centrifugo');
-
-        $plugin = new plugin();
-        $this->assertEquals('mykey', $plugin->get_rpc_header());
-    }
-
-    public function test_get_rpc_header_empty(): void {
-        $this->resetAfterTest();
-
-        $plugin = new plugin();
-        $this->assertNull($plugin->get_rpc_header());
-    }
-
-    public function test_get_rpc_endpoint(): void {
-        $plugin = new plugin();
-        $this->assertStringEndsWith(
-            '/admin/tool/realtime/plugin/centrifugo/webhook-rpc.php',
-            $plugin->get_rpc_endpoint()
-        );
-    }
-
     public function test_get_token(): void {
         $this->resetAfterTest();
         set_config('host', 'localhost:8000', 'realtimeplugin_centrifugo');
