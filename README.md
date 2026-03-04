@@ -39,14 +39,15 @@ via polling or websockets.
 
 ## How to use in plugins ##
 
-### Channel parameters ###
+### Channels ###
 
-A channel is defined by the following parameters:
-- `$context` - The Moodle context (e.g., course module context)
-- `$component` - Your plugin's frankenstyle name (e.g., 'mod_kahoodle')
-- `$area` - A string identifying the communication area (e.g., 'game', 'gamemaster')
-- `$itemid` - An integer identifier, often used to target specific users (e.g., player ID, 0 for broadcast)
-- `$channeldetails` - Optional additional channel identifier string
+A channel uniquely identifies a communication path between server and client.
+A hash is derived from the channel properties and embedded in the page during
+subscription. JavaScript uses this hash to authenticate polling or websocket
+requests — users cannot guess the hash of another channel.
+
+Creating a new channel with the same properties always produces the same hash,
+so the same channel object can be used for both subscribing and notifying.
 
 ### Subscribe and listen to events (client receives from server) ###
 
@@ -97,7 +98,7 @@ communication is faster when both receiving and sending data. Even in broadcasti
 channels, data sent to the server is never visible to other subscribers.
 
 If bi-directional websockets are not available in the current backend plugin,
-this will be performed via a regular Moodle web service request.
+this will be performed via a regular Moodle AJAX request.
 
 In Javascript, use the API module to send data to the server:
 ```javascript
@@ -116,6 +117,7 @@ RealTimeApi.sendToServer('mod_myplugin', payload)
 
 If you send data from client to server using the realtime API described in the
 previous section, you need to implement a callback function in your plugin's `lib.php`:
+
 ```php
 /**
  * Callback for tool_realtime
@@ -127,6 +129,7 @@ function PLUGINNAME_realtime_event_received($payload) {
     // The user who sent a request is already set as $USER.
 
     // Check permissions and perform action based on the payload.
+    // Payload must be validated and sanitised as it can be tampered with by the client.
 
     // You can return a JSON-encodable response that will be passed on to the JS caller.
     return [];
@@ -135,7 +138,7 @@ function PLUGINNAME_realtime_event_received($payload) {
 
 ### Other uses ###
 
-Check if area is enabled in PHP:
+Check if the real-time API is available for a component and area in PHP:
 ```php
 if (\tool_realtime\manager::is_enabled($component, $area)) {
     // ...
@@ -145,4 +148,3 @@ if (\tool_realtime\manager::is_enabled($component, $area)) {
 ## Examples ##
 
 - [mod_kahoodle](https://github.com/marinaglancy/moodle-mod_kahoodle) - A Kahoot-style quiz game
-- [mod_rplace (inspired by reddit r/place)](https://github.com/marinaglancy/moodle-mod_rplace)

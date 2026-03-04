@@ -96,23 +96,35 @@ class manager {
     }
 
     /**
-     * Checks if the given area is enabled
+     * Checks if the real-time API is available for the given component and area.
      *
-     * @param string $component
-     * @param string $area
+     * Currently this only checks whether a backend plugin is selected and set up.
+     * In the future it may be possible to enable or disable individual areas.
+     *
+     * @param string $component Frankenstyle plugin name
+     * @param string $area Communication area within the plugin
      * @return bool
      */
     public static function is_enabled(string $component, string $area) {
-        // TODO this function exists in case we want to provide UI for selective enabling/disabling areas.
+        if (!self::get_plugin()) {
+            return false;
+        }
         return true;
     }
 
     /**
-     * Invoked when an event is received from the backend
+     * Invoked when the client calls RealTimeApi.sendToServer() in JavaScript.
+     *
+     * Dispatches the payload to the component's PLUGINNAME_realtime_event_received()
+     * callback in lib.php. The payload is passed as-is without any sanitisation — it originates
+     * from browser JavaScript and can be tampered with. It is the callback's responsibility
+     * to validate and sanitise the input.
+     *
+     * The callback may return an array that will be JSON-encoded and returned
+     * to the calling JavaScript code.
      *
      * @param string $component
      * @param mixed $payload
-     * @throws \core\exception\coding_exception
      * @return array
      */
     public static function event_received(string $component, $payload): array {

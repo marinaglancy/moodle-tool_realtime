@@ -41,17 +41,26 @@ class channel {
     protected $channeldetails = '';
 
     /**
-     * Constructor
+     * Creates a channel for server-to-client real-time notifications.
      *
-     * @param \context $context
-     * @param string $component
-     * @param string $area
-     * @param int $itemid
-     * @param string $channeldetails any additional description of the communication channel, for example,
-     *    conversation identifier or md5 of several properties.
+     * A channel uniquely identifies a communication path between server and client.
+     * A hash is derived from all channel properties and embedded in the page
+     * during subscription. JavaScript uses this hash to authenticate polling or
+     * websocket requests — users cannot guess the hash of another channel.
+     *
+     * Creating a new channel with the same properties always produces the same hash,
+     * so the same channel object can be used for both subscribing and notifying.
+     * To prevent reuse of a channel across time periods (e.g. next day/next year),
+     * include a time-bound value in $channeldetails.
+     *
+     * @param \context $context Moodle context (e.g. course module context)
+     * @param string $component Frankenstyle plugin name (e.g. 'mod_kahoodle')
+     * @param string $area Identifies the communication area within the plugin (e.g. 'game')
+     * @param int $itemid Integer identifier, often used to target specific users (0 for broadcast)
+     * @param string $channeldetails Optional extra identifier, e.g. a conversation ID
+     *     or json_encode of multiple properties
      */
     public function __construct(context $context, string $component, string $area, int $itemid = 0, string $channeldetails = '') {
-        // TODO validate parameters (clean_param, length, etc).
         $this->context = $context;
         $this->component = $component;
         $this->area = $area;
@@ -92,13 +101,29 @@ class channel {
      */
     public function get_hash() {
         $params = ['contextid' => (string)$this->context->id,
-            'component' => (string)$this->component,
-            'area' => (string)$this->area,
+            'component' => $this->component,
+            'area' => $this->area,
             'itemid' => (string)$this->itemid,
             'channeldetails' => (string)$this->channeldetails,
-            'siteidentifier' => get_site_identifier(),
+            'siteurl' => (new \moodle_url('/'))->out(false),
+            'salt' => self::get_salt(),
         ];
-        return md5(json_encode($params));
+        return substr(hash('sha256', json_encode($params)), 0, 32);
+    }
+
+    /**
+     * Returns the random salt used for channel hashing, generating one if it doesn't exist yet.
+     *
+     * @return string
+     */
+    protected static function get_salt(): string {
+        $salt = get_config('tool_realtime', 'channelsalt');
+        if (empty($salt)) {
+            $salt = random_bytes(32);
+            $salt = bin2hex($salt);
+            set_config('channelsalt', $salt, 'tool_realtime');
+        }
+        return $salt;
     }
 
     /**
