@@ -47,20 +47,24 @@ class plugin extends plugin_base {
      * @param channel $channel
      */
     public function subscribe(channel $channel): void {
-        global $PAGE, $USER, $DB;
+        global $PAGE, $SESSION, $DB;
         if (!$this->is_set_up() || !isloggedin() || (isguestuser() && !$this->allow_guests())) {
             return;
         }
         self::init();
         $fromid = (int)$DB->get_field_sql("SELECT max(id) FROM {" . self::TABLENAME . "}");
         $hash = $channel->get_hash();
-        // Create a user key to be used with this channel for this user id (use userid as an instance).
-        $key = create_user_key("realtimeplugin_phppoll:$hash", $USER->id, $USER->id);
+
+        // Store the channel hash in the session so poll.php can validate it.
+        if (!isset($SESSION->realtimephppollchannels)) {
+            $SESSION->realtimephppollchannels = [];
+        }
+        $SESSION->realtimephppollchannels[$hash] = true;
 
         $PAGE->requires->js_call_amd(
             'realtimeplugin_phppoll/realtime',
             'subscribe',
-            [$hash, $key, $fromid]
+            [$hash, $fromid]
         );
     }
 
@@ -69,7 +73,7 @@ class plugin extends plugin_base {
      *
      */
     public function init(): void {
-        global $PAGE, $USER, $DB;
+        global $PAGE;
         if (self::$initialised || !$this->is_set_up() || !isloggedin() || (isguestuser() && !$this->allow_guests())) {
             return;
         }
@@ -78,7 +82,7 @@ class plugin extends plugin_base {
         $PAGE->requires->js_call_amd(
             'realtimeplugin_phppoll/realtime',
             'init',
-            [$USER->id, $url->out(false), $this->get_delay_between_checks(), substr(session_id(), 0, 5)]
+            [$url->out(false), $this->get_delay_between_checks()]
         );
     }
 

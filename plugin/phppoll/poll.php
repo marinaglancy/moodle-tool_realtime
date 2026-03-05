@@ -24,53 +24,55 @@
  */
 
 define('AJAX_SCRIPT', true);
-define('NO_MOODLE_COOKIES', true);
 define('READ_ONLY_SESSION', true);
+define('NO_SESSION_UPDATE', true);
 
 // @codingStandardsIgnoreLine This script does not require login.
 require_once(__DIR__ . '/../../../../../config.php');
 
 // We do not want to call require_login() here because we don't want to update 'lastaccess' and keep session alive.
 
-// Last event id seen.
-$fromid = optional_param('fromid', 0, PARAM_INT);
-// User id - we do not use cookies for performance reasons, the access will be validated separately.
-$userid = optional_param('userid', 0, PARAM_INT);
-// List of all channels user wants to receive updates from.
-$channels = optional_param_array('channels', [], PARAM_RAW);
-// Respective validation keys for each channel.
-$keys = optional_param_array('key', [], PARAM_RAW);
-// First 5 char of the user session id (to make sure they did not log out meanwhile).
-$sidpart = optional_param('sid', '', PARAM_RAW);
-
 if (\tool_realtime\manager::get_enabled_plugin_name() !== 'phppoll') {
     echo json_encode(['error' => 'Plugin is not enabled']);
     exit;
 }
 
-core_php_time_limit::raise();
-$starttime = microtime(true);
 /** @var realtimeplugin_phppoll\plugin $plugin */
 $plugin = \tool_realtime\manager::get_plugin();
+
+if (!isloggedin() || (isguestuser() && !$plugin->allow_guests())) {
+    throw new \require_login_exception('');
+}
+
+// Last event id seen.
+$fromid = optional_param('fromid', 0, PARAM_INT);
+// List of all channels user wants to receive updates from.
+$channels = optional_param_array('channels', [], PARAM_RAW);
+
+// Validate requested channels against subscriptions stored in the session.
+$subscribedchannels = $SESSION->realtimephppollchannels ?? [];
+foreach ($channels as $hash) {
+    if (!isset($subscribedchannels[$hash])) {
+        echo json_encode(['error' => 'Invalid channel']);
+        exit;
+    }
+}
+
+// Save session id and close the session to release the lock before the long-polling loop.
+$sid = session_id();
+\core\session\manager::write_close();
+
+core_php_time_limit::raise();
+$starttime = microtime(true);
 $maxduration = $plugin->get_request_timeout(); // In seconds as float.
 $sleepinterval = $plugin->get_delay_between_checks() * 1000; // In microseconds.
 
 while (true) {
-    // Validate that the user is allowed to subscribe to each requested channel.
-    // We use userid as the instance so it also validates that the key was issued to this user.
-    // If validation fails, the script will throw an exception and in the JS the event 'CONNECTION_LOST' will be raised.
-    foreach ($channels as $id => $hash) {
-        require_user_key_login("realtimeplugin_phppoll:$hash", $userid, $keys[$id]);
-    }
-
     // Validate that the user session is still active.
     // We check this in a loop because user session may end while we are still waiting.
-    $hassessions = $DB->count_records_select(
-        'sessions',
-        'userid = ? AND sid LIKE ? AND timemodified >= ?',
-        [$userid, $sidpart . '%', time() - $CFG->sessiontimeout]
-    );
-    if (strlen($sidpart) < 5 || !$hassessions) {
+    $session = \core\session\manager::get_session_by_sid($sid);
+    if (empty($session->sid) || (!empty($session->userid) && !isguestuser($session->userid)
+            && $session->timemodified < time() - $CFG->sessiontimeout)) {
         throw new moodle_exception('sessionexpired');
     }
 

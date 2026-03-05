@@ -77,7 +77,7 @@ class channel {
      * @return void
      */
     public function subscribe(): void {
-        if (manager::is_enabled($this->component, $this->area) && ($plugin = manager::get_plugin())) {
+        if (manager::is_enabled($this->component) && ($plugin = manager::get_plugin())) {
             $plugin->subscribe($this);
         }
     }
@@ -89,7 +89,7 @@ class channel {
      * @return void
      */
     public function notify(?array $payload = null): void {
-        if (manager::is_enabled($this->component, $this->area) && ($plugin = manager::get_plugin())) {
+        if (manager::is_enabled($this->component) && ($plugin = manager::get_plugin())) {
             $plugin->notify($this, $payload);
         }
     }

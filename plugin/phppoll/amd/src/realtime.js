@@ -120,12 +120,9 @@ function poll() {
         schedulePoll();
     };
 
-    let query = 'userid=' + encodeURIComponent(params.userid) +
-        '&fromid=' + encodeURIComponent(params.fromid) +
-        '&sid=' + encodeURIComponent(params.sid);
+    let query = 'fromid=' + encodeURIComponent(params.fromid);
     for (let i = 0; i < channels.length; i++) {
         query += `&channels[${i}]=` + encodeURIComponent(channels[i].hash);
-        query += `&key[${i}]=` + encodeURIComponent(channels[i].key);
     }
 
     ajax.open('POST', pollURL, true);
@@ -136,19 +133,15 @@ function poll() {
 /**
  * Initialise plugin
  *
- * @param {Number} userId
  * @param {String} pollURLParam
  * @param {Number} timeout
- * @param {String} sid
  */
-export function init(userId, pollURLParam, timeout, sid) {
-    if (params && params.userid) {
+export function init(pollURLParam, timeout) {
+    if (params) {
         // Log console dev error.
     } else {
         params = {
-            userid: userId,
             timeout: timeout,
-            sid
         };
     }
     pollURL = pollURLParam;
@@ -158,11 +151,10 @@ export function init(userId, pollURLParam, timeout, sid) {
  * Subscribe to events
  *
  * @param {String} hash
- * @param {String} key
  * @param {Number} fromId
  */
-export function subscribe(hash, key, fromId) {
+export function subscribe(hash, fromId) {
     params.fromid = fromId;
-    channels.push({hash, key});
+    channels.push({hash});
     restartPoll();
 }

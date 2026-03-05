@@ -99,13 +99,12 @@ class manager {
      * Checks if the real-time API is available for the given component and area.
      *
      * Currently this only checks whether a backend plugin is selected and set up.
-     * In the future it may be possible to enable or disable individual areas.
+     * In the future it may be possible to enable or disable individual components.
      *
      * @param string $component Frankenstyle plugin name
-     * @param string $area Communication area within the plugin
      * @return bool
      */
-    public static function is_enabled(string $component, string $area) {
+    public static function is_enabled(string $component) {
         if (!self::get_plugin()) {
             return false;
         }
@@ -129,7 +128,7 @@ class manager {
      */
     public static function event_received(string $component, $payload): array {
         $component = clean_param($component, PARAM_COMPONENT);
-        if (!$component) {
+        if (!$component || !self::is_enabled($component)) {
             return [];
         }
         $res = component_callback($component, 'realtime_event_received', [$payload]);
