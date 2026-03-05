@@ -1,4 +1,6 @@
 <?php
+
+use core\exception\coding_exception;
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -15,27 +17,23 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * External functions and service declaration for Real time events
- *
- * Documentation: {@link https://moodledev.io/docs/apis/subsystems/external/description}
+ * Endpoint for client-to-server push requests via the realtime API.
  *
  * @package    tool_realtime
- * @category   webservice
  * @copyright  Marina Glancy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+define('AJAX_SCRIPT', true);
 
-$functions = [
+require('../../../config.php');
 
-    'tool_realtime_send_test_events' => [
-        'classname' => tool_realtime\external\send_test_events::class,
-        'description' => 'Send test events for the test settings page',
-        'type' => 'write',
-        'ajax' => true,
-    ],
-];
+require_login();
+require_sesskey();
 
-$services = [
-];
+$component = required_param('component', PARAM_COMPONENT);
+$payload = required_param('payload', PARAM_RAW);
+$payload = json_decode($payload, true);
+
+$resp = \tool_realtime\manager::event_received($component, $payload);
+echo json_encode(['success' => 1, 'response' => $resp]);

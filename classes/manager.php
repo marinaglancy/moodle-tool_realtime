@@ -16,6 +16,8 @@
 
 namespace tool_realtime;
 
+use core\exception\moodle_exception;
+
 /**
  * Class manager
  *
@@ -128,8 +130,11 @@ class manager {
      */
     public static function event_received(string $component, $payload): array {
         $component = clean_param($component, PARAM_COMPONENT);
-        if (!$component || !self::is_enabled($component)) {
-            return [];
+        if (!isloggedin() || !$component || !self::is_enabled($component)) {
+            throw new moodle_exception('realtimenotenabled', 'tool_realtime');
+        }
+        if (isguestuser() && !self::get_plugin()->allow_guests()) {
+            throw new moodle_exception('noguest');
         }
         $res = component_callback($component, 'realtime_event_received', [$payload]);
         if ($res && !is_array($res)) {

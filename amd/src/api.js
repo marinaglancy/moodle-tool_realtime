@@ -14,14 +14,14 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * TODO describe module api
+ * API for sending data to the server via the realtime plugin.
  *
  * @module     tool_realtime/api
  * @copyright  Marina Glancy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-import Ajax from 'core/ajax';
+import Config from 'core/config';
 
 let delegatedplugin = null;
 
@@ -59,18 +59,40 @@ export function setImplementation(plugin) {
 }
 
 /**
- * Send data to server using Ajax, without using any plugin implementation.
+ * Send data to server by posting to push.php.
  *
  * @param {string} component
  * @param {Object} payload
  * @return {Promise}
  */
 export async function sendToServerAjax(component, payload) {
-    const response = await Ajax.call([{
-        methodname: 'tool_realtime_request',
-        args: {
-            component, payload: JSON.stringify(payload)
-        }
-    }])[0];
-    return response.response ? JSON.parse(response.response) : null;
+    const pushUrl = Config.wwwroot + '/admin/tool/realtime/push.php';
+    const query = 'sesskey=' + encodeURIComponent(Config.sesskey) +
+        '&component=' + encodeURIComponent(component) +
+        '&payload=' + encodeURIComponent(JSON.stringify(payload));
+    const response = await fetch(pushUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Accept': 'application/json',
+        },
+        body: query,
+    });
+
+    if (!response.ok) {
+        throw new Error('Connection error. Request failed with status ' +
+            response.status + ' ' + response.statusText);
+    }
+
+    let json;
+    try {
+        json = await response.json();
+    } catch {
+        throw new Error('Server returned invalid JSON');
+    }
+
+    if (json.error) {
+        throw new Error(json.error);
+    }
+    return json.response ?? null;
 }

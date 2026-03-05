@@ -32,13 +32,12 @@ require_once(__DIR__ . '/../../../../../config.php');
 
 // We do not want to call require_login() here because we don't want to update 'lastaccess' and keep session alive.
 
-if (\tool_realtime\manager::get_enabled_plugin_name() !== 'phppoll') {
-    echo json_encode(['error' => 'Plugin is not enabled']);
-    exit;
-}
-
 /** @var realtimeplugin_phppoll\plugin $plugin */
-$plugin = \tool_realtime\manager::get_plugin();
+$plugin = tool_realtime\manager::get_plugin();
+
+if (!$plugin || !($plugin instanceof realtimeplugin_phppoll\plugin)) {
+    throw new moodle_exception('realtimenotenabled', 'tool_realtime');
+}
 
 if (!isloggedin() || (isguestuser() && !$plugin->allow_guests())) {
     throw new \require_login_exception('');

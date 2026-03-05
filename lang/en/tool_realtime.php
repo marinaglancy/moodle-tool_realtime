@@ -32,6 +32,7 @@ $string['enabledplugin'] = 'Enabled real time backend plugin';
 $string['enabledplugindesc'] = 'Select the real time backend plugin that is used on the site.';
 $string['managerealtime'] = 'Manage Real time backend plugins';
 $string['pluginname'] = 'Real time events';
+$string['realtimenotenabled'] = 'Real time events plugin is not enabled or not configured';
 $string['privacy:metadata'] = 'The Real time events plugin does not store any personal data.';
 $string['subplugintype_realtimeplugin'] = 'Real time backend plugin';
 $string['subplugintype_realtimeplugin_plural'] = 'Real time backend plugins';
