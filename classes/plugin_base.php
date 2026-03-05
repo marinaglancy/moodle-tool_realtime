@@ -62,6 +62,15 @@ abstract class plugin_base {
     abstract public function is_set_up(): bool;
 
     /**
+     * Whether guest users are allowed to subscribe to realtime events
+     *
+     * @return bool
+     */
+    public function allow_guests(): bool {
+        return (bool)get_config('tool_realtime', 'allowguests');
+    }
+
+    /**
      * Subscribe the current page to receive notifications about events
      *
      * @param channel $channel

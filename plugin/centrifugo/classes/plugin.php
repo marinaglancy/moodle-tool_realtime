@@ -93,7 +93,7 @@ class plugin extends plugin_base {
      */
     public function init(): void {
         global $PAGE, $USER, $DB;
-        if (!$this->is_set_up() || !isloggedin() || isguestuser() || self::$initialised) {
+        if (self::$initialised || !$this->is_set_up() || !isloggedin() || (isguestuser() && !$this->allow_guests())) {
             return;
         }
         self::$initialised = true;

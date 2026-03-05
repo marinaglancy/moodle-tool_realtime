@@ -48,6 +48,12 @@ if ($hassiteconfig) {
         'phppoll',
         $choices
     ));
+    $temp->add(new admin_setting_configcheckbox(
+        'tool_realtime/allowguests',
+        new lang_string('allowguests', 'tool_realtime'),
+        new lang_string('allowguestsdesc', 'tool_realtime'),
+        0
+    ));
 
     foreach (core_plugin_manager::instance()->get_plugins_of_type('realtimeplugin') as $plugin) {
         /** @var \tool_realtime\plugininfo\realtimeplugin $plugin */

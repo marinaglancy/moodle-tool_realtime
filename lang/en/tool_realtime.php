@@ -25,6 +25,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['allowguests'] = 'Allow guest users';
+$string['allowguestsdesc'] = 'Allow guest users to subscribe to realtime events';
 $string['availableplugins'] = 'Available real time backend plugins';
 $string['enabledplugin'] = 'Enabled real time backend plugin';
 $string['enabledplugindesc'] = 'Select the real time backend plugin that is used on the site.';
