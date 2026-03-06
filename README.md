@@ -94,11 +94,10 @@ $channel->notify($payload); // $payload is an array
 ### Send data from client to server ###
 
 Some backend plugins may enable bi-directional websockets, which means that
-communication is faster when both receiving and sending data. Even in broadcasting
-channels, data sent to the server is never visible to other subscribers.
+communication is faster when both receiving and sending data.
 
 If bi-directional websockets are not available in the current backend plugin,
-this will be performed via a regular Moodle AJAX request.
+this will be performed via a Moodle AJAX request.
 
 In Javascript, use the API module to send data to the server:
 ```javascript
@@ -129,7 +128,7 @@ function PLUGINNAME_realtime_event_received($payload) {
     // The user who sent a request is already set as $USER.
 
     // Check permissions and perform action based on the payload.
-    // Payload must be validated and sanitised as it can be tampered with by the client.
+    // Payload must be validated and sanitised as it can be tampered with by the malicious user.
 
     // You can return a JSON-encodable response that will be passed on to the JS caller.
     return [];
@@ -138,13 +137,14 @@ function PLUGINNAME_realtime_event_received($payload) {
 
 ### Other uses ###
 
-Check if the real-time API is available for a component and area in PHP:
+Check if the real-time API is available for a component in PHP:
 ```php
-if (\tool_realtime\manager::is_enabled($component, $area)) {
+if (\tool_realtime\manager::is_enabled($component)) {
     // ...
 }
 ```
 
 ## Examples ##
 
-- [mod_kahoodle](https://github.com/marinaglancy/moodle-mod_kahoodle) - A Kahoot-style quiz game
+- **test_settings.php** - A test page to test real-time communication and demonstrate how to use the API in plugins.
+- [mod_kahoodle](https://github.com/marinaglancy/moodle-mod_kahoodle) - A real-time quiz game

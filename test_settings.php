@@ -32,21 +32,37 @@ $pluginname = \tool_realtime\manager::get_enabled_plugin_name();
 echo $OUTPUT->header();
 
 if (!$pluginname) {
-    echo $OUTPUT->notification(get_string('testsettings_noplugin', 'tool_realtime'), 'warning');
+    $manageurl = \tool_realtime\plugininfo\realtimeplugin::get_manage_url();
+    $message = get_string('testsettings_noplugin', 'tool_realtime') . ' ' .
+        \html_writer::link($manageurl, get_string('managerealtime', 'tool_realtime'));
+    echo $OUTPUT->notification($message, 'warning', false);
     echo $OUTPUT->footer();
     die;
 }
 
 $plugin = \tool_realtime\manager::get_plugin();
+$fullname = 'realtimeplugin_' . $pluginname;
+$displayname = get_string('pluginname', $fullname);
+$plugininfos = \core_plugin_manager::instance()->get_plugins_of_type('realtimeplugin');
+$settingsurl = isset($plugininfos[$pluginname]) ? $plugininfos[$pluginname]->get_settings_url() : null;
+
 if (!$plugin) {
-    echo $OUTPUT->notification(get_string('testsettings_notsetup', 'tool_realtime'), 'warning');
+    $message = get_string('testsettings_notsetup', 'tool_realtime', $displayname);
+    if ($settingsurl) {
+        $message .= ' ' . \html_writer::link($settingsurl, get_string('testsettings_opensettings', 'tool_realtime', $displayname));
+    }
+    echo $OUTPUT->notification($message, 'warning', false);
     echo $OUTPUT->footer();
     die;
 }
 
-$fullname = 'realtimeplugin_' . $pluginname;
-$displayname = get_string('pluginname', $fullname);
 echo $OUTPUT->heading($displayname . '. ' . get_string('testsettings', 'tool_realtime'));
+if ($settingsurl) {
+    echo \html_writer::div(\html_writer::link(
+        $settingsurl,
+        get_string('testsettings_opensettings', 'tool_realtime', $displayname)
+    ));
+}
 
 // Subscribe to the test channel.
 $context = context_system::instance();

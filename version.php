@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'tool_realtime';
-$plugin->release = '2.0.0';
-$plugin->version = 2026030500;
+$plugin->release = '2.1.0';
+$plugin->version = 2026030600;
 $plugin->requires = 2024100700;
 $plugin->supported = [405, 501];
