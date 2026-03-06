@@ -1,6 +1,4 @@
 <?php
-
-use core\exception\coding_exception;
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify

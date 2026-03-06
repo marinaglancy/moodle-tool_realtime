@@ -70,8 +70,10 @@ while (true) {
     // Validate that the user session is still active.
     // We check this in a loop because user session may end while we are still waiting.
     $session = \core\session\manager::get_session_by_sid($sid);
-    if (empty($session->sid) || (!empty($session->userid) && !isguestuser($session->userid)
-            && $session->timemodified < time() - $CFG->sessiontimeout)) {
+    if (
+        empty($session->sid) || (!empty($session->userid) && !isguestuser($session->userid)
+            && $session->timemodified < time() - $CFG->sessiontimeout)
+    ) {
         throw new moodle_exception('sessionexpired');
     }
 
