@@ -118,11 +118,30 @@ class plugin extends plugin_base {
     public function subscribe(channel $channel): void {
         global $PAGE;
         self::init();
+        $subtoken = $this->get_subscription_token($channel->get_hash());
         $PAGE->requires->js_call_amd(
             'realtimeplugin_centrifugo/realtime',
             'subscribe',
-            [$channel->get_hash(), $channel->get_properties()]
+            [$channel->get_hash(), $channel->get_properties(), $subtoken]
         );
+    }
+
+    /**
+     * Generate a subscription JWT token for the given channel.
+     *
+     * @param string $channelname
+     * @return string
+     */
+    public function get_subscription_token(string $channelname): string {
+        global $USER;
+        $client = new \phpcent\Client($this->get_api_url());
+        $token = $client->setSecret($this->get_token_secret())->generateSubscriptionToken(
+            $USER->id,
+            $channelname,
+            time() + 5 * 60,
+            []
+        );
+        return $token;
     }
 
     /**

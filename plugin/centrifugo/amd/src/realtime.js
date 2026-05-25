@@ -60,15 +60,16 @@ const getToken = async() => {
  *
  * @param {String} hash
  * @param {Object} properties
+ * @param {String|null} subscriptionToken
  */
-export function subscribe(hash, properties) {
+export function subscribe(hash, properties, subscriptionToken = null) {
 
     centrifuge.on('disconnected', function() {
         PubSub.publish(RealTimeEvents.CONNECTION_LOST);
     });
 
     // Allocate Subscription to a channel.
-    const sub = centrifuge.newSubscription(hash);
+    const sub = centrifuge.newSubscription(hash, {token: subscriptionToken});
 
     // React on channel real-time publications.
     sub.on('publication', async(ctx) => {
