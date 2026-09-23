@@ -1,3 +1,5 @@
+[![MDL Shield](https://img.shields.io/endpoint?url=https%3A%2F%2Fmdlshield.com%2Fapi%2Fbadge%2Ftool_realtime)](https://mdlshield.com/plugins/tool_realtime)
+
 # Real time events #
 
 This plugin provides a framework for real-time communication between the server and client
