@@ -14,6 +14,10 @@ subplugin root directory:
 
     composer require centrifugal/phpcent
 
+Do not include the composer autoloader (vendor/autoload.php) anywhere, it breaks the
+detection of Moodle's own composer packages (MDL-89898). The library consists of one class,
+classes/plugin.php includes vendor/centrifugal/phpcent/src/Client.php directly.
+
 2. centrifuge-js (JavaScript)
 =========================================================================================
 

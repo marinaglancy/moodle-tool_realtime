@@ -16,12 +16,8 @@
 
 namespace realtimeplugin_centrifugo;
 
-defined('MOODLE_INTERNAL') || die();
-
 use tool_realtime\channel;
 use tool_realtime\plugin_base;
-
-require(__DIR__ . '/../vendor/autoload.php');
 
 /**
  * Class plugin
@@ -88,6 +84,19 @@ class plugin extends plugin_base {
     }
 
     /**
+     * Create the client for the Centrifugo server API
+     *
+     * The library is included directly and not through its composer autoloader, because a plugin's
+     * composer autoloader breaks the detection of Moodle's own composer packages (MDL-89898).
+     *
+     * @return \phpcent\Client
+     */
+    protected function get_client(): \phpcent\Client {
+        require_once(__DIR__ . '/../vendor/centrifugal/phpcent/src/Client.php');
+        return new \phpcent\Client($this->get_api_url());
+    }
+
+    /**
      * Intitialises realtime tool for Javascript subscriptions
      *
      */
@@ -109,7 +118,7 @@ class plugin extends plugin_base {
     #[\Override]
     public function notify(channel $channel, ?array $payload = null): void {
         $channelname = $channel->get_hash();
-        $client = new \phpcent\Client($this->get_api_url());
+        $client = $this->get_client();
         $client->setApiKey($this->get_api_key());
         $client->publish($channelname, ['payload' => $payload ?? []]);
     }
@@ -132,7 +141,7 @@ class plugin extends plugin_base {
      */
     public function get_token(): string {
         global $USER;
-        $client = new \phpcent\Client($this->get_api_url());
+        $client = $this->get_client();
         // Generate a JWT token for the current user that is valid for 5 minutes.
         $meta = [];
         $token = $client->setSecret($this->get_token_secret())->generateConnectionToken(
