@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   when real-time events are sent.
 - Centrifugo backend no longer reports a lost connection several times on pages with multiple subscriptions.
 - PHP polling "Check interval" setting only accepts numbers. Other values broke pages that use real-time events.
+- Privacy information for the Centrifugo backend now declares the user id and event data sent to the Centrifugo server.
 
 ## [2.1.1] - 2026-03-06
 
