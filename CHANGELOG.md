@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Centrifugo backend no longer breaks the site administration pages in Moodle 5.3.
+- Centrifugo backend now respects the "Allow guest users" setting. Previously guests could
+  connect and receive real-time events even when this setting was disabled.
 
 ## [2.1.1] - 2026-03-06
 

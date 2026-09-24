@@ -62,6 +62,10 @@ const getToken = async() => {
  * @param {Object} properties
  */
 export function subscribe(hash, properties) {
+    if (!centrifuge) {
+        // The plugin was not initialised, for example, guest access is not allowed.
+        return;
+    }
 
     centrifuge.on('disconnected', function() {
         PubSub.publish(RealTimeEvents.CONNECTION_LOST);

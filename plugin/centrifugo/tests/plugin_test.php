@@ -74,4 +74,61 @@ final class plugin_test extends \advanced_testcase {
         // Token should be a valid JWT (three base64url-encoded parts separated by dots).
         $this->assertMatchesRegularExpression('/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/', $token);
     }
+
+    /**
+     * Configure the Centrifugo plugin and make it the enabled backend
+     */
+    protected function set_up_centrifugo(): void {
+        set_config('enabled', 'centrifugo', 'tool_realtime');
+        set_config('host', 'localhost:8000', 'realtimeplugin_centrifugo');
+        set_config('apikey', 'testapikey', 'realtimeplugin_centrifugo');
+        set_config('tokensecret', 'testsecret', 'realtimeplugin_centrifugo');
+    }
+
+    /**
+     * Returns the AMD javascript code queued on the current page
+     *
+     * @return string
+     */
+    protected function get_page_amd_js(): string {
+        global $PAGE;
+        $requires = $PAGE->requires;
+        $property = new \ReflectionProperty($requires, 'amdjscode');
+        return implode("\n", $property->getValue($requires));
+    }
+
+    public function test_subscribe(): void {
+        $this->resetAfterTest();
+        $this->set_up_centrifugo();
+        $this->setUser($this->getDataGenerator()->create_user());
+
+        $channel = new \tool_realtime\channel(\context_system::instance(), 'testcomponent', 'testarea');
+        (new plugin())->subscribe($channel);
+
+        $this->assertStringContainsString('amd.subscribe(' . json_encode($channel->get_hash()), $this->get_page_amd_js());
+    }
+
+    public function test_subscribe_guest_not_allowed(): void {
+        $this->resetAfterTest();
+        $this->set_up_centrifugo();
+        set_config('allowguests', 0, 'tool_realtime');
+        $this->setGuestUser();
+
+        $channel = new \tool_realtime\channel(\context_system::instance(), 'testcomponent', 'testarea');
+        (new plugin())->subscribe($channel);
+
+        $this->assertStringNotContainsString('realtimeplugin_centrifugo/realtime', $this->get_page_amd_js());
+    }
+
+    public function test_subscribe_guest_allowed(): void {
+        $this->resetAfterTest();
+        $this->set_up_centrifugo();
+        set_config('allowguests', 1, 'tool_realtime');
+        $this->setGuestUser();
+
+        $channel = new \tool_realtime\channel(\context_system::instance(), 'testcomponent', 'testarea');
+        (new plugin())->subscribe($channel);
+
+        $this->assertStringContainsString('amd.subscribe(' . json_encode($channel->get_hash()), $this->get_page_amd_js());
+    }
 }

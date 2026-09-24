@@ -126,7 +126,10 @@ class plugin extends plugin_base {
     #[\Override]
     public function subscribe(channel $channel): void {
         global $PAGE;
-        self::init();
+        if (!$this->is_set_up() || !isloggedin() || (isguestuser() && !$this->allow_guests())) {
+            return;
+        }
+        $this->init();
         $PAGE->requires->js_call_amd(
             'realtimeplugin_centrifugo/realtime',
             'subscribe',
