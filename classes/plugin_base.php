@@ -82,6 +82,7 @@ abstract class plugin_base {
      *
      * @param channel $channel
      * @param array|null $payload
+     * @throws \Exception if the event could not be sent, for example when the realtime server is not available
      */
     abstract public function notify(channel $channel, ?array $payload = null): void;
 }

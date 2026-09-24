@@ -104,19 +104,6 @@ final class plugin_test extends \advanced_testcase {
         set_config('host', '127.0.0.1:1', 'realtimeplugin_centrifugo');
 
         $channel = new \tool_realtime\channel(\context_system::instance(), 'testcomponent', 'testarea');
-        (new plugin())->notify($channel, ['a' => 'b']);
-
-        $this->assertDebuggingCalledCount(1);
-    }
-
-    public function test_notify_server_unavailable_test_channel(): void {
-        $this->resetAfterTest();
-        $this->set_up_centrifugo();
-        // Nothing listens on this port, the connection is refused.
-        set_config('host', '127.0.0.1:1', 'realtimeplugin_centrifugo');
-
-        // Errors on the channel used by the tool_realtime test page are not caught, the page displays them.
-        $channel = new \tool_realtime\channel(\context_system::instance(), 'tool_realtime', 'test');
         $this->expectException(\Exception::class);
         (new plugin())->notify($channel, ['a' => 'b']);
     }

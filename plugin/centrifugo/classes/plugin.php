@@ -126,16 +126,7 @@ class plugin extends plugin_base {
         $channelname = $channel->get_hash();
         $client = $this->get_client();
         $client->setApiKey($this->get_api_key());
-        try {
-            $client->publish($channelname, ['payload' => $payload ?? []]);
-        } catch (\Exception $e) {
-            // The page testing the settings of tool_realtime displays this error to the admin.
-            if ($channel->get_properties()['component'] === 'tool_realtime') {
-                throw $e;
-            }
-            // Do not let an unavailable Centrifugo server break the action that triggered the notification.
-            debugging('Failed to publish the event to the Centrifugo server: ' . $e->getMessage(), DEBUG_DEVELOPER);
-        }
+        $client->publish($channelname, ['payload' => $payload ?? []]);
     }
 
     #[\Override]
