@@ -36,6 +36,7 @@ if ($hassiteconfig) {
         'realtimeplugin_phppoll/checkinterval',
         new lang_string('checkinterval', 'realtimeplugin_phppoll'),
         new lang_string('checkintervaldesc', 'realtimeplugin_phppoll', 200),
-        1000
+        1000,
+        PARAM_INT
     ));
 }

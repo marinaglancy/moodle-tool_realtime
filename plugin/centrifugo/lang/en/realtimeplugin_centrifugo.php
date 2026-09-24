@@ -47,4 +47,6 @@ $string['privacy:metadata'] = 'The Centrifugo plugin does not store any personal
 $string['tokensecret'] = 'Token HMAC secret';
 $string['tokensecret_desc'] = 'HMAC secret key used to sign JWT connection tokens for WebSocket authentication. Corresponds to `token_hmac_secret_key` in Centrifugo server configuration. Railway template variable: `CENTRIFUGO_CLIENT_TOKEN_HMAC_SECRET_KEY`.';
 $string['usessl'] = 'Use SSL';
-$string['usessl_desc'] = 'Use SSL for the websocket connection. If disabled, the connection will be made using protocols `ws://` and `http://` instead of `wss://` and `https://`.';
+$string['usessl_desc'] = 'Use SSL for the websocket connection. If disabled, the connection will be made using protocols `ws://` and `http://` instead of `wss://` and `https://`.
+
+Warning: without SSL the HTTP API key and the users\' connection tokens are sent unencrypted. Only disable SSL if Centrifugo runs on the same server or in a trusted private network.';

@@ -112,7 +112,9 @@ class plugin extends plugin_base {
      */
     public function get_all(array $hashes, int $fromid): array {
         global $DB;
-        $events = [];
+        if (empty($hashes)) {
+            return [];
+        }
 
         [$sql, $params] = $DB->get_in_or_equal($hashes, SQL_PARAMS_NAMED);
         $sql .= $fromid ? ' AND id > :fromid' : '';
@@ -132,7 +134,8 @@ class plugin extends plugin_base {
                 $item->context = ['id' => $context->id, 'contextlevel' => $context->contextlevel,
                     'instanceid' => $context->instanceid];
             } catch (\moodle_exception $e) {
-                $item->context = ['id' => $context->id];
+                // The context was deleted after the event was created.
+                $item->context = ['id' => (int)$item->contextid];
             }
             unset($item->contextid);
         });
@@ -145,7 +148,7 @@ class plugin extends plugin_base {
      * @return int sleep time between checks, in milliseconds
      */
     public function get_delay_between_checks(): int {
-        $period = get_config('realtimeplugin_phppoll', 'checkinterval');
+        $period = (int)get_config('realtimeplugin_phppoll', 'checkinterval');
         return max($period, 200);
     }
 

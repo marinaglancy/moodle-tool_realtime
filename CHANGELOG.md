@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   connect and receive real-time events even when this setting was disabled.
 - A slow or unreachable Centrifugo server no longer makes page requests hang or fail
   when real-time events are sent.
+- Centrifugo backend no longer reports a lost connection several times on pages with multiple subscriptions.
+- PHP polling "Check interval" setting only accepts numbers. Other values broke pages that use real-time events.
 
 ## [2.1.1] - 2026-03-06
 

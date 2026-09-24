@@ -52,7 +52,7 @@ class get_token extends external_api {
         if ($plugin && $plugin instanceof \realtimeplugin_centrifugo\plugin && $plugin->is_set_up()) {
             return ['token' => $plugin->get_token()];
         } else {
-            throw new \moodle_exception('Centrifugo plugin is not enabled');
+            throw new \moodle_exception('realtimenotenabled', 'tool_realtime');
         }
     }
 

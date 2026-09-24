@@ -26,7 +26,7 @@ namespace realtimeplugin_centrifugo\external;
  */
 final class get_token_test extends \advanced_testcase {
     /** @var string regular expression for a JWT token */
-    const JWT_REGEX = '/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/';
+    private const JWT_REGEX = '/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/';
 
     /**
      * Configure the Centrifugo plugin and make it the enabled backend
@@ -46,6 +46,17 @@ final class get_token_test extends \advanced_testcase {
         $result = get_token::execute();
         $result = \core_external\external_api::clean_returnvalue(get_token::execute_returns(), $result);
         $this->assertMatchesRegularExpression(self::JWT_REGEX, $result['token']);
+    }
+
+    public function test_execute_not_enabled(): void {
+        $this->resetAfterTest();
+        $this->set_up_centrifugo();
+        set_config('enabled', 'phppoll', 'tool_realtime');
+        $this->setUser($this->getDataGenerator()->create_user());
+
+        $this->expectException(\moodle_exception::class);
+        $this->expectExceptionMessage(get_string('realtimenotenabled', 'tool_realtime'));
+        get_token::execute();
     }
 
     public function test_execute_guest_not_allowed(): void {
