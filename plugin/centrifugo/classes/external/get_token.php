@@ -46,10 +46,13 @@ class get_token extends external_api {
         self::validate_context($context);
 
         $plugin = \tool_realtime\manager::get_plugin();
+        if (isguestuser() && $plugin && !$plugin->allow_guests()) {
+            throw new \moodle_exception('noguest');
+        }
         if ($plugin && $plugin instanceof \realtimeplugin_centrifugo\plugin && $plugin->is_set_up()) {
             return ['token' => $plugin->get_token()];
         } else {
-            throw new \moodle_exception('Centrifugo plugin is not enabled');
+            throw new \moodle_exception('realtimenotenabled', 'tool_realtime');
         }
     }
 

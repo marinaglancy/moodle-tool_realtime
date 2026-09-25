@@ -1,0 +1,46 @@
+# camp listing manifest — descriptive content for your plugin's page.
+# Edit freely and commit; camp ingests this file at each tagged release.
+# Schema: https://camp-registry.org/schema/listing.schema.json
+name: Real time events
+summary: Add real-time server-to-browser communication to your plugins via WebSockets or polling. Send notifications from PHP, receive events in JavaScript, no page reloads needed.
+category: Developer tools
+description: |
+  Real time events is a framework for real-time communication between the server and the browser
+  in Moodle plugins. Other plugins build on it, for example
+  [Kahoodle](https://github.com/marinaglancy/moodle-mod_kahoodle), a real-time quiz game.
+
+  - **Server to browser**: any PHP process, such as another user's request or a scheduled task,
+    calls `$channel->notify()`. Every page subscribed to the channel receives the event in
+    JavaScript through `core/pubsub`, without a page reload.
+  - **Browser to server**: JavaScript sends data with `sendToServer()`, and the request is passed
+    to the `PLUGINNAME_realtime_event_received()` callback of your plugin.
+  - **Secure channels**: subscription is only possible from PHP. The page receives a channel hash
+    that authenticates the polling or websocket requests, so users cannot guess the channels of
+    other contexts.
+
+  ## Backends
+
+  The communication method is provided by backend subplugins:
+
+  - **PHP polling** works on any Moodle site without additional software, with long or short polling.
+  - **Centrifugo** delivers events over WebSockets through [Centrifugo](https://centrifugal.dev/),
+    an open-source real-time messaging server that you run yourself. Its settings can be imported
+    from a Railway template deployment or from the Centrifugo server configuration.
+
+  A test page measures the event latency and round-trip time with the enabled backend. See the
+  [README](https://github.com/marinaglancy/moodle-tool_realtime#readme) for the full API.
+labels:
+  # Required disclosure labels — pick all that apply (RFC §4.7):
+  #   fully-free | freemium | paid-service | external-account
+  #   donation-supported | commercial-support-available
+  - fully-free
+# screenshots:
+#   - path: .camp/screenshots/overview.png
+#     caption: Main view
+links:
+  docs: https://github.com/marinaglancy/moodle-tool_realtime#readme
+  issues: https://github.com/marinaglancy/moodle-tool_realtime/issues
+  changelog: https://github.com/marinaglancy/moodle-tool_realtime/blob/HEAD/CHANGELOG.md
+badges:
+  - endpoint: https://mdlshield.com/api/badge/tool_realtime
+    link: https://mdlshield.com/plugins/tool_realtime

@@ -87,6 +87,7 @@ class channel {
      *
      * @param array|null $payload
      * @return void
+     * @throws \Exception if the event could not be sent, for example when the realtime server is not available
      */
     public function notify(?array $payload = null): void {
         if (manager::is_enabled($this->component) && ($plugin = manager::get_plugin())) {

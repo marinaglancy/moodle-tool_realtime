@@ -20,7 +20,6 @@
  * @package     realtimeplugin_phppoll
  * @copyright   2020 Marina Glancy
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @license     Moodle Workplace License, distribution is restricted, contact support@moodle.com
  */
 
 define('AJAX_SCRIPT', true);
@@ -55,6 +54,12 @@ foreach ($channels as $hash) {
         echo json_encode(['error' => 'Invalid channel']);
         exit;
     }
+}
+
+// Nothing to wait for if no channels were requested.
+if (empty($channels)) {
+    echo json_encode(['success' => 1, 'events' => []]);
+    exit;
 }
 
 // Save session id and close the session to release the lock before the long-polling loop.
