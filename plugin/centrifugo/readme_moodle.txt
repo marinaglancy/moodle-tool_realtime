@@ -14,6 +14,12 @@ subplugin root directory:
 
     composer require centrifugal/phpcent
 
+Then delete the composer autoloader and the files that are not needed at runtime:
+
+    rm -rf vendor/autoload.php vendor/composer vendor/centrifugal/phpcent/.github \
+        vendor/centrifugal/phpcent/.gitignore vendor/centrifugal/phpcent/phpunit.xml.dist \
+        vendor/centrifugal/phpcent/tests
+
 Do not include the composer autoloader (vendor/autoload.php) anywhere, it breaks the
 detection of Moodle's own composer packages (MDL-89898). The library consists of one class,
 classes/plugin.php includes vendor/centrifugal/phpcent/src/Client.php directly.

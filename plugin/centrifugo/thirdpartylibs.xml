@@ -8,20 +8,6 @@
         <licenseversion></licenseversion>
     </library>
     <library>
-        <location>vendor/composer</location>
-        <name>composer</name>
-        <version></version>
-        <license>Expat</license>
-        <licenseversion></licenseversion>
-    </library>
-    <library>
-        <location>vendor/autoload.php</location>
-        <name>composer autoload</name>
-        <version></version>
-        <license></license>
-        <licenseversion></licenseversion>
-    </library>
-    <library>
         <location>amd/src/centrifuge-lazy.js</location>
         <name>centrifuge-js</name>
         <description>JavaScript SDK for Centrifugo real-time messaging server</description>
