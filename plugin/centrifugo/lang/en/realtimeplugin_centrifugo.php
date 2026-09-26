@@ -29,6 +29,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['apikey'] = 'HTTP API key';
 $string['apikey_desc'] = 'API key for authenticating server-to-Centrifugo requests (publishing events). Corresponds to `api_key` in Centrifugo server configuration. Railway template variable: `CENTRIFUGO_HTTP_API_KEY`.';
+$string['channelnotauthorised'] = 'You are not allowed to subscribe to this channel.';
 $string['configintro'] = 'This plugin enables real-time communication via WebSockets using <a href="https://centrifugal.dev/" target="_blank">Centrifugo</a>, an open-source scalable real-time messaging server.
 
 The easiest way to set up your own Centrifugo hosting is to use the <a href="{$a->railwayurl}" target="_blank">Railway template</a>. All secrets will be randomly generated. After deploying, copy the deployed URL and other variables into the settings below.<br><br>
@@ -43,6 +44,7 @@ $string['importbutton'] = 'Import settings';
 $string['importerror'] = 'Could not parse the configuration.';
 $string['importtitle'] = 'Import settings';
 $string['pluginname'] = 'Centrifugo';
+$string['pluginnotenabled'] = 'The Centrifugo plugin is not enabled.';
 $string['privacy:metadata'] = 'The Centrifugo plugin does not store any personal data.';
 $string['tokensecret'] = 'Token HMAC secret';
 $string['tokensecret_desc'] = 'HMAC secret key used to sign JWT connection tokens for WebSocket authentication. Corresponds to `token_hmac_secret_key` in Centrifugo server configuration. Railway template variable: `CENTRIFUGO_CLIENT_TOKEN_HMAC_SECRET_KEY`.';

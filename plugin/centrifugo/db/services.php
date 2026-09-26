@@ -35,6 +35,13 @@ $functions = [
         'type' => 'read',
         'ajax' => true,
     ],
+
+    'realtimeplugin_centrifugo_get_subscription_token' => [
+        'classname' => realtimeplugin_centrifugo\external\get_subscription_token::class,
+        'description' => 'Get subscription token for a channel',
+        'type' => 'read',
+        'ajax' => true,
+    ],
 ];
 
 $services = [
