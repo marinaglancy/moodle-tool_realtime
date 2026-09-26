@@ -56,6 +56,30 @@ const getToken = async() => {
 };
 
 /**
+ * Request a subscription token for a channel
+ *
+ * @param {Object} ctx
+ * @param {String} ctx.channel
+ * @returns {Promise<String>}
+ */
+const getSubscriptionToken = async(ctx) => {
+    let token;
+    try {
+        const response = await Ajax.call([{
+            methodname: 'realtimeplugin_centrifugo_get_subscription_token',
+            args: {channel: ctx.channel},
+        }])[0];
+        token = response?.token;
+    } catch (error) {
+        token = null;
+    }
+    if (!token) {
+        throw new UnauthorizedError();
+    }
+    return token;
+};
+
+/**
  * Subscribe to events
  *
  * @param {String} hash
@@ -69,7 +93,7 @@ export function subscribe(hash, properties, subscriptionToken = null) {
     });
 
     // Allocate Subscription to a channel.
-    const sub = centrifuge.newSubscription(hash, {token: subscriptionToken});
+    const sub = centrifuge.newSubscription(hash, {token: subscriptionToken, getToken: getSubscriptionToken});
 
     // React on channel real-time publications.
     sub.on('publication', async(ctx) => {

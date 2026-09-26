@@ -31,6 +31,15 @@ require(__DIR__ . '/../vendor/autoload.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class plugin extends plugin_base {
+    /** @var int Seconds a generated token stays valid */
+    public const TOKEN_LIFETIME = 5 * 60;
+
+    /** @var string Session key listing the channels the user may subscribe to */
+    private const SESSION_CHANNELS_KEY = 'tool_realtime_centrifugo_channels';
+
+    /** @var int Seconds a channel authorisation is remembered for */
+    private const CHANNEL_LIFETIME = HOURSECS;
+
     /** @var bool */
     protected static $initialised = false;
 
@@ -118,30 +127,78 @@ class plugin extends plugin_base {
     public function subscribe(channel $channel): void {
         global $PAGE;
         self::init();
-        $subtoken = $this->get_subscription_token($channel->get_hash());
+        $channelhash = $channel->get_hash();
+        self::remember_channel($channelhash);
         $PAGE->requires->js_call_amd(
             'realtimeplugin_centrifugo/realtime',
             'subscribe',
-            [$channel->get_hash(), $channel->get_properties(), $subtoken]
+            [$channelhash, $channel->get_properties(), $this->get_subscription_token($channelhash)]
         );
     }
 
     /**
      * Generate a subscription JWT token for the given channel.
      *
-     * @param string $channelname
+     * Only channels authorised in this session get a token, otherwise any user could request one
+     * for an arbitrary channel and channel_token_auth would be pointless.
+     *
+     * @param string $channelhash
      * @return string
      */
-    public function get_subscription_token(string $channelname): string {
+    public function get_subscription_token(string $channelhash): string {
         global $USER;
+        if (!self::is_channel_authorised($channelhash)) {
+            throw new \moodle_exception('channelnotauthorised', 'realtimeplugin_centrifugo');
+        }
         $client = new \phpcent\Client($this->get_api_url());
         $token = $client->setSecret($this->get_token_secret())->generateSubscriptionToken(
             $USER->id,
-            $channelname,
-            time() + 5 * 60,
+            $channelhash,
+            \core\di::get(\core\clock::class)->time() + self::TOKEN_LIFETIME,
             []
         );
         return $token;
+    }
+
+    /**
+     * Record that the user may subscribe to this channel, so its token can be refreshed later.
+     *
+     * @param string $channelhash
+     */
+    protected static function remember_channel(string $channelhash): void {
+        $channels = self::get_authorised_channels();
+        $channels[$channelhash] = \core\di::get(\core\clock::class)->time();
+        $_SESSION[self::SESSION_CHANNELS_KEY] = $channels;
+    }
+
+    /**
+     * Whether the user may subscribe to this channel in this session.
+     *
+     * @param string $channelhash
+     * @return bool
+     */
+    protected static function is_channel_authorised(string $channelhash): bool {
+        return isset(self::get_authorised_channels()[$channelhash]);
+    }
+
+    /**
+     * The channels the user may subscribe to in this session, mapped to when access was granted.
+     * Entries older than a day are dropped.
+     *
+     * @return array
+     */
+    protected static function get_authorised_channels(): array {
+        $channels = $_SESSION[self::SESSION_CHANNELS_KEY] ?? [];
+        if (!is_array($channels)) {
+            return [];
+        }
+        $recent = \core\di::get(\core\clock::class)->time() - self::CHANNEL_LIFETIME;
+        foreach ($channels as $channelhash => $granted) {
+            if ((int) $granted <= $recent) {
+                unset($channels[$channelhash]);
+            }
+        }
+        return $channels;
     }
 
     /**
@@ -156,7 +213,7 @@ class plugin extends plugin_base {
         $meta = [];
         $token = $client->setSecret($this->get_token_secret())->generateConnectionToken(
             $USER->id,
-            time() + 5 * 60,
+            \core\di::get(\core\clock::class)->time() + self::TOKEN_LIFETIME,
             [],
             [],
             $meta
