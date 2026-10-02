@@ -37,6 +37,9 @@ let centrifuge;
 export function init(initParams) {
     params = initParams;
     centrifuge = new Centrifuge(params.host, {token: params.token, getToken: getToken});
+    centrifuge.on('disconnected', function() {
+        PubSub.publish(RealTimeEvents.CONNECTION_LOST);
+    });
 }
 
 const getToken = async() => {
@@ -62,10 +65,10 @@ const getToken = async() => {
  * @param {Object} properties
  */
 export function subscribe(hash, properties) {
-
-    centrifuge.on('disconnected', function() {
-        PubSub.publish(RealTimeEvents.CONNECTION_LOST);
-    });
+    if (!centrifuge) {
+        // The plugin was not initialised, for example, guest access is not allowed.
+        return;
+    }
 
     // Allocate Subscription to a channel.
     const sub = centrifuge.newSubscription(hash);
@@ -80,6 +83,6 @@ export function subscribe(hash, properties) {
     // Trigger subscribe process.
     sub.subscribe();
 
-    // Trigger actual connection establishement.
+    // Trigger actual connection establishment (does nothing if already connected or connecting).
     centrifuge.connect();
 }

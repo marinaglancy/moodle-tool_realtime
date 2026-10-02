@@ -65,4 +65,42 @@ final class plugin_test extends advanced_testcase {
             ],
         ], $result);
     }
+
+    public function test_get_all_no_channels(): void {
+        $this->resetAfterTest();
+        $plugin = new plugin();
+        $this->assertSame([], $plugin->get_all([], 0));
+    }
+
+    public function test_get_all_deleted_context(): void {
+        $this->resetAfterTest();
+        $plugin = new plugin();
+        $course = $this->getDataGenerator()->create_course();
+        $context = \context_course::instance($course->id);
+        $channel = new \tool_realtime\channel($context, 'testcomponent', 'testarea');
+        $plugin->notify($channel, ['a' => 'b']);
+        delete_course($course, false);
+
+        $results = $plugin->get_all([$channel->get_hash()], 0);
+        $this->assertCount(1, $results);
+        $result = reset($results);
+        $this->assertEquals(['id' => $context->id], $result->context);
+        $this->assertEquals(['a' => 'b'], $result->payload);
+    }
+
+    public function test_get_delay_between_checks(): void {
+        $this->resetAfterTest();
+        $plugin = new plugin();
+
+        set_config('checkinterval', '500', 'realtimeplugin_phppoll');
+        $this->assertSame(500, $plugin->get_delay_between_checks());
+
+        // The value can not be less than 200 ms.
+        set_config('checkinterval', '100', 'realtimeplugin_phppoll');
+        $this->assertSame(200, $plugin->get_delay_between_checks());
+
+        // Invalid value does not cause an error.
+        set_config('checkinterval', 'abc', 'realtimeplugin_phppoll');
+        $this->assertSame(200, $plugin->get_delay_between_checks());
+    }
 }

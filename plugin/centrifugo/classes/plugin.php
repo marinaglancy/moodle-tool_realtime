@@ -16,12 +16,8 @@
 
 namespace realtimeplugin_centrifugo;
 
-defined('MOODLE_INTERNAL') || die();
-
 use tool_realtime\channel;
 use tool_realtime\plugin_base;
-
-require(__DIR__ . '/../vendor/autoload.php');
 
 /**
  * Class plugin
@@ -33,6 +29,10 @@ require(__DIR__ . '/../vendor/autoload.php');
 class plugin extends plugin_base {
     /** @var bool */
     protected static $initialised = false;
+    /** @var int Timeout for connecting to the Centrifugo server API, in seconds */
+    const API_CONNECT_TIMEOUT = 3;
+    /** @var int Timeout for the whole request to the Centrifugo server API, in seconds */
+    const API_TIMEOUT = 5;
 
     #[\Override]
     public function is_set_up(): bool {
@@ -88,6 +88,21 @@ class plugin extends plugin_base {
     }
 
     /**
+     * Create the client for the Centrifugo server API
+     *
+     * The library is included directly and not through its composer autoloader, because a plugin's
+     * composer autoloader breaks the detection of Moodle's own composer packages (MDL-89898).
+     *
+     * @return \phpcent\Client
+     */
+    protected function get_client(): \phpcent\Client {
+        require_once(__DIR__ . '/../vendor/centrifugal/phpcent/src/Client.php');
+        return (new \phpcent\Client($this->get_api_url()))
+            ->setConnectTimeoutOption(self::API_CONNECT_TIMEOUT)
+            ->setTimeoutOption(self::API_TIMEOUT);
+    }
+
+    /**
      * Intitialises realtime tool for Javascript subscriptions
      *
      */
@@ -109,7 +124,7 @@ class plugin extends plugin_base {
     #[\Override]
     public function notify(channel $channel, ?array $payload = null): void {
         $channelname = $channel->get_hash();
-        $client = new \phpcent\Client($this->get_api_url());
+        $client = $this->get_client();
         $client->setApiKey($this->get_api_key());
         $client->publish($channelname, ['payload' => $payload ?? []]);
     }
@@ -117,7 +132,10 @@ class plugin extends plugin_base {
     #[\Override]
     public function subscribe(channel $channel): void {
         global $PAGE;
-        self::init();
+        if (!$this->is_set_up() || !isloggedin() || (isguestuser() && !$this->allow_guests())) {
+            return;
+        }
+        $this->init();
         $PAGE->requires->js_call_amd(
             'realtimeplugin_centrifugo/realtime',
             'subscribe',
@@ -132,7 +150,7 @@ class plugin extends plugin_base {
      */
     public function get_token(): string {
         global $USER;
-        $client = new \phpcent\Client($this->get_api_url());
+        $client = $this->get_client();
         // Generate a JWT token for the current user that is valid for 5 minutes.
         $meta = [];
         $token = $client->setSecret($this->get_token_secret())->generateConnectionToken(

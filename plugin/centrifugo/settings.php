@@ -22,29 +22,31 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
- defined('MOODLE_INTERNAL') || die();
+defined('MOODLE_INTERNAL') || die();
 
 if ($hassiteconfig) {
     global $PAGE;
-    $importbtn = html_writer::tag(
-        'button',
-        get_string('importbutton', 'realtimeplugin_centrifugo'),
-        [
-            'type' => 'button',
-            'class' => 'btn btn-secondary mt-3',
-            'id' => 'realtimeplugin_centrifugo_importbtn',
-        ]
-    );
-    $settings->add(new admin_setting_heading(
-        'realtimeplugin_centrifugo/intro',
-        '',
-        get_string(
-            'configintro',
-            'realtimeplugin_centrifugo',
-            ['railwayurl' => 'https://railway.com/deploy/centrifugo-for-moodle']
-        ) . '<br/>' . $importbtn
-    ));
-    $PAGE->requires->js_call_amd('realtimeplugin_centrifugo/import_settings', 'init');
+    if ($ADMIN->fulltree) {
+        $importbtn = html_writer::tag(
+            'button',
+            get_string('importbutton', 'realtimeplugin_centrifugo'),
+            [
+                'type' => 'button',
+                'class' => 'btn btn-secondary mt-3',
+                'id' => 'realtimeplugin_centrifugo_importbtn',
+            ]
+        );
+        $settings->add(new admin_setting_heading(
+            'realtimeplugin_centrifugo/intro',
+            '',
+            get_string(
+                'configintro',
+                'realtimeplugin_centrifugo',
+                ['railwayurl' => 'https://railway.com/deploy/centrifugo-for-moodle']
+            ) . '<br/>' . $importbtn
+        ));
+        $PAGE->requires->js_call_amd('realtimeplugin_centrifugo/import_settings', 'init');
+    }
     $settings->add(new admin_setting_configtext(
         'realtimeplugin_centrifugo/host',
         new lang_string('host', 'realtimeplugin_centrifugo'),

@@ -43,8 +43,12 @@ $string['importbutton'] = 'Import settings';
 $string['importerror'] = 'Could not parse the configuration.';
 $string['importtitle'] = 'Import settings';
 $string['pluginname'] = 'Centrifugo';
-$string['privacy:metadata'] = 'The Centrifugo plugin does not store any personal data.';
+$string['privacy:metadata:centrifugo'] = 'The Centrifugo plugin does not store any personal data in Moodle. It sends data to the external Centrifugo server, which delivers real-time events to the users\' browsers. Depending on its configuration, the Centrifugo server may keep recent events for some time.';
+$string['privacy:metadata:centrifugo:payload'] = 'The data of the real-time events. It is sent to all users subscribed to the channel. The content depends on the plugin that sends the event and may include personal data.';
+$string['privacy:metadata:centrifugo:userid'] = 'The ID of the user. It is included in the token that the user\'s browser uses to connect to the Centrifugo server.';
 $string['tokensecret'] = 'Token HMAC secret';
 $string['tokensecret_desc'] = 'HMAC secret key used to sign JWT connection tokens for WebSocket authentication. Corresponds to `token_hmac_secret_key` in Centrifugo server configuration. Railway template variable: `CENTRIFUGO_CLIENT_TOKEN_HMAC_SECRET_KEY`.';
 $string['usessl'] = 'Use SSL';
-$string['usessl_desc'] = 'Use SSL for the websocket connection. If disabled, the connection will be made using protocols `ws://` and `http://` instead of `wss://` and `https://`.';
+$string['usessl_desc'] = 'Use SSL for the websocket connection. If disabled, the connection will be made using protocols `ws://` and `http://` instead of `wss://` and `https://`.
+
+Warning: without SSL the HTTP API key and the users\' connection tokens are sent unencrypted. Only disable SSL if Centrifugo runs on the same server or in a trusted private network.';
